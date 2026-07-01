@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Elements xmlns="http://schemas.microsoft.com/sharepoint/">
+  <List
+    Title="TechElixirApps"
+    Description="Application registry for Tech Elixir Solution Center. Each item represents a tracked application."
+    Url="Lists/TechElixirApps"
+    EnableVersioning="TRUE"
+    TemplateType="100">
+    <MetaData>
+      <Fields>
+        <!-- Title field is inherited (app name) -->
+
+        <Field
+          ID="{f8e0a1b2-c3d4-5e6f-7a8b-9c0d1e2f3a4b}"
+          Name="Description"
+          DisplayName="Description"
+          Type="Note"
+          RichText="FALSE"
+          NumLines="6"
+          Required="FALSE" />
+
+        <Field
+          ID="{a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d}"
+          Name="AppStatus"
+          DisplayName="App Status"
+          Type="Choice"
+          Required="FALSE">
+          <CHOICES>
+            <CHOICE>Active</CHOICE>
+            <CHOICE>InDevelopment</CHOICE>
+            <CHOICE>Deprecated</CHOICE>
+            <CHOICE>Planned</CHOICE>
+          </CHOICES>
+          <Default>Active</Default>
+        </Field>
+
+        <Field
+          ID="{b2c3d4e5-f6a7-8b9c-0d1e-2f3a4b5c6d7e}"
+          Name="AppOwner"
+          DisplayName="App Owner"
+          Type="Text"
+          Required="FALSE" />
+
+        <Field
+          ID="{c3d4e5f6-a7b8-9c0d-1e2f-3a4b5c6d7e8f}"
+          Name="DocCompleteness"
+          DisplayName="Doc Completeness (%)"
+          Type="Number"
+          Min="0"
+          Max="100"
+          Required="FALSE" />
+
+        <Field
+          ID="{d4e5f6a7-b8c9-0d1e-2f3a-4b5c6d7e8f9a}"
+          Name="GithubRepoUrl"
+          DisplayName="GitHub Repository URL"
+          Type="URL"
+          Required="FALSE" />
+
+        <Field
+          ID="{e5f6a7b8-c9d0-1e2f-3a4b-5c6d7e8f9a0b}"
+          Name="Tags"
+          DisplayName="Tags"
+          Type="Text"
+          Description="Semicolon-separated list of tags (e.g. Finance;SharePoint;Power BI)"
+          Required="FALSE" />
+      </Fields>
+
+      <Views>
+        <View BaseViewID="1" Type="HTML" WebPartZoneID="Main" DisplayName="All Items" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" SetupPath="pages\viewpage.aspx" ImageUrl="/_layouts/15/images/generic.png?rev=23">
+          <Query>
+            <OrderBy>
+              <FieldRef Name="Title" />
+            </OrderBy>
+          </Query>
+          <ViewFields>
+            <FieldRef Name="Title" />
+            <FieldRef Name="AppStatus" />
+            <FieldRef Name="AppOwner" />
+            <FieldRef Name="DocCompleteness" />
+            <FieldRef Name="GithubRepoUrl" />
+            <FieldRef Name="Tags" />
+          </ViewFields>
+          <RowLimit Paged="TRUE">30</RowLimit>
+        </View>
+      </Views>
+    </MetaData>
+  </List>
+</Elements>

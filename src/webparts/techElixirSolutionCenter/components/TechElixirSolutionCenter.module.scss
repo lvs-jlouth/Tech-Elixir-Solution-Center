@@ -1,0 +1,52 @@
+.container {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 16px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--bodyText, #323130);
+  margin: 0 0 4px 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: var(--bodyText, #605e5c);
+}
+
+.errorBanner {
+  margin-bottom: 16px;
+}
+
+.appGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.appSection {
+  margin-top: 16px;
+}
+
+.sectionHeading {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 24px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #0078d4;
+  color: var(--bodyText, #323130);
+}
+
+.pivot {
+  margin-top: 8px;
+}
+
+.darkTheme {
+  color: #ffffff;
+}

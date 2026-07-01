@@ -1,0 +1,43 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "tech-elixir-solution-center-client-side-solution",
+    "id": "c4d5e6f7-b8c9-5d0e-9f2a-3b4c5d6e7f80",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.18.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "Living documentation and engineering dashboard for SharePoint-based app builds."
+      },
+      "longDescription": {
+        "default": "Tech Elixir Solution Center is a SharePoint Framework web part that serves as a living documentation and application engineering dashboard for SharePoint-based app builds, including Finance Elixir, Fitness Elixir, Script Elixir, and other Tech Elixir projects."
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "Tech Elixir Solution Center Feature",
+        "description": "Provisions the TechElixirApps SharePoint list used by the web part.",
+        "id": "d5e6f7a8-b9c0-5e1f-a023-4c5d6e7f8a9b",
+        "version": "1.0.0.0",
+        "assets": {
+          "elementManifests": ["elements.xml"]
+        }
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/tech-elixir-solution-center.sppkg"
+  }
+}
