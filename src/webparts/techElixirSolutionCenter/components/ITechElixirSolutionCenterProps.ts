@@ -5,5 +5,6 @@ export interface ITechElixirSolutionCenterProps {
   displayMode: string;
   selectedApp: string;
   isDarkTheme: boolean;
+  useMockData: boolean;
   context: WebPartContext;
 }

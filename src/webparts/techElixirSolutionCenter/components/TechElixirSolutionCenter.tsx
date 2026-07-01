@@ -13,8 +13,9 @@ import {
 import { ITechElixirSolutionCenterProps } from './ITechElixirSolutionCenterProps';
 import { IApplication } from '../models';
 import { IHealthSummary } from '../models/IMockDataTypes';
-import { AppDataService } from '../services/AppDataService';
 import { MockDataService } from '../services/MockDataService';
+import { SharePointDataService } from '../services/SharePointDataService';
+import { IDetailDataService } from './AppDetailPanel/AppDetailPanel';
 import { AppOverviewCard } from './AppOverviewCard/AppOverviewCard';
 import { AppDetailPanel } from './AppDetailPanel/AppDetailPanel';
 import { DocCompletenessBar } from './DocCompletenessBar/DocCompletenessBar';
@@ -40,13 +41,13 @@ export default class TechElixirSolutionCenter extends React.Component<
   ITechElixirSolutionCenterProps,
   ITechElixirSolutionCenterState
 > {
-  private _dataService: AppDataService;
   private _mockDataService: MockDataService;
+  private _spDataService: SharePointDataService;
 
   constructor(props: ITechElixirSolutionCenterProps) {
     super(props);
-    this._dataService = new AppDataService(props.context, props.listName);
     this._mockDataService = new MockDataService();
+    this._spDataService = new SharePointDataService(props.context);
     this.state = {
       apps: [],
       healthSummaries: [],
@@ -61,16 +62,30 @@ export default class TechElixirSolutionCenter extends React.Component<
   }
 
   public componentDidUpdate(prevProps: ITechElixirSolutionCenterProps): void {
-    if (prevProps.listName !== this.props.listName) {
-      this._dataService = new AppDataService(this.props.context, this.props.listName);
+    if (
+      prevProps.useMockData !== this.props.useMockData ||
+      prevProps.listName !== this.props.listName
+    ) {
+      if (!this.props.useMockData) {
+        this._spDataService = new SharePointDataService(this.props.context);
+      }
       this._loadApps();
     }
   }
 
+  private _getActiveService(): IDetailDataService {
+    return this.props.useMockData ? this._mockDataService : this._spDataService;
+  }
+
   private _loadApps(): void {
     this.setState({ isLoading: true, error: undefined });
+
+    const appsPromise: Promise<IApplication[]> = this.props.useMockData
+      ? this._mockDataService.getApplications()
+      : this._spDataService.getSolutions();
+
     Promise.all([
-      this._dataService.getApplications(),
+      appsPromise,
       this._mockDataService.getAllHealthSummaries()
     ])
       .then(([apps, healthSummaries]) => {
@@ -188,7 +203,7 @@ export default class TechElixirSolutionCenter extends React.Component<
             healthSummary={healthSummaries.find(h => h.appId === selectedApp.id)}
             isOpen={true}
             onDismiss={() => this.setState({ selectedAppId: undefined })}
-            mockDataService={this._mockDataService}
+            dataService={this._getActiveService()}
           />
         )}
       </div>

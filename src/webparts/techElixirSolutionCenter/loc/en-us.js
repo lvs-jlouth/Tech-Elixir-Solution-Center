@@ -3,6 +3,7 @@ define([], function() {
     "PropertyPaneDescription": "Configure the Tech Elixir Solution Center web part.",
     "DataGroupName": "Data Source",
     "DisplayGroupName": "Display Settings",
+    "UseMockDataFieldLabel": "Use Mock Data",
     "ListNameFieldLabel": "SharePoint List Name",
     "ListNameFieldDescription": "Name of the SharePoint list containing app records (leave empty to use built-in mock data).",
     "DisplayModeFieldLabel": "Display Mode",

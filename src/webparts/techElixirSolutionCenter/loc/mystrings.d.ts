@@ -2,6 +2,7 @@ declare interface ITechElixirSolutionCenterWebPartStrings {
   PropertyPaneDescription: string;
   DataGroupName: string;
   DisplayGroupName: string;
+  UseMockDataFieldLabel: string;
   ListNameFieldLabel: string;
   ListNameFieldDescription: string;
   DisplayModeFieldLabel: string;

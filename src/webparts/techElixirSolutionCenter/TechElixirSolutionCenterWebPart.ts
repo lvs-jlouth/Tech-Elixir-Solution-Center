@@ -4,7 +4,8 @@ import { Version } from '@microsoft/sp-core-library';
 import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField,
-  PropertyPaneDropdown
+  PropertyPaneDropdown,
+  PropertyPaneToggle
 } from '@microsoft/sp-property-pane';
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 import { IReadonlyTheme } from '@microsoft/sp-component-base';
@@ -17,6 +18,7 @@ export interface ITechElixirSolutionCenterWebPartProps {
   listName: string;
   displayMode: string;
   selectedApp: string;
+  useMockData: boolean;
 }
 
 export default class TechElixirSolutionCenterWebPart extends BaseClientSideWebPart<ITechElixirSolutionCenterWebPartProps> {
@@ -30,6 +32,7 @@ export default class TechElixirSolutionCenterWebPart extends BaseClientSideWebPa
         listName: this.properties.listName || '',
         displayMode: this.properties.displayMode || 'cards',
         selectedApp: this.properties.selectedApp || '',
+        useMockData: this.properties.useMockData !== false,
         isDarkTheme: this._isDarkTheme,
         context: this.context
       }
@@ -67,6 +70,12 @@ export default class TechElixirSolutionCenterWebPart extends BaseClientSideWebPa
             {
               groupName: strings.DataGroupName,
               groupFields: [
+                PropertyPaneToggle('useMockData', {
+                  label: strings.UseMockDataFieldLabel,
+                  onText: 'Mock Data',
+                  offText: 'SharePoint Lists',
+                  checked: this.properties.useMockData !== false
+                }),
                 PropertyPaneTextField('listName', {
                   label: strings.ListNameFieldLabel,
                   description: strings.ListNameFieldDescription

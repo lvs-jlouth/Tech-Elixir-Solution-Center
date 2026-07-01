@@ -15,7 +15,6 @@ import {
 
 import { IApplication, AppStatus } from '../../models';
 import { IHealthSummary, IIntegration, IDocument } from '../../models/IMockDataTypes';
-import { MockDataService } from '../../services/MockDataService';
 import { HealthStatus, DocumentationStatus, DOCUMENTATION_SECTIONS } from '../../constants';
 import { calculateDocCompleteness } from '../../utils/docCompleteness';
 import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
@@ -27,12 +26,17 @@ import { DocumentMatrix } from '../DocumentMatrix/DocumentMatrix';
 import { IntegrationInventory } from '../IntegrationInventory/IntegrationInventory';
 import styles from './AppDetailPanel.module.scss';
 
+export interface IDetailDataService {
+  getIntegrations(appId: string): Promise<IIntegration[]>;
+  getDocuments(appId: string): Promise<IDocument[]>;
+}
+
 export interface IAppDetailPanelProps {
   app: IApplication;
   healthSummary: IHealthSummary | undefined;
   isOpen: boolean;
   onDismiss: () => void;
-  mockDataService: MockDataService;
+  dataService: IDetailDataService;
 }
 
 // ── Shared config maps ────────────────────────────────────────────────────────
@@ -85,7 +89,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
   healthSummary,
   isOpen,
   onDismiss,
-  mockDataService
+  dataService
 }) => {
   const [integrations, setIntegrations] = React.useState<IIntegration[]>([]);
   const [documents, setDocuments] = React.useState<IDocument[]>([]);
@@ -95,8 +99,8 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
     if (!isOpen) return;
     setLoadingDetails(true);
     Promise.all([
-      mockDataService.getIntegrations(app.id),
-      mockDataService.getDocuments(app.id)
+      dataService.getIntegrations(app.id),
+      dataService.getDocuments(app.id)
     ])
       .then(([intgs, docs]) => {
         setIntegrations(intgs);
