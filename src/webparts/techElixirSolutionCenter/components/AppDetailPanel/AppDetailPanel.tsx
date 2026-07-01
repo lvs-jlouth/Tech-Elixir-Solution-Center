@@ -1,0 +1,592 @@
+import * as React from 'react';
+import {
+  Panel,
+  PanelType,
+  Pivot,
+  PivotItem,
+  Stack,
+  Text,
+  Link,
+  Icon,
+  Spinner,
+  SpinnerSize,
+  ProgressIndicator,
+  DetailsList,
+  DetailsListLayoutMode,
+  SelectionMode,
+  IColumn
+} from '@fluentui/react';
+
+import { IApplication, AppStatus } from '../../models';
+import { IHealthSummary, IIntegration, IDocument } from '../../models/IMockDataTypes';
+import { MockDataService } from '../../services/MockDataService';
+import { HealthStatus, DocumentationStatus } from '../../constants';
+import { ReleaseNotes } from '../ReleaseNotes/ReleaseNotes';
+import { ArchitectureDocs } from '../ArchitectureDocs/ArchitectureDocs';
+import { TechnicalDebt } from '../TechnicalDebt/TechnicalDebt';
+import { AccessibilityReview } from '../AccessibilityReview/AccessibilityReview';
+import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
+import styles from './AppDetailPanel.module.scss';
+
+export interface IAppDetailPanelProps {
+  app: IApplication;
+  healthSummary: IHealthSummary | undefined;
+  isOpen: boolean;
+  onDismiss: () => void;
+  mockDataService: MockDataService;
+}
+
+// ── Shared config maps ────────────────────────────────────────────────────────
+
+const STATUS_CONFIG: Record<string, { background: string; color: string; label: string }> = {
+  Active: { background: '#dff6dd', color: '#107c10', label: 'Active' },
+  InDevelopment: { background: '#fff4ce', color: '#8a5700', label: 'In Development' },
+  Deprecated: { background: '#fde7e9', color: '#a80000', label: 'Deprecated' },
+  Planned: { background: '#f3f2f1', color: '#605e5c', label: 'Planned' }
+};
+
+const HEALTH_CONFIG: Record<string, { label: string; color: string; background: string }> = {
+  [HealthStatus.Green]:   { label: 'Healthy',  color: '#107c10', background: '#dff6dd' },
+  [HealthStatus.Yellow]:  { label: 'Warning',  color: '#8a5700', background: '#fff4ce' },
+  [HealthStatus.Red]:     { label: 'Critical', color: '#a80000', background: '#fde7e9' },
+  [HealthStatus.Unknown]: { label: 'Unknown',  color: '#605e5c', background: '#f3f2f1' }
+};
+
+const DOC_STATUS_CONFIG: Record<string, { color: string; background: string; label: string }> = {
+  [DocumentationStatus.Current]:  { color: '#107c10', background: '#dff6dd', label: 'Current' },
+  [DocumentationStatus.Approved]: { color: '#107c10', background: '#dff6dd', label: 'Approved' },
+  [DocumentationStatus.Draft]:    { color: '#8a5700', background: '#fff4ce', label: 'Draft' },
+  [DocumentationStatus.InReview]: { color: '#8a5700', background: '#fff4ce', label: 'In Review' },
+  [DocumentationStatus.Outdated]: { color: '#c43501', background: '#fed9cc', label: 'Outdated' },
+  [DocumentationStatus.Missing]:  { color: '#a80000', background: '#fde7e9', label: 'Missing' }
+};
+
+const INTEGRATION_TYPE_ICONS: Record<string, string> = {
+  SharePoint:    'SharepointLogo',
+  PowerBI:       'BarChart4',
+  PowerAutomate: 'Flow',
+  Teams:         'TeamsLogo',
+  Graph:         'BranchMerge',
+  AzureFunction: 'AzureLogo',
+  Dataverse:     'Database',
+  GitHub:        'CodeEdit',
+  External:      'Globe'
+};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function deriveEnvironment(status: AppStatus): string {
+  switch (status) {
+    case 'Active':        return 'Production';
+    case 'InDevelopment': return 'Development';
+    case 'Deprecated':    return 'Production';
+    case 'Planned':       return 'Development';
+    default:              return 'Unknown';
+  }
+}
+
+function getDocBarColor(pct: number): string {
+  if (pct >= 75) return '#107c10';
+  if (pct >= 50) return '#8a5700';
+  return '#a80000';
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
+
+export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
+  app,
+  healthSummary,
+  isOpen,
+  onDismiss,
+  mockDataService
+}) => {
+  const [integrations, setIntegrations] = React.useState<IIntegration[]>([]);
+  const [documents, setDocuments] = React.useState<IDocument[]>([]);
+  const [loadingDetails, setLoadingDetails] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!isOpen) return;
+    setLoadingDetails(true);
+    Promise.all([
+      mockDataService.getIntegrations(app.id),
+      mockDataService.getDocuments(app.id)
+    ])
+      .then(([intgs, docs]) => {
+        setIntegrations(intgs);
+        setDocuments(docs);
+        setLoadingDetails(false);
+      })
+      .catch(() => setLoadingDetails(false));
+  }, [isOpen, app.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Derived values ──────────────────────────────────────────────────────────
+
+  const statusCfg = STATUS_CONFIG[app.status] || STATUS_CONFIG['Planned'];
+  const latestRelease = app.releaseNotes && app.releaseNotes.length > 0 ? app.releaseNotes[0] : null;
+  const environment   = deriveEnvironment(app.status);
+  const sharepointLink = app.quickLinks?.find(l => l.url.toLowerCase().includes('sharepoint'))?.url;
+  const archDocLink    = app.architectureDocs && app.architectureDocs.length > 0
+    ? app.architectureDocs[0].url
+    : undefined;
+
+  // ── Sub-renderers ───────────────────────────────────────────────────────────
+
+  function renderHealthBadge(label: string, value: string | undefined): JSX.Element {
+    const cfg = (value && HEALTH_CONFIG[value]) ? HEALTH_CONFIG[value] : HEALTH_CONFIG[HealthStatus.Unknown];
+    return (
+      <div className={styles.healthItem}>
+        <span className={styles.healthItemLabel}>{label}</span>
+        <span
+          className={styles.healthBadge}
+          style={{ background: cfg.background, color: cfg.color }}
+          aria-label={`${label}: ${cfg.label}`}
+        >
+          {cfg.label}
+        </span>
+      </div>
+    );
+  }
+
+  function renderOverviewTab(): JSX.Element {
+    return (
+      <Stack tokens={{ childrenGap: 24 }}>
+        {/* Description */}
+        <section aria-labelledby="panel-desc-heading">
+          <Text
+            id="panel-desc-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
+          >
+            Description
+          </Text>
+          <Text>{app.description}</Text>
+        </section>
+
+        {/* Metadata */}
+        <section aria-labelledby="panel-meta-heading">
+          <Text
+            id="panel-meta-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+          >
+            Details
+          </Text>
+          <dl className={styles.detailGrid}>
+            <div className={styles.detailItem}>
+              <dt>Owner</dt>
+              <dd>{app.owner}</dd>
+            </div>
+            <div className={styles.detailItem}>
+              <dt>Status</dt>
+              <dd>
+                <span
+                  className={styles.inlineBadge}
+                  style={{ background: statusCfg.background, color: statusCfg.color }}
+                  aria-label={`Status: ${statusCfg.label}`}
+                >
+                  {statusCfg.label}
+                </span>
+              </dd>
+            </div>
+            <div className={styles.detailItem}>
+              <dt>Environment</dt>
+              <dd>{environment}</dd>
+            </div>
+            <div className={styles.detailItem}>
+              <dt>Current Version</dt>
+              <dd>{latestRelease ? latestRelease.version : 'N/A'}</dd>
+            </div>
+            {latestRelease && (
+              <div className={styles.detailItem}>
+                <dt>Last Updated</dt>
+                <dd>{latestRelease.date}</dd>
+              </div>
+            )}
+          </dl>
+        </section>
+
+        {/* Links */}
+        {(app.githubRepoUrl || sharepointLink || archDocLink || (app.quickLinks && app.quickLinks.length > 0)) && (
+          <section aria-labelledby="panel-links-heading">
+            <Text
+              id="panel-links-heading"
+              variant="mediumPlus"
+              styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+            >
+              Links
+            </Text>
+            <div>
+              {app.githubRepoUrl && (
+                <div className={styles.linkRow}>
+                  <Icon iconName="CodeEdit" styles={{ root: { color: '#0078d4', fontSize: 16, flexShrink: 0 } }} aria-hidden />
+                  <span className={styles.linkRowLabel}>GitHub Repository</span>
+                  <Link href={app.githubRepoUrl} target="_blank" rel="noopener noreferrer">
+                    {app.githubRepoUrl}
+                  </Link>
+                </div>
+              )}
+              {sharepointLink && (
+                <div className={styles.linkRow}>
+                  <Icon iconName="SharepointLogo" styles={{ root: { color: '#0078d4', fontSize: 16, flexShrink: 0 } }} aria-hidden />
+                  <span className={styles.linkRowLabel}>SharePoint Site</span>
+                  <Link href={sharepointLink} target="_blank" rel="noopener noreferrer">
+                    View SharePoint Site
+                  </Link>
+                </div>
+              )}
+              {archDocLink && (
+                <div className={styles.linkRow}>
+                  <Icon iconName="Documentation" styles={{ root: { color: '#0078d4', fontSize: 16, flexShrink: 0 } }} aria-hidden />
+                  <span className={styles.linkRowLabel}>Documentation Library</span>
+                  <Link href={archDocLink} target="_blank" rel="noopener noreferrer">
+                    View Architecture Docs
+                  </Link>
+                </div>
+              )}
+              {app.quickLinks && app.quickLinks.map((ql, idx) => (
+                <div key={idx} className={styles.linkRow}>
+                  <Icon
+                    iconName={ql.iconName || 'Link'}
+                    styles={{ root: { color: '#0078d4', fontSize: 16, flexShrink: 0 } }}
+                    aria-hidden
+                  />
+                  <span className={styles.linkRowLabel}>{ql.label}</span>
+                  <Link href={ql.url} target="_blank" rel="noopener noreferrer">
+                    Open
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Health indicators */}
+        {healthSummary && (
+          <section aria-labelledby="panel-health-heading">
+            <Text
+              id="panel-health-heading"
+              variant="mediumPlus"
+              styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+            >
+              Health Indicators
+            </Text>
+            <div className={styles.healthGrid} role="list" aria-label="Health indicators">
+              <div role="listitem">{renderHealthBadge('Overall',       healthSummary.overall)}</div>
+              <div role="listitem">{renderHealthBadge('Documentation', healthSummary.documentation)}</div>
+              <div role="listitem">{renderHealthBadge('Accessibility', healthSummary.accessibility)}</div>
+              <div role="listitem">{renderHealthBadge('Security',      healthSummary.security)}</div>
+            </div>
+            {healthSummary.notes && (
+              <Text
+                variant="small"
+                styles={{ root: { color: '#605e5c', fontStyle: 'italic', marginTop: 10, display: 'block' } }}
+              >
+                {healthSummary.notes}
+              </Text>
+            )}
+            {healthSummary.lastAssessed && (
+              <Text
+                variant="tiny"
+                styles={{ root: { color: '#a19f9d', marginTop: 4, display: 'block' } }}
+              >
+                Last assessed: {healthSummary.lastAssessed}
+              </Text>
+            )}
+          </section>
+        )}
+      </Stack>
+    );
+  }
+
+  function renderDocumentsTab(): JSX.Element {
+    if (loadingDetails) {
+      return <Spinner size={SpinnerSize.medium} label="Loading documents…" />;
+    }
+
+    const pct = Math.min(100, Math.max(0, app.docCompleteness)) / 100;
+    const barColor = getDocBarColor(app.docCompleteness);
+
+    const docColumns: IColumn[] = [
+      {
+        key: 'number',
+        name: '#',
+        minWidth: 30,
+        maxWidth: 40,
+        onRender: (item: IDocument) => (
+          <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.sectionNumber}</Text>
+        )
+      },
+      {
+        key: 'title',
+        name: 'Section',
+        minWidth: 130,
+        maxWidth: 200,
+        onRender: (item: IDocument) => (
+          <Text variant="small" styles={{ root: { fontWeight: 600 } }}>{item.sectionTitle}</Text>
+        )
+      },
+      {
+        key: 'status',
+        name: 'Status',
+        minWidth: 80,
+        maxWidth: 110,
+        onRender: (item: IDocument) => {
+          const cfg = DOC_STATUS_CONFIG[item.status] || { color: '#605e5c', background: '#f3f2f1', label: item.status };
+          return (
+            <span
+              className={styles.docStatusBadge}
+              style={{ background: cfg.background, color: cfg.color }}
+              aria-label={`Status: ${cfg.label}`}
+            >
+              {cfg.label}
+            </span>
+          );
+        }
+      },
+      {
+        key: 'lastUpdated',
+        name: 'Last Updated',
+        minWidth: 90,
+        maxWidth: 110,
+        onRender: (item: IDocument) => (
+          <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.lastUpdated || '—'}</Text>
+        )
+      },
+      {
+        key: 'owner',
+        name: 'Owner',
+        minWidth: 100,
+        maxWidth: 160,
+        onRender: (item: IDocument) => (
+          <Text variant="small">{item.owner || '—'}</Text>
+        )
+      },
+      {
+        key: 'url',
+        name: 'Document',
+        minWidth: 80,
+        onRender: (item: IDocument) =>
+          item.url ? (
+            <Link href={item.url} target="_blank" rel="noopener noreferrer" styles={{ root: { fontSize: 12 } }}>
+              Open
+            </Link>
+          ) : (
+            <Text variant="tiny" styles={{ root: { color: '#a19f9d' } }}>Not available</Text>
+          )
+      }
+    ];
+
+    return (
+      <Stack tokens={{ childrenGap: 20 }}>
+        {/* Completeness progress bar */}
+        <section aria-labelledby="docs-completeness-heading">
+          <Text
+            id="docs-completeness-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
+          >
+            Documentation Completeness
+          </Text>
+          <ProgressIndicator
+            label={`${app.docCompleteness}% complete`}
+            percentComplete={pct}
+            styles={{ progressBar: { background: barColor }, itemName: { color: barColor } }}
+            barHeight={10}
+            ariaLabel={`Documentation completeness: ${app.docCompleteness} percent`}
+          />
+        </section>
+
+        {/* Section-by-section table */}
+        {documents.length > 0 && (
+          <section aria-labelledby="docs-sections-heading">
+            <Text
+              id="docs-sections-heading"
+              variant="mediumPlus"
+              styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
+            >
+              Documentation Sections
+            </Text>
+            <DetailsList
+              items={documents}
+              columns={docColumns}
+              layoutMode={DetailsListLayoutMode.justified}
+              selectionMode={SelectionMode.none}
+              isHeaderVisible
+              compact
+              ariaLabel="Documentation sections"
+            />
+          </section>
+        )}
+      </Stack>
+    );
+  }
+
+  function renderIntegrationsTab(): JSX.Element {
+    if (loadingDetails) {
+      return <Spinner size={SpinnerSize.medium} label="Loading integrations…" />;
+    }
+    if (integrations.length === 0) {
+      return (
+        <Text variant="small" styles={{ root: { color: '#a19f9d' } }}>
+          No integrations registered for this application.
+        </Text>
+      );
+    }
+
+    const intColumns: IColumn[] = [
+      {
+        key: 'type',
+        name: 'Type',
+        minWidth: 100,
+        maxWidth: 140,
+        onRender: (item: IIntegration) => (
+          <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 6 }}>
+            <Icon
+              iconName={INTEGRATION_TYPE_ICONS[item.type] || 'Globe'}
+              styles={{ root: { color: '#0078d4', fontSize: 14 } }}
+              aria-hidden
+            />
+            <Text variant="small">{item.type}</Text>
+          </Stack>
+        )
+      },
+      {
+        key: 'name',
+        name: 'Name',
+        minWidth: 140,
+        maxWidth: 220,
+        onRender: (item: IIntegration) =>
+          item.url ? (
+            <Link href={item.url} target="_blank" rel="noopener noreferrer" styles={{ root: { fontSize: 13 } }}>
+              {item.name}
+            </Link>
+          ) : (
+            <Text variant="small">{item.name}</Text>
+          )
+      },
+      {
+        key: 'environment',
+        name: 'Environment',
+        minWidth: 90,
+        maxWidth: 120,
+        onRender: (item: IIntegration) => <Text variant="small">{item.environment}</Text>
+      },
+      {
+        key: 'health',
+        name: 'Health',
+        minWidth: 80,
+        maxWidth: 100,
+        onRender: (item: IIntegration) => {
+          const cfg = HEALTH_CONFIG[item.healthStatus] || HEALTH_CONFIG[HealthStatus.Unknown];
+          return (
+            <span
+              style={{
+                background: cfg.background,
+                color: cfg.color,
+                borderRadius: 10,
+                padding: '1px 8px',
+                fontSize: 11,
+                fontWeight: 600
+              }}
+              aria-label={`Health: ${cfg.label}`}
+            >
+              {cfg.label}
+            </span>
+          );
+        }
+      },
+      {
+        key: 'description',
+        name: 'Description',
+        minWidth: 200,
+        isMultiline: true,
+        onRender: (item: IIntegration) => (
+          <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.description || '—'}</Text>
+        )
+      }
+    ];
+
+    return (
+      <DetailsList
+        items={integrations}
+        columns={intColumns}
+        layoutMode={DetailsListLayoutMode.justified}
+        selectionMode={SelectionMode.none}
+        isHeaderVisible
+        compact
+        ariaLabel="Application integrations"
+      />
+    );
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+
+  return (
+    <Panel
+      isOpen={isOpen}
+      onDismiss={onDismiss}
+      type={PanelType.large}
+      headerText={app.name}
+      closeButtonAriaLabel={`Close ${app.name} detail panel`}
+      isLightDismiss
+      styles={{
+        header:          { paddingBottom: 0 },
+        content:         { padding: '0 24px' },
+        scrollableContent: { overflowY: 'auto' }
+      }}
+    >
+      <Pivot
+        aria-label={`${app.name} detail sections`}
+        styles={{ root: { marginTop: 4, borderBottom: '1px solid #edebe9' } }}
+      >
+        <PivotItem headerText="Overview" itemIcon="Info" aria-label="Overview tab">
+          <div className={styles.tabContent}>
+            {renderOverviewTab()}
+          </div>
+        </PivotItem>
+
+        <PivotItem headerText="Documents" itemIcon="Documentation" aria-label="Documents tab">
+          <div className={styles.tabContent}>
+            {renderDocumentsTab()}
+          </div>
+        </PivotItem>
+
+        <PivotItem headerText="Releases" itemIcon="ReleaseGate" aria-label="Releases tab">
+          <div className={styles.tabContent}>
+            <ReleaseNotes app={app} />
+          </div>
+        </PivotItem>
+
+        <PivotItem headerText="Architecture" itemIcon="Flow" aria-label="Architecture tab">
+          <div className={styles.tabContent}>
+            <ArchitectureDocs app={app} />
+          </div>
+        </PivotItem>
+
+        <PivotItem headerText="Integrations" itemIcon="PlugConnected" aria-label="Integrations tab">
+          <div className={styles.tabContent}>
+            {renderIntegrationsTab()}
+          </div>
+        </PivotItem>
+
+        <PivotItem headerText="Technical Debt" itemIcon="Warning" aria-label="Technical debt tab">
+          <div className={styles.tabContent}>
+            <TechnicalDebt app={app} />
+          </div>
+        </PivotItem>
+
+        <PivotItem headerText="Accessibility" itemIcon="Accessibility" aria-label="Accessibility tab">
+          <div className={styles.tabContent}>
+            <AccessibilityReview app={app} />
+          </div>
+        </PivotItem>
+
+        <PivotItem headerText="Security" itemIcon="Shield" aria-label="Security tab">
+          <div className={styles.tabContent}>
+            <SecurityStatus app={app} />
+          </div>
+        </PivotItem>
+      </Pivot>
+    </Panel>
+  );
+};

@@ -63,9 +63,10 @@ export const AppOverviewCard: React.FC<IAppOverviewCardProps> = ({ app, compact,
 
   return (
     <article
-      className={`${styles.card} ${compact ? styles.compactCard : ''}`}
+      className={`${styles.card} ${compact ? styles.compactCard : ''} ${onSelect ? styles.clickable : ''}`}
       tabIndex={0}
-      aria-label={`${app.name} application card`}
+      role={onSelect ? 'button' : undefined}
+      aria-label={onSelect ? `${app.name} — press Enter to view details` : `${app.name} application card`}
       onKeyDown={onSelect ? handleKeyDown : undefined}
       onClick={onSelect ? () => onSelect(app.id) : undefined}
     >

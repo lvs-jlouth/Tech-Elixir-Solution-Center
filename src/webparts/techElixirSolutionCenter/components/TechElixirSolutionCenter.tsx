@@ -16,6 +16,7 @@ import { IHealthSummary } from '../models/IMockDataTypes';
 import { AppDataService } from '../services/AppDataService';
 import { MockDataService } from '../services/MockDataService';
 import { AppOverviewCard } from './AppOverviewCard/AppOverviewCard';
+import { AppDetailPanel } from './AppDetailPanel/AppDetailPanel';
 import { DocCompletenessBar } from './DocCompletenessBar/DocCompletenessBar';
 import { ArchitectureDocs } from './ArchitectureDocs/ArchitectureDocs';
 import { ReleaseNotes } from './ReleaseNotes/ReleaseNotes';
@@ -32,6 +33,7 @@ interface ITechElixirSolutionCenterState {
   healthSummaries: IHealthSummary[];
   isLoading: boolean;
   error: string | undefined;
+  selectedAppId: string | undefined;
 }
 
 export default class TechElixirSolutionCenter extends React.Component<
@@ -49,7 +51,8 @@ export default class TechElixirSolutionCenter extends React.Component<
       apps: [],
       healthSummaries: [],
       isLoading: true,
-      error: undefined
+      error: undefined,
+      selectedAppId: undefined
     };
   }
 
@@ -113,6 +116,7 @@ export default class TechElixirSolutionCenter extends React.Component<
               app={app}
               compact
               healthSummary={healthSummaries.find(h => h.appId === app.id)}
+              onSelect={(id) => this.setState({ selectedAppId: id })}
             />
           </div>
         ))}
@@ -122,7 +126,8 @@ export default class TechElixirSolutionCenter extends React.Component<
 
   public render(): React.ReactElement<ITechElixirSolutionCenterProps> {
     const { isDarkTheme, displayMode } = this.props;
-    const { apps, isLoading, error } = this.state;
+    const { apps, healthSummaries, isLoading, error, selectedAppId } = this.state;
+    const selectedApp = selectedAppId ? apps.find(a => a.id === selectedAppId) : undefined;
 
     return (
       <div className={`${styles.container} ${isDarkTheme ? styles.darkTheme : ''}`}>
@@ -174,6 +179,17 @@ export default class TechElixirSolutionCenter extends React.Component<
               </Stack>
             ))}
           </Stack>
+        )}
+
+        {/* Detail panel — opens when a card is selected from the grid */}
+        {selectedApp && (
+          <AppDetailPanel
+            app={selectedApp}
+            healthSummary={healthSummaries.find(h => h.appId === selectedApp.id)}
+            isOpen={true}
+            onDismiss={() => this.setState({ selectedAppId: undefined })}
+            mockDataService={this._mockDataService}
+          />
         )}
       </div>
     );

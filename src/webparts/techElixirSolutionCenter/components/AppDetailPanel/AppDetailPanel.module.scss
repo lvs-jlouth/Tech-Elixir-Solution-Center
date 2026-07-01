@@ -1,0 +1,103 @@
+.tabContent {
+  padding: 20px 0;
+}
+
+/* ── Overview: detail metadata grid ── */
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.detailItem {
+  background: #f3f2f1;
+  border-radius: 4px;
+  padding: 10px 14px;
+
+  dt {
+    font-size: 10px;
+    font-weight: 600;
+    color: #605e5c;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+
+  dd {
+    font-size: 14px;
+    font-weight: 600;
+    color: #323130;
+    margin: 0;
+  }
+}
+
+.inlineBadge {
+  border-radius: 4px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ── Overview: links list ── */
+
+.linkRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid #f3f2f1;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.linkRowLabel {
+  font-size: 13px;
+  color: #605e5c;
+  min-width: 150px;
+  flex-shrink: 0;
+}
+
+/* ── Overview: health indicators grid ── */
+
+.healthGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.healthItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #f3f2f1;
+  border-radius: 4px;
+}
+
+.healthItemLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: #323130;
+}
+
+.healthBadge {
+  border-radius: 10px;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ── Documents: section status badge ── */
+
+.docStatusBadge {
+  border-radius: 3px;
+  padding: 1px 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
