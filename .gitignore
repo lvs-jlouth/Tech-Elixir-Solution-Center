@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Build output
+lib/
+dist/
+release/
+temp/
+sharepoint/solution/
+
+# SPFx temp files
+.haste_cache/
+.sass-cache/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+*.log
+
+# Coverage
+coverage/
