@@ -34,6 +34,8 @@ import { SecurityStatus } from './SecurityStatus/SecurityStatus';
 import { QuickLinks } from './QuickLinks/QuickLinks';
 import styles from './TechElixirSolutionCenter.module.scss';
 
+type SortField = 'default' | 'title' | 'lastUpdated' | 'health' | 'docCompleteness' | 'environment' | 'version';
+
 interface ITechElixirSolutionCenterState {
   apps: IApplication[];
   healthSummaries: IHealthSummary[];
@@ -46,6 +48,7 @@ interface ITechElixirSolutionCenterState {
   healthFilter: string;
   accessibilityFilter: string;
   appTypeFilter: string;
+  sortBy: SortField;
 }
 
 export default class TechElixirSolutionCenter extends React.Component<
@@ -70,7 +73,8 @@ export default class TechElixirSolutionCenter extends React.Component<
       statusFilter: 'All',
       healthFilter: 'All',
       accessibilityFilter: 'All',
-      appTypeFilter: 'All'
+      appTypeFilter: 'All',
+      sortBy: 'default'
     };
   }
 
@@ -262,6 +266,63 @@ export default class TechElixirSolutionCenter extends React.Component<
     });
   }
 
+  private _getLatestReleaseDate(app: IApplication): string {
+    if (!app.releaseNotes || app.releaseNotes.length === 0) {
+      return '';
+    }
+    return app.releaseNotes
+      .map(r => r.date)
+      .sort((a, b) => b.localeCompare(a))[0];
+  }
+
+  private _getCurrentVersion(app: IApplication): string {
+    if (!app.releaseNotes || app.releaseNotes.length === 0) {
+      return '';
+    }
+    const latest = app.releaseNotes
+      .slice()
+      .sort((a, b) => b.date.localeCompare(a.date))[0];
+    return latest ? latest.version : '';
+  }
+
+  private _healthRank(health: string): number {
+    const ranks: Record<string, number> = { Healthy: 0, Warning: 1, Critical: 2, Unknown: 3 };
+    return ranks[health] !== undefined ? ranks[health] : 3;
+  }
+
+  private _getSortedApps(apps: IApplication[]): IApplication[] {
+    const { sortBy, healthSummaries } = this.state;
+    if (sortBy === 'default') {
+      return apps;
+    }
+    return apps.slice().sort((a, b) => {
+      switch (sortBy) {
+        case 'title':
+          return a.name.localeCompare(b.name);
+        case 'lastUpdated': {
+          const dateA = this._getLatestReleaseDate(a);
+          const dateB = this._getLatestReleaseDate(b);
+          return dateB.localeCompare(dateA);
+        }
+        case 'health': {
+          const summaryA = healthSummaries.find(s => s.appId === a.id);
+          const summaryB = healthSummaries.find(s => s.appId === b.id);
+          const rankA = this._healthRank(summaryA ? summaryA.overall : 'Unknown');
+          const rankB = this._healthRank(summaryB ? summaryB.overall : 'Unknown');
+          return rankA - rankB;
+        }
+        case 'docCompleteness':
+          return b.docCompleteness - a.docCompleteness;
+        case 'environment':
+          return this._getDerivedEnvironment(a).localeCompare(this._getDerivedEnvironment(b));
+        case 'version':
+          return this._getCurrentVersion(b).localeCompare(this._getCurrentVersion(a));
+        default:
+          return 0;
+      }
+    });
+  }
+
   private _buildFilterOptions(values: string[]): IDropdownOption[] {
     return [{ key: 'All', text: 'All' }].concat(
       values
@@ -278,7 +339,8 @@ export default class TechElixirSolutionCenter extends React.Component<
       statusFilter: 'All',
       healthFilter: 'All',
       accessibilityFilter: 'All',
-      appTypeFilter: 'All'
+      appTypeFilter: 'All',
+      sortBy: 'default'
     });
   };
 
@@ -318,9 +380,10 @@ export default class TechElixirSolutionCenter extends React.Component<
       statusFilter,
       healthFilter,
       accessibilityFilter,
-      appTypeFilter
+      appTypeFilter,
+      sortBy
     } = this.state;
-    const filteredApps = this._getFilteredApps();
+    const filteredApps = this._getSortedApps(this._getFilteredApps());
     const selectedApp = selectedAppId ? filteredApps.find(a => a.id === selectedAppId) : undefined;
     const environmentOptions = this._buildFilterOptions(apps.map(app => this._getDerivedEnvironment(app)));
     const statusOptions = this._buildFilterOptions(apps.map(app => app.status).map(status => this._getStatusLabel(status)));
@@ -412,6 +475,23 @@ export default class TechElixirSolutionCenter extends React.Component<
                       selectedKey={appTypeFilter}
                       options={appTypeOptions}
                       onChange={(_, option) => this.setState({ appTypeFilter: String(option ? option.key : 'All') })}
+                    />
+                  </div>
+                  <div className={styles.filterControl}>
+                    <Dropdown
+                      label='Sort by'
+                      selectedKey={sortBy}
+                      options={[
+                        { key: 'default', text: 'Default' },
+                        { key: 'title', text: 'Title' },
+                        { key: 'lastUpdated', text: 'Last updated' },
+                        { key: 'health', text: 'Health status' },
+                        { key: 'docCompleteness', text: 'Documentation completeness' },
+                        { key: 'environment', text: 'Environment' },
+                        { key: 'version', text: 'Current version' }
+                      ]}
+                      onChange={(_, option) => this.setState({ sortBy: (option ? option.key : 'default') as SortField })}
+                      ariaLabel='Sort solutions by field'
                     />
                   </div>
                 </Stack>
