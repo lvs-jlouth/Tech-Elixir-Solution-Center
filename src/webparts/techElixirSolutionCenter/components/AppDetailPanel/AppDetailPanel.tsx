@@ -20,7 +20,8 @@ import {
 import { IApplication, AppStatus } from '../../models';
 import { IHealthSummary, IIntegration, IDocument } from '../../models/IMockDataTypes';
 import { MockDataService } from '../../services/MockDataService';
-import { HealthStatus, DocumentationStatus } from '../../constants';
+import { HealthStatus, DocumentationStatus, DOCUMENTATION_SECTIONS } from '../../constants';
+import { calculateDocCompleteness } from '../../utils/docCompleteness';
 import { ReleaseNotes } from '../ReleaseNotes/ReleaseNotes';
 import { ArchitectureDocs } from '../ArchitectureDocs/ArchitectureDocs';
 import { TechnicalDebt } from '../TechnicalDebt/TechnicalDebt';
@@ -52,13 +53,13 @@ const HEALTH_CONFIG: Record<string, { label: string; color: string; background: 
   [HealthStatus.Unknown]: { label: 'Unknown',  color: '#605e5c', background: '#f3f2f1' }
 };
 
-const DOC_STATUS_CONFIG: Record<string, { color: string; background: string; label: string }> = {
-  [DocumentationStatus.Current]:  { color: '#107c10', background: '#dff6dd', label: 'Current' },
-  [DocumentationStatus.Approved]: { color: '#107c10', background: '#dff6dd', label: 'Approved' },
-  [DocumentationStatus.Draft]:    { color: '#8a5700', background: '#fff4ce', label: 'Draft' },
-  [DocumentationStatus.InReview]: { color: '#8a5700', background: '#fff4ce', label: 'In Review' },
-  [DocumentationStatus.Outdated]: { color: '#c43501', background: '#fed9cc', label: 'Outdated' },
-  [DocumentationStatus.Missing]:  { color: '#a80000', background: '#fde7e9', label: 'Missing' }
+const DOC_STATUS_CONFIG: Record<string, { color: string; background: string; label: string; icon: string }> = {
+  [DocumentationStatus.Current]:  { color: '#107c10', background: '#dff6dd', label: 'Current',   icon: 'CheckMark' },
+  [DocumentationStatus.Approved]: { color: '#107c10', background: '#dff6dd', label: 'Approved',  icon: 'Accept' },
+  [DocumentationStatus.Draft]:    { color: '#8a5700', background: '#fff4ce', label: 'Draft',     icon: 'Edit' },
+  [DocumentationStatus.InReview]: { color: '#8a5700', background: '#fff4ce', label: 'In Review', icon: 'Glasses' },
+  [DocumentationStatus.Outdated]: { color: '#c43501', background: '#fed9cc', label: 'Outdated',  icon: 'Warning' },
+  [DocumentationStatus.Missing]:  { color: '#a80000', background: '#fde7e9', label: 'Missing',   icon: 'ErrorBadge' }
 };
 
 const INTEGRATION_TYPE_ICONS: Record<string, string> = {
@@ -303,8 +304,41 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
       return <Spinner size={SpinnerSize.medium} label="Loading documents…" />;
     }
 
-    const pct = Math.min(100, Math.max(0, app.docCompleteness)) / 100;
-    const barColor = getDocBarColor(app.docCompleteness);
+    // Build a lookup so we can merge DOCUMENTATION_SECTIONS with loaded document records
+    const docByKey = new Map<string, IDocument>();
+    documents.forEach(d => docByKey.set(d.sectionKey, d));
+
+    // Compute completeness from the canonical section list + loaded records
+    const completeness = calculateDocCompleteness(DOCUMENTATION_SECTIONS, documents);
+    const barColor = getDocBarColor(completeness.completenessPercentage);
+
+    // Build merged rows – one per canonical section, whether or not a record was loaded
+    interface IDocRow {
+      key: string;
+      sectionNumber: string;
+      sectionTitle: string;
+      required: boolean;
+      expectedFileName: string;
+      status: DocumentationStatus;
+      lastUpdated?: string;
+      owner?: string;
+      url?: string;
+    }
+
+    const rows: IDocRow[] = DOCUMENTATION_SECTIONS.map(section => {
+      const doc = docByKey.get(section.key);
+      return {
+        key: section.key,
+        sectionNumber: section.number,
+        sectionTitle: section.title,
+        required: section.required,
+        expectedFileName: section.recommendedFileNamePattern,
+        status: doc ? doc.status : DocumentationStatus.Missing,
+        lastUpdated: doc?.lastUpdated,
+        owner: doc?.owner,
+        url: doc?.url
+      };
+    });
 
     const docColumns: IColumn[] = [
       {
@@ -312,7 +346,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
         name: '#',
         minWidth: 30,
         maxWidth: 40,
-        onRender: (item: IDocument) => (
+        onRender: (item: IDocRow) => (
           <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.sectionNumber}</Text>
         )
       },
@@ -320,24 +354,42 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
         key: 'title',
         name: 'Section',
         minWidth: 130,
-        maxWidth: 200,
-        onRender: (item: IDocument) => (
-          <Text variant="small" styles={{ root: { fontWeight: 600 } }}>{item.sectionTitle}</Text>
+        maxWidth: 180,
+        onRender: (item: IDocRow) => (
+          <Stack>
+            <Text variant="small" styles={{ root: { fontWeight: 600 } }}>{item.sectionTitle}</Text>
+            {item.required && (
+              <Text variant="tiny" styles={{ root: { color: '#605e5c' } }}>Required</Text>
+            )}
+          </Stack>
+        )
+      },
+      {
+        key: 'expectedFileName',
+        name: 'Expected File Name',
+        minWidth: 160,
+        maxWidth: 220,
+        onRender: (item: IDocRow) => (
+          <Text variant="tiny" styles={{ root: { color: '#605e5c', fontFamily: 'monospace' } }}>
+            {item.expectedFileName}
+          </Text>
         )
       },
       {
         key: 'status',
         name: 'Status',
-        minWidth: 80,
-        maxWidth: 110,
-        onRender: (item: IDocument) => {
-          const cfg = DOC_STATUS_CONFIG[item.status] || { color: '#605e5c', background: '#f3f2f1', label: item.status };
+        minWidth: 100,
+        maxWidth: 130,
+        onRender: (item: IDocRow) => {
+          const cfg = DOC_STATUS_CONFIG[item.status] || { color: '#605e5c', background: '#f3f2f1', label: item.status, icon: 'Info' };
           return (
             <span
               className={styles.docStatusBadge}
               style={{ background: cfg.background, color: cfg.color }}
               aria-label={`Status: ${cfg.label}`}
+              role="status"
             >
+              <Icon iconName={cfg.icon} styles={{ root: { fontSize: 10, marginRight: 4, verticalAlign: 'middle' } }} aria-hidden />
               {cfg.label}
             </span>
           );
@@ -345,10 +397,10 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
       },
       {
         key: 'lastUpdated',
-        name: 'Last Updated',
+        name: 'Last Reviewed',
         minWidth: 90,
         maxWidth: 110,
-        onRender: (item: IDocument) => (
+        onRender: (item: IDocRow) => (
           <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.lastUpdated || '—'}</Text>
         )
       },
@@ -357,7 +409,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
         name: 'Owner',
         minWidth: 100,
         maxWidth: 160,
-        onRender: (item: IDocument) => (
+        onRender: (item: IDocRow) => (
           <Text variant="small">{item.owner || '—'}</Text>
         )
       },
@@ -365,9 +417,15 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
         key: 'url',
         name: 'Document',
         minWidth: 80,
-        onRender: (item: IDocument) =>
+        onRender: (item: IDocRow) =>
           item.url ? (
-            <Link href={item.url} target="_blank" rel="noopener noreferrer" styles={{ root: { fontSize: 12 } }}>
+            <Link
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              styles={{ root: { fontSize: 12 } }}
+              aria-label={`Open ${item.sectionTitle} document (opens in new tab)`}
+            >
               Open
             </Link>
           ) : (
@@ -388,35 +446,90 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
             Documentation Completeness
           </Text>
           <ProgressIndicator
-            label={`${app.docCompleteness}% complete`}
-            percentComplete={pct}
+            label={`${completeness.completenessPercentage}% complete`}
+            percentComplete={completeness.completenessPercentage / 100}
             styles={{ progressBar: { background: barColor }, itemName: { color: barColor } }}
             barHeight={10}
-            ariaLabel={`Documentation completeness: ${app.docCompleteness} percent`}
+            ariaLabel={`Documentation completeness: ${completeness.completenessPercentage} percent`}
           />
         </section>
 
+        {/* Summary stats */}
+        <section aria-labelledby="docs-summary-heading">
+          <Text
+            id="docs-summary-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
+          >
+            Summary
+          </Text>
+          <div className={styles.docSummaryGrid} role="list" aria-label="Documentation completeness summary">
+            <div className={styles.docSummaryItem} role="listitem">
+              <div className={styles.docSummaryValue} aria-label={`${completeness.completedRequired} of ${completeness.totalRequired} required sections complete`}>
+                {completeness.completedRequired}<span className={styles.docSummaryDenom}>/{completeness.totalRequired}</span>
+              </div>
+              <div className={styles.docSummaryLabel}>Required Complete</div>
+            </div>
+            <div className={styles.docSummaryItem} role="listitem">
+              <div
+                className={styles.docSummaryValue}
+                style={{ color: completeness.missingRequired > 0 ? '#a80000' : '#107c10' }}
+                aria-label={`${completeness.missingRequired} required sections missing`}
+              >
+                {completeness.missingRequired}
+              </div>
+              <div className={styles.docSummaryLabel}>Required Missing</div>
+            </div>
+            <div className={styles.docSummaryItem} role="listitem">
+              <div className={styles.docSummaryValue} aria-label={`${completeness.optionalPresent} optional sections present`}>
+                {completeness.optionalPresent}
+              </div>
+              <div className={styles.docSummaryLabel}>Optional Present</div>
+            </div>
+            <div className={styles.docSummaryItem} role="listitem">
+              <div
+                className={styles.docSummaryValue}
+                style={{ color: barColor }}
+                aria-label={`${completeness.completenessPercentage} percent complete`}
+              >
+                {completeness.completenessPercentage}%
+              </div>
+              <div className={styles.docSummaryLabel}>Completeness</div>
+            </div>
+          </div>
+          {completeness.missingSectionKeys.length > 0 && (
+            <div className={styles.missingSectionsAlert} role="alert" aria-label="Missing required sections">
+              <Icon iconName="ErrorBadge" styles={{ root: { color: '#a80000', fontSize: 14, flexShrink: 0 } }} aria-hidden />
+              <span>
+                <strong>Missing required sections: </strong>
+                {completeness.missingSectionKeys
+                  .map(k => DOCUMENTATION_SECTIONS.find(s => s.key === k)?.title ?? k)
+                  .join(', ')}
+              </span>
+            </div>
+          )}
+        </section>
+
         {/* Section-by-section table */}
-        {documents.length > 0 && (
-          <section aria-labelledby="docs-sections-heading">
-            <Text
-              id="docs-sections-heading"
-              variant="mediumPlus"
-              styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
-            >
-              Documentation Sections
-            </Text>
-            <DetailsList
-              items={documents}
-              columns={docColumns}
-              layoutMode={DetailsListLayoutMode.justified}
-              selectionMode={SelectionMode.none}
-              isHeaderVisible
-              compact
-              ariaLabel="Documentation sections"
-            />
-          </section>
-        )}
+        <section aria-labelledby="docs-sections-heading">
+          <Text
+            id="docs-sections-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
+          >
+            Documentation Sections
+          </Text>
+          <DetailsList
+            items={rows}
+            columns={docColumns}
+            getKey={(item: IDocRow) => item.key}
+            layoutMode={DetailsListLayoutMode.justified}
+            selectionMode={SelectionMode.none}
+            isHeaderVisible
+            compact
+            ariaLabel="Documentation sections"
+          />
+        </section>
       </Stack>
     );
   }
