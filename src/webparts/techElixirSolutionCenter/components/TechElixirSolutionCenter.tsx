@@ -23,7 +23,7 @@ import { ReleaseNotes } from './ReleaseNotes/ReleaseNotes';
 import { GitHubLinks } from './GitHubLinks/GitHubLinks';
 import { PowerPlatformRefs } from './PowerPlatformRefs/PowerPlatformRefs';
 import { TechnicalDebt } from './TechnicalDebt/TechnicalDebt';
-import { AccessibilityReview } from './AccessibilityReview/AccessibilityReview';
+import { AccessibilityDashboard } from './AccessibilityDashboard/AccessibilityDashboard';
 import { SecurityStatus } from './SecurityStatus/SecurityStatus';
 import { QuickLinks } from './QuickLinks/QuickLinks';
 import styles from './TechElixirSolutionCenter.module.scss';
@@ -96,7 +96,7 @@ export default class TechElixirSolutionCenter extends React.Component<
         <GitHubLinks app={app} />
         <PowerPlatformRefs app={app} />
         <TechnicalDebt app={app} />
-        <AccessibilityReview app={app} />
+        <AccessibilityDashboard app={app} />
         <SecurityStatus app={app} />
       </Stack>
     );

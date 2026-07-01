@@ -34,6 +34,31 @@ export interface IAccessibilityItem {
   notes?: string;
 }
 
+export type AccessibilityCheckStatus = 'Pass' | 'NeedsAttention' | 'Blocked' | 'NotReviewed';
+
+export type AccessibilityImpactArea =
+  | 'Visual'
+  | 'Auditory'
+  | 'Mobility'
+  | 'Cognitive'
+  | 'Keyboard Navigation'
+  | 'Screen Reader'
+  | 'Color Contrast'
+  | 'Motion Sensitivity';
+
+export interface IAccessibilityCheck {
+  id: string;
+  requirement: string;
+  wcagReference?: string;
+  status: AccessibilityCheckStatus;
+  impactArea: AccessibilityImpactArea;
+  notes?: string;
+  remediationGuidance?: string;
+  owner?: string;
+  targetDate?: string;
+  relatedDocumentUrl?: string;
+}
+
 export interface IArchitectureDoc {
   title: string;
   url: string;
@@ -79,6 +104,7 @@ export interface IApplication {
   powerPlatformComponents: IPowerPlatformComponent[];
   technicalDebt: ITechnicalDebtItem[];
   accessibilityItems: IAccessibilityItem[];
+  accessibilityChecks?: IAccessibilityCheck[];
   securityStatus: ISecurityStatus;
   quickLinks: IQuickLink[];
   tags?: string[];

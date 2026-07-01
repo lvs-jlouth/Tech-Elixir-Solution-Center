@@ -25,7 +25,7 @@ import { calculateDocCompleteness } from '../../utils/docCompleteness';
 import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
 import { ArchitectureDocs } from '../ArchitectureDocs/ArchitectureDocs';
 import { TechnicalDebtRegister } from '../TechnicalDebtRegister/TechnicalDebtRegister';
-import { AccessibilityReview } from '../AccessibilityReview/AccessibilityReview';
+import { AccessibilityDashboard } from '../AccessibilityDashboard/AccessibilityDashboard';
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
 import { DocumentMatrix } from '../DocumentMatrix/DocumentMatrix';
 import styles from './AppDetailPanel.module.scss';
@@ -517,7 +517,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
 
         <PivotItem headerText="Accessibility" itemIcon="Accessibility" aria-label="Accessibility tab">
           <div className={styles.tabContent}>
-            <AccessibilityReview app={app} />
+            <AccessibilityDashboard app={app} />
           </div>
         </PivotItem>
 

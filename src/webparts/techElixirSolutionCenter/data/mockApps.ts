@@ -161,6 +161,99 @@ export const mockApps: IApplication[] = [
         notes: 'Expense date picker field is missing an aria-label.'
       }
     ],
+    accessibilityChecks: [
+      {
+        id: 'FE-CHK-001',
+        requirement: 'All images have descriptive alt text',
+        wcagReference: '1.1.1 Non-text Content (A)',
+        status: 'Pass',
+        impactArea: 'Visual',
+        notes: 'All chart images include aria-label attributes.',
+        remediationGuidance: 'No action required.',
+        owner: 'Finance Team',
+        targetDate: '2024-04-01',
+        relatedDocumentUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/A11Y-Report.docx'
+      },
+      {
+        id: 'FE-CHK-002',
+        requirement: 'Color is not the only means of conveying budget status',
+        wcagReference: '1.4.1 Use of Color (A)',
+        status: 'NeedsAttention',
+        impactArea: 'Color Contrast',
+        notes: 'Budget status indicators rely solely on red/green color. Users with color blindness cannot distinguish states.',
+        remediationGuidance: 'Add a text label or icon (e.g., "Over budget" / warning icon) alongside the color indicator on the budget dashboard.',
+        owner: 'Finance Team',
+        targetDate: '2024-06-30',
+        relatedDocumentUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/ColorContrast-Audit.docx'
+      },
+      {
+        id: 'FE-CHK-003',
+        requirement: 'Keyboard navigation works for all interactive elements',
+        wcagReference: '2.1.1 Keyboard (A)',
+        status: 'Pass',
+        impactArea: 'Keyboard Navigation',
+        notes: 'All buttons, links, and dropdowns are keyboard accessible.',
+        remediationGuidance: 'No action required.',
+        owner: 'Finance Team',
+        targetDate: '2024-04-01'
+      },
+      {
+        id: 'FE-CHK-004',
+        requirement: 'Expense date picker field has an accessible label',
+        wcagReference: '1.3.1 Info and Relationships (A)',
+        status: 'Blocked',
+        impactArea: 'Screen Reader',
+        notes: 'Expense date picker field is missing an aria-label. Screen reader users cannot identify the field.',
+        remediationGuidance: 'Add aria-label="Expense date" to the date picker input element. Awaiting third-party component update to support label injection.',
+        owner: 'Finance Team',
+        targetDate: '2024-07-15',
+        relatedDocumentUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/A11Y-Report.docx'
+      },
+      {
+        id: 'FE-CHK-005',
+        requirement: 'Text contrast ratio meets WCAG AA minimum (4.5:1)',
+        wcagReference: '1.4.3 Contrast Minimum (AA)',
+        status: 'Pass',
+        impactArea: 'Color Contrast',
+        notes: 'All body text verified at minimum 4.5:1 contrast ratio against backgrounds.',
+        remediationGuidance: 'No action required.',
+        owner: 'Finance Team',
+        targetDate: '2024-04-01'
+      },
+      {
+        id: 'FE-CHK-006',
+        requirement: 'Animated loading indicators respect prefers-reduced-motion',
+        wcagReference: '2.3.3 Animation from Interactions (AAA)',
+        status: 'NotReviewed',
+        impactArea: 'Motion Sensitivity',
+        notes: 'Loading spinners have not been reviewed against prefers-reduced-motion media query.',
+        remediationGuidance: 'Add @media (prefers-reduced-motion: reduce) CSS rule to disable or slow animations. Review all spinner and transition components.',
+        owner: 'Finance Team',
+        targetDate: '2024-08-01'
+      },
+      {
+        id: 'FE-CHK-007',
+        requirement: 'Export report button is announced correctly by screen readers',
+        wcagReference: '4.1.2 Name, Role, Value (A)',
+        status: 'Pass',
+        impactArea: 'Screen Reader',
+        notes: 'Export button has a clear accessible name and role.',
+        remediationGuidance: 'No action required.',
+        owner: 'Finance Team',
+        targetDate: '2024-04-01'
+      },
+      {
+        id: 'FE-CHK-008',
+        requirement: 'Error messages are programmatically associated with form fields',
+        wcagReference: '3.3.1 Error Identification (A)',
+        status: 'NeedsAttention',
+        impactArea: 'Cognitive',
+        notes: 'Budget submission form error messages appear visually but are not linked to fields via aria-describedby.',
+        remediationGuidance: 'Add aria-describedby on each input referencing its error message element ID. Ensure error messages are included in the accessible description.',
+        owner: 'Finance Team',
+        targetDate: '2024-06-15'
+      }
+    ],
     securityStatus: {
       threatModelComplete: 'Complete',
       dataClassificationComplete: 'Complete',
@@ -304,6 +397,64 @@ export const mockApps: IApplication[] = [
         notes: 'Challenge cards may suppress default focus ring in some browser/theme combos.'
       }
     ],
+    accessibilityChecks: [
+      {
+        id: 'FIT-CHK-001',
+        requirement: 'All images have descriptive alt text',
+        wcagReference: '1.1.1 Non-text Content (A)',
+        status: 'Pass',
+        impactArea: 'Visual',
+        notes: 'Activity badge images include alt text describing the badge type.',
+        remediationGuidance: 'No action required.',
+        owner: 'HR & Wellness Team',
+        targetDate: '2024-03-20'
+      },
+      {
+        id: 'FIT-CHK-002',
+        requirement: 'Leaderboard rank text meets minimum color contrast (4.5:1)',
+        wcagReference: '1.4.3 Contrast Minimum (AA)',
+        status: 'Blocked',
+        impactArea: 'Color Contrast',
+        notes: 'Rank numbers use light gray text on white background (contrast ratio 2.5:1). Waiting on design team approval to update color tokens.',
+        remediationGuidance: 'Change rank number color to #595959 or darker to achieve 4.5:1 ratio on white background. Update the design token in the shared styles file.',
+        owner: 'HR & Wellness Team',
+        targetDate: '2024-07-01',
+        relatedDocumentUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FitnessElixir/A11Y-ColorAudit.xlsx'
+      },
+      {
+        id: 'FIT-CHK-003',
+        requirement: 'Focus indicator is visible on challenge cards',
+        wcagReference: '2.4.7 Focus Visible (AA)',
+        status: 'NeedsAttention',
+        impactArea: 'Keyboard Navigation',
+        notes: 'Challenge cards suppress the default browser focus ring via outline:none CSS. Keyboard-only users cannot see current focus position.',
+        remediationGuidance: 'Replace outline:none with a custom focus style (e.g., outline: 2px solid #0078d4). Test in high-contrast mode and across supported browsers.',
+        owner: 'HR & Wellness Team',
+        targetDate: '2024-06-01'
+      },
+      {
+        id: 'FIT-CHK-004',
+        requirement: 'Screen reader announces challenge completion status',
+        wcagReference: '4.1.3 Status Messages (AA)',
+        status: 'NotReviewed',
+        impactArea: 'Screen Reader',
+        notes: 'Not yet reviewed. Challenge completion toasts may not be announced by screen readers.',
+        remediationGuidance: 'Add role="status" or aria-live="polite" to the completion notification container so screen readers announce the message automatically.',
+        owner: 'HR & Wellness Team',
+        targetDate: '2024-08-01'
+      },
+      {
+        id: 'FIT-CHK-005',
+        requirement: 'Activity log form inputs are keyboard operable',
+        wcagReference: '2.1.1 Keyboard (A)',
+        status: 'Pass',
+        impactArea: 'Mobility',
+        notes: 'All form fields in the activity log are operable via keyboard alone.',
+        remediationGuidance: 'No action required.',
+        owner: 'HR & Wellness Team',
+        targetDate: '2024-03-20'
+      }
+    ],
     securityStatus: {
       threatModelComplete: 'NotStarted',
       dataClassificationComplete: 'InProgress',
@@ -427,6 +578,52 @@ export const mockApps: IApplication[] = [
         notes: 'Not yet reviewed; application still in development.'
       }
     ],
+    accessibilityChecks: [
+      {
+        id: 'SE-CHK-001',
+        requirement: 'All images and icons have descriptive alt text',
+        wcagReference: '1.1.1 Non-text Content (A)',
+        status: 'NotReviewed',
+        impactArea: 'Visual',
+        notes: 'Application still in development. Not yet reviewed.',
+        remediationGuidance: 'Audit all img elements and icon components. Add alt text to all informational images and mark decorative images with alt="".',
+        owner: 'IT/SharePoint Admin Team',
+        targetDate: '2024-09-01'
+      },
+      {
+        id: 'SE-CHK-002',
+        requirement: 'Keyboard navigation works for all interactive elements',
+        wcagReference: '2.1.1 Keyboard (A)',
+        status: 'NotReviewed',
+        impactArea: 'Keyboard Navigation',
+        notes: 'Application still in development. Not yet reviewed.',
+        remediationGuidance: 'Conduct keyboard-only walkthrough. Ensure tab order is logical and all actions are reachable without a mouse.',
+        owner: 'IT/SharePoint Admin Team',
+        targetDate: '2024-09-01'
+      },
+      {
+        id: 'SE-CHK-003',
+        requirement: 'Script search results are announced to screen readers',
+        wcagReference: '4.1.3 Status Messages (AA)',
+        status: 'NotReviewed',
+        impactArea: 'Screen Reader',
+        notes: 'Search result count update on filter has not been tested with screen readers.',
+        remediationGuidance: 'Add aria-live="polite" region to announce result count changes when search filters are applied.',
+        owner: 'IT/SharePoint Admin Team',
+        targetDate: '2024-09-01'
+      },
+      {
+        id: 'SE-CHK-004',
+        requirement: 'Script category filter labels are associated with controls',
+        wcagReference: '1.3.1 Info and Relationships (A)',
+        status: 'NotReviewed',
+        impactArea: 'Cognitive',
+        notes: 'Filter dropdowns have not been reviewed for proper label association.',
+        remediationGuidance: 'Ensure each filter dropdown has an associated <label> element or aria-label. Use Fluent UI Dropdown which includes built-in label support.',
+        owner: 'IT/SharePoint Admin Team',
+        targetDate: '2024-09-01'
+      }
+    ],
     securityStatus: {
       threatModelComplete: 'NotStarted',
       dataClassificationComplete: 'NotStarted',
@@ -519,6 +716,75 @@ export const mockApps: IApplication[] = [
         wcagCriteria: '1.4.3 Contrast (Minimum) (AA)',
         status: 'NeedsReview',
         notes: 'Severity badge colors need contrast ratio verification.'
+      }
+    ],
+    accessibilityChecks: [
+      {
+        id: 'TESC-CHK-001',
+        requirement: 'All icon-only controls have accessible names',
+        wcagReference: '4.1.2 Name, Role, Value (A)',
+        status: 'Pass',
+        impactArea: 'Screen Reader',
+        notes: 'All Fluent UI Icon components include aria-label or are accompanied by visible text.',
+        remediationGuidance: 'No action required.',
+        owner: 'Tech Elixir Core Team',
+        targetDate: '2024-04-15'
+      },
+      {
+        id: 'TESC-CHK-002',
+        requirement: 'Keyboard navigation works for all interactive controls',
+        wcagReference: '2.1.1 Keyboard (A)',
+        status: 'Pass',
+        impactArea: 'Keyboard Navigation',
+        notes: 'Pivot tabs, dropdowns, links, and detail list rows are all keyboard accessible.',
+        remediationGuidance: 'No action required.',
+        owner: 'Tech Elixir Core Team',
+        targetDate: '2024-04-15'
+      },
+      {
+        id: 'TESC-CHK-003',
+        requirement: 'Severity badge colors meet minimum contrast ratio (4.5:1)',
+        wcagReference: '1.4.3 Contrast Minimum (AA)',
+        status: 'NeedsAttention',
+        impactArea: 'Color Contrast',
+        notes: 'Badge colors for NeedsAttention and Blocked states need contrast ratio verification against their background colors.',
+        remediationGuidance: 'Run contrast analysis on all badge foreground/background color pairs. Update any pairs below 4.5:1 to compliant values using a contrast checker tool.',
+        owner: 'Tech Elixir Core Team',
+        targetDate: '2024-06-01',
+        relatedDocumentUrl: 'https://github.com/lvs-jlouth/Tech-Elixir-Solution-Center/issues/12'
+      },
+      {
+        id: 'TESC-CHK-004',
+        requirement: 'Status information is not conveyed by color alone',
+        wcagReference: '1.4.1 Use of Color (A)',
+        status: 'Pass',
+        impactArea: 'Color Contrast',
+        notes: 'All status badges display both an icon and a text label alongside color.',
+        remediationGuidance: 'No action required.',
+        owner: 'Tech Elixir Core Team',
+        targetDate: '2024-04-15'
+      },
+      {
+        id: 'TESC-CHK-005',
+        requirement: 'Animated loading spinners respect prefers-reduced-motion',
+        wcagReference: '2.3.3 Animation from Interactions (AAA)',
+        status: 'NotReviewed',
+        impactArea: 'Motion Sensitivity',
+        notes: 'Loading spinners and transition animations have not been reviewed for reduced-motion support.',
+        remediationGuidance: 'Add CSS @media (prefers-reduced-motion: reduce) rules to pause or disable spinner animations and transitions.',
+        owner: 'Tech Elixir Core Team',
+        targetDate: '2024-07-01'
+      },
+      {
+        id: 'TESC-CHK-006',
+        requirement: 'Filter live region announces result count changes',
+        wcagReference: '4.1.3 Status Messages (AA)',
+        status: 'Pass',
+        impactArea: 'Screen Reader',
+        notes: 'Filter result count elements use aria-live="polite" to announce changes.',
+        remediationGuidance: 'No action required.',
+        owner: 'Tech Elixir Core Team',
+        targetDate: '2024-04-15'
       }
     ],
     securityStatus: {
