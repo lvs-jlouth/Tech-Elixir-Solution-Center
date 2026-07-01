@@ -18,7 +18,7 @@ import { MockDataService } from '../services/MockDataService';
 import { AppOverviewCard } from './AppOverviewCard/AppOverviewCard';
 import { AppDetailPanel } from './AppDetailPanel/AppDetailPanel';
 import { DocCompletenessBar } from './DocCompletenessBar/DocCompletenessBar';
-import { ArchitectureDocs } from './ArchitectureDocs/ArchitectureDocs';
+import { ArchitectureAssets } from './ArchitectureAssets/ArchitectureAssets';
 import { ReleaseNotes } from './ReleaseNotes/ReleaseNotes';
 import { GitHubLinks } from './GitHubLinks/GitHubLinks';
 import { PowerPlatformRefs } from './PowerPlatformRefs/PowerPlatformRefs';
@@ -91,7 +91,7 @@ export default class TechElixirSolutionCenter extends React.Component<
         <AppOverviewCard app={app} />
         <DocCompletenessBar app={app} />
         <QuickLinks app={app} />
-        <ArchitectureDocs app={app} />
+        <ArchitectureAssets app={app} />
         <ReleaseNotes app={app} />
         <GitHubLinks app={app} />
         <PowerPlatformRefs app={app} />

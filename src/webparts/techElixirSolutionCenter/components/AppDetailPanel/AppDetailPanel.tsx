@@ -23,7 +23,7 @@ import { MockDataService } from '../../services/MockDataService';
 import { HealthStatus, DocumentationStatus, DOCUMENTATION_SECTIONS } from '../../constants';
 import { calculateDocCompleteness } from '../../utils/docCompleteness';
 import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
-import { ArchitectureDocs } from '../ArchitectureDocs/ArchitectureDocs';
+import { ArchitectureAssets } from '../ArchitectureAssets/ArchitectureAssets';
 import { TechnicalDebtRegister } from '../TechnicalDebtRegister/TechnicalDebtRegister';
 import { AccessibilityDashboard } from '../AccessibilityDashboard/AccessibilityDashboard';
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
@@ -499,7 +499,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
 
         <PivotItem headerText="Architecture" itemIcon="Flow" aria-label="Architecture tab">
           <div className={styles.tabContent}>
-            <ArchitectureDocs app={app} />
+            <ArchitectureAssets app={app} />
           </div>
         </PivotItem>
 

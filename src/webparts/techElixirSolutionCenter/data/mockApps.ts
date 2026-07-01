@@ -14,14 +14,58 @@ export const mockApps: IApplication[] = [
       {
         title: 'Finance Elixir – Solution Architecture',
         url: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/Architecture.docx',
+        assetType: 'Word document',
         description: 'High-level solution architecture covering SharePoint lists, Power BI integration, and Power Automate flows.',
-        lastUpdated: '2024-03-15'
+        version: 'v2.1',
+        lastUpdated: '2024-03-15',
+        owner: 'Finance Team',
+        previewAvailable: false,
+        category: 'Current State'
       },
       {
         title: 'Data Flow Diagram',
         url: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/DataFlow.vsdx',
+        assetType: 'VSDX',
         description: 'Data flow between SharePoint, Dataverse, and Power BI.',
-        lastUpdated: '2024-02-20'
+        version: 'v1.4',
+        lastUpdated: '2024-02-20',
+        owner: 'Data Engineering Team',
+        previewAvailable: false,
+        category: 'Data Flow'
+      },
+      {
+        title: 'Security Trust Boundaries',
+        url: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/SecurityModel.pdf',
+        assetType: 'PDF',
+        description: 'Trust boundaries, access model, and encryption standards.',
+        version: 'v1.2',
+        lastUpdated: '2024-03-18',
+        owner: 'Security Team',
+        previewAvailable: false,
+        category: 'Security'
+      },
+      {
+        title: 'Deployment Topology',
+        url: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/DeploymentTopology.drawio',
+        assetType: 'Draw.io',
+        description: 'Deployment topology for production and disaster recovery environments.',
+        version: 'v1.0',
+        lastUpdated: '2024-03-05',
+        owner: 'Platform Engineering',
+        previewAvailable: false,
+        category: 'Deployment'
+      },
+      {
+        title: 'Power Platform Integration Map',
+        url: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/PowerPlatformMap.png',
+        assetType: 'PNG',
+        description: 'Visual map of Power Apps, Power Automate, and Dataverse integration points.',
+        version: 'v1.6',
+        lastUpdated: '2024-03-22',
+        owner: 'Power Platform Team',
+        previewAvailable: true,
+        previewUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/PowerPlatformMap.png',
+        category: 'Power Platform'
       }
     ],
     releaseNotes: [
@@ -282,8 +326,13 @@ export const mockApps: IApplication[] = [
       {
         title: 'Fitness Elixir – Architecture Overview',
         url: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FitnessElixir/Architecture.docx',
+        assetType: 'Word document',
         description: 'System design covering Power Apps, SharePoint lists, and gamification logic.',
-        lastUpdated: '2024-02-10'
+        version: 'v1.3',
+        lastUpdated: '2024-02-10',
+        owner: 'HR & Wellness Team',
+        previewAvailable: false,
+        category: 'Future State'
       }
     ],
     releaseNotes: [
@@ -482,8 +531,13 @@ export const mockApps: IApplication[] = [
       {
         title: 'Script Elixir – Draft Architecture',
         url: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/ScriptElixir/ArchitectureDraft.docx',
+        assetType: 'Word document',
         description: 'Initial architecture draft for the script library system.',
-        lastUpdated: '2024-04-05'
+        version: 'v0.2',
+        lastUpdated: '2024-04-05',
+        owner: 'IT/SharePoint Admin Team',
+        previewAvailable: false,
+        category: 'Integration'
       }
     ],
     releaseNotes: [
@@ -650,8 +704,13 @@ export const mockApps: IApplication[] = [
       {
         title: 'Solution Center – Architecture',
         url: 'https://github.com/lvs-jlouth/Tech-Elixir-Solution-Center/blob/main/README.md',
+        assetType: 'Markdown',
         description: 'README with architecture overview, component structure, and setup guide.',
-        lastUpdated: '2024-04-15'
+        version: 'v1.0',
+        lastUpdated: '2024-04-15',
+        owner: 'Tech Elixir Core Team',
+        previewAvailable: false,
+        category: 'Network'
       }
     ],
     releaseNotes: [

@@ -62,9 +62,36 @@ export interface IAccessibilityCheck {
 export interface IArchitectureDoc {
   title: string;
   url: string;
+  assetType?: ArchitectureAssetType;
   description?: string;
+  version?: string;
   lastUpdated?: string;
+  owner?: string;
+  previewAvailable?: boolean;
+  previewUrl?: string;
+  category?: ArchitectureCategory;
 }
+
+export type ArchitectureAssetType =
+  | 'SVG'
+  | 'PNG'
+  | 'JPG'
+  | 'PDF'
+  | 'VSDX'
+  | 'Draw.io'
+  | 'Markdown'
+  | 'Word document'
+  | 'PowerPoint';
+
+export type ArchitectureCategory =
+  | 'Current State'
+  | 'Future State'
+  | 'Data Flow'
+  | 'Security'
+  | 'Integration'
+  | 'Network'
+  | 'Power Platform'
+  | 'Deployment';
 
 export interface IReleaseNote {
   version: string;

@@ -8,6 +8,8 @@ export {
   AccessibilityCheckStatus,
   AccessibilityImpactArea,
   IArchitectureDoc,
+  ArchitectureAssetType,
+  ArchitectureCategory,
   IReleaseNote,
   ISecurityStatus,
   SecurityDocStatus,
