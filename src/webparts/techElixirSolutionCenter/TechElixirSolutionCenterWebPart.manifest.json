@@ -1,0 +1,25 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "b3d4e5f6-a7b8-4c9d-8e0f-2a3b4c5d6e7f",
+  "alias": "TechElixirSolutionCenterWebPart",
+  "componentType": "WebPart",
+  "version": "*",
+  "manifestVersion": 2,
+  "requiresCustomScript": false,
+  "supportedHosts": ["SharePointWebPart", "TeamsPersonalApp", "TeamsTab"],
+  "supportsThemeVariants": true,
+  "preconfiguredEntries": [
+    {
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70",
+      "group": { "default": "Other" },
+      "title": { "default": "Tech Elixir Solution Center" },
+      "description": { "default": "Living documentation and engineering dashboard for SharePoint-based app builds." },
+      "officeFabricIconFontName": "TechEd",
+      "properties": {
+        "listName": "",
+        "displayMode": "cards",
+        "selectedApp": ""
+      }
+    }
+  ]
+}

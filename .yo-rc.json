@@ -1,0 +1,14 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "isCreatingSolution": true,
+    "environment": "spo",
+    "version": "1.18.2",
+    "libraryName": "tech-elixir-solution-center",
+    "libraryId": "c4d5e6f7-b8c9-5d0e-9f2a-3b4c5d6e7f80",
+    "packageManager": "npm",
+    "isDomainIsolated": false,
+    "componentType": "webpart",
+    "template": "react",
+    "framework": "react"
+  }
+}
