@@ -38,6 +38,8 @@ export const MOCK_APPLICATIONS: IApplication[] = [
   {
     id: '1',
     name: 'Finance Elixir',
+    shortName: 'FE',
+    appType: 'SharePointSolution',
     description:
       'A SharePoint-based financial management and reporting application that streamlines budget tracking, expense approvals, and financial dashboards for the organization.',
     status: 'Active',
@@ -228,6 +230,8 @@ export const MOCK_APPLICATIONS: IApplication[] = [
   {
     id: '2',
     name: 'Fitness Elixir',
+    shortName: 'FitE',
+    appType: 'PowerApp',
     description:
       'An employee wellness and fitness tracking application built on SharePoint and Power Platform, enabling staff to log activities, join challenges, and track team wellness goals.',
     status: 'Active',
@@ -379,6 +383,8 @@ export const MOCK_APPLICATIONS: IApplication[] = [
   {
     id: '3',
     name: 'Script Elixir',
+    shortName: 'SE',
+    appType: 'HybridSolution',
     description:
       'A centralized script library and automation hub for SharePoint administrators, allowing teams to discover, share, and execute PnP PowerShell, SPFx, and Graph API scripts through a governed SharePoint interface.',
     status: 'InDevelopment',
@@ -517,6 +523,8 @@ export const MOCK_APPLICATIONS: IApplication[] = [
   {
     id: '4',
     name: 'Tech Elixir Solution Center',
+    shortName: 'TESC',
+    appType: 'SPFxWebPart',
     description:
       'This web part itself — a living documentation and application engineering dashboard for all Tech Elixir SharePoint-based app builds.',
     status: 'InDevelopment',

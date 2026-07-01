@@ -53,7 +53,9 @@ export class SharePointDataService {
       const items = await this._readListItems(this._lists.solutions, [
         'Id',
         'Title',
+        'ShortName',
         'Description',
+        'AppType',
         'SolutionStatus',
         'AppStatus',
         'Owner',
@@ -251,7 +253,9 @@ export class SharePointDataService {
     return {
       id: String(item.Id),
       name: this._toString(item.Title, 'Untitled Solution'),
+      shortName: this._toString(item.ShortName),
       description: this._toString(item.Description),
+      appType: this._toString(item.AppType),
       status,
       owner: this._toString(this._firstDefined(item.Owner, item.AppOwner), 'Unassigned'),
       docCompleteness: this._toNumber(item.DocCompleteness, 0),

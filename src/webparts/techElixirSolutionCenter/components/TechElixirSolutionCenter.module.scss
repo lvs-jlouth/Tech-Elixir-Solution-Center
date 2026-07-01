@@ -23,6 +23,29 @@
   margin-bottom: 16px;
 }
 
+.filterSection {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid #edebe9;
+  border-radius: 4px;
+  background: #ffffff;
+}
+
+.filterHeading {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.filterControl {
+  min-width: 220px;
+  flex: 1 1 220px;
+}
+
+.visibleCount {
+  font-size: 14px;
+  color: var(--bodyText, #323130);
+}
+
 .appGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));

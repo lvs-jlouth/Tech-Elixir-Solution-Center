@@ -121,7 +121,9 @@ export type AppStatus = 'Active' | 'InDevelopment' | 'Deprecated' | 'Planned';
 export interface IApplication {
   id: string;
   name: string;
+  shortName?: string;
   description: string;
+  appType?: string;
   status: AppStatus;
   owner: string;
   docCompleteness: number;
