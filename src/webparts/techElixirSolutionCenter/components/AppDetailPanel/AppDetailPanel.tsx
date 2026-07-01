@@ -27,6 +27,7 @@ import { ArchitectureDocs } from '../ArchitectureDocs/ArchitectureDocs';
 import { TechnicalDebt } from '../TechnicalDebt/TechnicalDebt';
 import { AccessibilityReview } from '../AccessibilityReview/AccessibilityReview';
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
+import { DocumentMatrix } from '../DocumentMatrix/DocumentMatrix';
 import styles from './AppDetailPanel.module.scss';
 
 export interface IAppDetailPanelProps {
@@ -304,135 +305,9 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
       return <Spinner size={SpinnerSize.medium} label="Loading documents…" />;
     }
 
-    // Build a lookup so we can merge DOCUMENTATION_SECTIONS with loaded document records
-    const docByKey = new Map<string, IDocument>();
-    documents.forEach(d => docByKey.set(d.sectionKey, d));
-
     // Compute completeness from the canonical section list + loaded records
     const completeness = calculateDocCompleteness(DOCUMENTATION_SECTIONS, documents);
     const barColor = getDocBarColor(completeness.completenessPercentage);
-
-    // Build merged rows – one per canonical section, whether or not a record was loaded
-    interface IDocRow {
-      key: string;
-      sectionNumber: string;
-      sectionTitle: string;
-      required: boolean;
-      expectedFileName: string;
-      status: DocumentationStatus;
-      lastUpdated?: string;
-      owner?: string;
-      url?: string;
-    }
-
-    const rows: IDocRow[] = DOCUMENTATION_SECTIONS.map(section => {
-      const doc = docByKey.get(section.key);
-      return {
-        key: section.key,
-        sectionNumber: section.number,
-        sectionTitle: section.title,
-        required: section.required,
-        expectedFileName: section.recommendedFileNamePattern,
-        status: doc ? doc.status : DocumentationStatus.Missing,
-        lastUpdated: doc?.lastUpdated,
-        owner: doc?.owner,
-        url: doc?.url
-      };
-    });
-
-    const docColumns: IColumn[] = [
-      {
-        key: 'number',
-        name: '#',
-        minWidth: 30,
-        maxWidth: 40,
-        onRender: (item: IDocRow) => (
-          <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.sectionNumber}</Text>
-        )
-      },
-      {
-        key: 'title',
-        name: 'Section',
-        minWidth: 130,
-        maxWidth: 180,
-        onRender: (item: IDocRow) => (
-          <Stack>
-            <Text variant="small" styles={{ root: { fontWeight: 600 } }}>{item.sectionTitle}</Text>
-            {item.required && (
-              <Text variant="tiny" styles={{ root: { color: '#605e5c' } }}>Required</Text>
-            )}
-          </Stack>
-        )
-      },
-      {
-        key: 'expectedFileName',
-        name: 'Expected File Name',
-        minWidth: 160,
-        maxWidth: 220,
-        onRender: (item: IDocRow) => (
-          <Text variant="tiny" styles={{ root: { color: '#605e5c', fontFamily: 'monospace' } }}>
-            {item.expectedFileName}
-          </Text>
-        )
-      },
-      {
-        key: 'status',
-        name: 'Status',
-        minWidth: 100,
-        maxWidth: 130,
-        onRender: (item: IDocRow) => {
-          const cfg = DOC_STATUS_CONFIG[item.status] || { color: '#605e5c', background: '#f3f2f1', label: item.status, icon: 'Info' };
-          return (
-            <span
-              className={styles.docStatusBadge}
-              style={{ background: cfg.background, color: cfg.color }}
-              aria-label={`Status: ${cfg.label}`}
-              role="status"
-            >
-              <Icon iconName={cfg.icon} styles={{ root: { fontSize: 10, marginRight: 4, verticalAlign: 'middle' } }} aria-hidden />
-              {cfg.label}
-            </span>
-          );
-        }
-      },
-      {
-        key: 'lastUpdated',
-        name: 'Last Reviewed',
-        minWidth: 90,
-        maxWidth: 110,
-        onRender: (item: IDocRow) => (
-          <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.lastUpdated || '—'}</Text>
-        )
-      },
-      {
-        key: 'owner',
-        name: 'Owner',
-        minWidth: 100,
-        maxWidth: 160,
-        onRender: (item: IDocRow) => (
-          <Text variant="small">{item.owner || '—'}</Text>
-        )
-      },
-      {
-        key: 'url',
-        name: 'Document',
-        minWidth: 80,
-        onRender: (item: IDocRow) =>
-          item.url ? (
-            <Link
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              styles={{ root: { fontSize: 12 } }}
-              aria-label={`Open ${item.sectionTitle} document (opens in new tab)`}
-            >
-              Open
-            </Link>
-          ) : (
-            <Text variant="tiny" styles={{ root: { color: '#a19f9d' } }}>Not available</Text>
-          )
-      }
-    ];
 
     return (
       <Stack tokens={{ childrenGap: 20 }}>
@@ -454,63 +329,20 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
           />
         </section>
 
-        {/* Summary stats */}
-        <section aria-labelledby="docs-summary-heading">
-          <Text
-            id="docs-summary-heading"
-            variant="mediumPlus"
-            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
-          >
-            Summary
-          </Text>
-          <div className={styles.docSummaryGrid} role="list" aria-label="Documentation completeness summary">
-            <div className={styles.docSummaryItem} role="listitem">
-              <div className={styles.docSummaryValue} aria-label={`${completeness.completedRequired} of ${completeness.totalRequired} required sections complete`}>
-                {completeness.completedRequired}<span className={styles.docSummaryDenom}>/{completeness.totalRequired}</span>
-              </div>
-              <div className={styles.docSummaryLabel}>Required Complete</div>
-            </div>
-            <div className={styles.docSummaryItem} role="listitem">
-              <div
-                className={styles.docSummaryValue}
-                style={{ color: completeness.missingRequired > 0 ? '#a80000' : '#107c10' }}
-                aria-label={`${completeness.missingRequired} required sections missing`}
-              >
-                {completeness.missingRequired}
-              </div>
-              <div className={styles.docSummaryLabel}>Required Missing</div>
-            </div>
-            <div className={styles.docSummaryItem} role="listitem">
-              <div className={styles.docSummaryValue} aria-label={`${completeness.optionalPresent} optional sections present`}>
-                {completeness.optionalPresent}
-              </div>
-              <div className={styles.docSummaryLabel}>Optional Present</div>
-            </div>
-            <div className={styles.docSummaryItem} role="listitem">
-              <div
-                className={styles.docSummaryValue}
-                style={{ color: barColor }}
-                aria-label={`${completeness.completenessPercentage} percent complete`}
-              >
-                {completeness.completenessPercentage}%
-              </div>
-              <div className={styles.docSummaryLabel}>Completeness</div>
-            </div>
+        {/* Missing required sections alert */}
+        {completeness.missingSectionKeys.length > 0 && (
+          <div className={styles.missingSectionsAlert} role="alert" aria-label="Missing required sections">
+            <Icon iconName="ErrorBadge" styles={{ root: { color: '#a80000', fontSize: 14, flexShrink: 0 } }} aria-hidden />
+            <span>
+              <strong>Missing required sections: </strong>
+              {completeness.missingSectionKeys
+                .map(k => DOCUMENTATION_SECTIONS.find(s => s.key === k)?.title ?? k)
+                .join(', ')}
+            </span>
           </div>
-          {completeness.missingSectionKeys.length > 0 && (
-            <div className={styles.missingSectionsAlert} role="alert" aria-label="Missing required sections">
-              <Icon iconName="ErrorBadge" styles={{ root: { color: '#a80000', fontSize: 14, flexShrink: 0 } }} aria-hidden />
-              <span>
-                <strong>Missing required sections: </strong>
-                {completeness.missingSectionKeys
-                  .map(k => DOCUMENTATION_SECTIONS.find(s => s.key === k)?.title ?? k)
-                  .join(', ')}
-              </span>
-            </div>
-          )}
-        </section>
+        )}
 
-        {/* Section-by-section table */}
+        {/* Section-by-section matrix */}
         <section aria-labelledby="docs-sections-heading">
           <Text
             id="docs-sections-heading"
@@ -519,15 +351,10 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
           >
             Documentation Sections
           </Text>
-          <DetailsList
-            items={rows}
-            columns={docColumns}
-            getKey={(item: IDocRow) => item.key}
-            layoutMode={DetailsListLayoutMode.justified}
-            selectionMode={SelectionMode.none}
-            isHeaderVisible
-            compact
-            ariaLabel="Documentation sections"
+          <DocumentMatrix
+            app={app}
+            documents={documents}
+            sections={DOCUMENTATION_SECTIONS}
           />
         </section>
       </Stack>
