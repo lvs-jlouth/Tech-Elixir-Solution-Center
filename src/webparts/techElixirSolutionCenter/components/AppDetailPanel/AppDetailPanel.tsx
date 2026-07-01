@@ -10,11 +10,7 @@ import {
   Icon,
   Spinner,
   SpinnerSize,
-  ProgressIndicator,
-  DetailsList,
-  DetailsListLayoutMode,
-  SelectionMode,
-  IColumn
+  ProgressIndicator
 } from '@fluentui/react';
 
 import { IApplication, AppStatus } from '../../models';
@@ -28,6 +24,7 @@ import { TechnicalDebtRegister } from '../TechnicalDebtRegister/TechnicalDebtReg
 import { AccessibilityDashboard } from '../AccessibilityDashboard/AccessibilityDashboard';
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
 import { DocumentMatrix } from '../DocumentMatrix/DocumentMatrix';
+import { IntegrationInventory } from '../IntegrationInventory/IntegrationInventory';
 import styles from './AppDetailPanel.module.scss';
 
 export interface IAppDetailPanelProps {
@@ -61,18 +58,6 @@ const DOC_STATUS_CONFIG: Record<string, { color: string; background: string; lab
   [DocumentationStatus.InReview]: { color: '#8a5700', background: '#fff4ce', label: 'In Review', icon: 'Glasses' },
   [DocumentationStatus.Outdated]: { color: '#c43501', background: '#fed9cc', label: 'Outdated',  icon: 'Warning' },
   [DocumentationStatus.Missing]:  { color: '#a80000', background: '#fde7e9', label: 'Missing',   icon: 'ErrorBadge' }
-};
-
-const INTEGRATION_TYPE_ICONS: Record<string, string> = {
-  SharePoint:    'SharepointLogo',
-  PowerBI:       'BarChart4',
-  PowerAutomate: 'Flow',
-  Teams:         'TeamsLogo',
-  Graph:         'BranchMerge',
-  AzureFunction: 'AzureLogo',
-  Dataverse:     'Database',
-  GitHub:        'CodeEdit',
-  External:      'Globe'
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -365,96 +350,11 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
     if (loadingDetails) {
       return <Spinner size={SpinnerSize.medium} label="Loading integrations…" />;
     }
-    if (integrations.length === 0) {
-      return (
-        <Text variant="small" styles={{ root: { color: '#a19f9d' } }}>
-          No integrations registered for this application.
-        </Text>
-      );
-    }
-
-    const intColumns: IColumn[] = [
-      {
-        key: 'type',
-        name: 'Type',
-        minWidth: 100,
-        maxWidth: 140,
-        onRender: (item: IIntegration) => (
-          <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 6 }}>
-            <Icon
-              iconName={INTEGRATION_TYPE_ICONS[item.type] || 'Globe'}
-              styles={{ root: { color: '#0078d4', fontSize: 14 } }}
-              aria-hidden
-            />
-            <Text variant="small">{item.type}</Text>
-          </Stack>
-        )
-      },
-      {
-        key: 'name',
-        name: 'Name',
-        minWidth: 140,
-        maxWidth: 220,
-        onRender: (item: IIntegration) =>
-          item.url ? (
-            <Link href={item.url} target="_blank" rel="noopener noreferrer" styles={{ root: { fontSize: 13 } }}>
-              {item.name}
-            </Link>
-          ) : (
-            <Text variant="small">{item.name}</Text>
-          )
-      },
-      {
-        key: 'environment',
-        name: 'Environment',
-        minWidth: 90,
-        maxWidth: 120,
-        onRender: (item: IIntegration) => <Text variant="small">{item.environment}</Text>
-      },
-      {
-        key: 'health',
-        name: 'Health',
-        minWidth: 80,
-        maxWidth: 100,
-        onRender: (item: IIntegration) => {
-          const cfg = HEALTH_CONFIG[item.healthStatus] || HEALTH_CONFIG[HealthStatus.Unknown];
-          return (
-            <span
-              style={{
-                background: cfg.background,
-                color: cfg.color,
-                borderRadius: 10,
-                padding: '1px 8px',
-                fontSize: 11,
-                fontWeight: 600
-              }}
-              aria-label={`Health: ${cfg.label}`}
-            >
-              {cfg.label}
-            </span>
-          );
-        }
-      },
-      {
-        key: 'description',
-        name: 'Description',
-        minWidth: 200,
-        isMultiline: true,
-        onRender: (item: IIntegration) => (
-          <Text variant="small" styles={{ root: { color: '#605e5c' } }}>{item.description || '—'}</Text>
-        )
-      }
-    ];
-
     return (
-      <DetailsList
-        items={integrations}
-        columns={intColumns}
-        layoutMode={DetailsListLayoutMode.justified}
-        selectionMode={SelectionMode.none}
-        isHeaderVisible
-        compact
-        ariaLabel="Application integrations"
+      <IntegrationInventory
+        integrations={integrations}
+        title='Integration Inventory'
+        emptyMessage='No integrations registered for this application.'
       />
     );
   }

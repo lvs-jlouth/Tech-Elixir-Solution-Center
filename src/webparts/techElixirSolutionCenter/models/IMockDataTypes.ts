@@ -1,4 +1,4 @@
-import { DocumentationStatus, Environment, HealthStatus } from '../constants';
+import { DocumentationStatus, Environment } from '../constants';
 
 /**
  * Represents the completeness/status of a single documentation section for an app.
@@ -35,25 +35,43 @@ export interface IIntegration {
   appId: string;
   /** Human-readable name of the integrated system */
   name: string;
-  /** Category of integration */
-  type:
+  /** System type for the integration/dependency */
+  systemType:
     | 'SharePoint'
-    | 'PowerBI'
-    | 'PowerAutomate'
-    | 'Teams'
-    | 'Graph'
-    | 'AzureFunction'
     | 'Dataverse'
+    | 'Power Automate'
+    | 'Power Apps'
+    | 'Copilot Studio'
+    | 'Azure Function'
+    | 'Azure SQL'
     | 'GitHub'
-    | 'External';
-  /** Brief description of what the integration does */
-  description?: string;
+    | 'Microsoft Graph'
+    | 'External API'
+    | 'On-premises System';
+  /** Direction of data movement */
+  direction: 'Inbound' | 'Outbound' | 'Bidirectional';
+  /** Authentication mechanism */
+  authenticationType:
+    | 'None'
+    | 'API Key'
+    | 'OAuth 2.0'
+    | 'Managed Identity'
+    | 'Service Principal'
+    | 'Basic'
+    | 'Certificate'
+    | 'Windows Integrated';
+  /** Data classification handled by the integration */
+  dataClassification: 'Public' | 'Internal' | 'Confidential' | 'Restricted';
   /** URL for the integrated resource (report, flow, app, etc.) */
   url?: string;
+  /** URL of documentation for this integration/dependency */
+  documentationUrl?: string;
+  /** Free-form notes */
+  notes?: string;
   /** Environment this integration lives in */
   environment: Environment;
-  /** Current operational health of the integration */
-  healthStatus: HealthStatus;
+  /** Current state of the integration */
+  status: 'Active' | 'Degraded' | 'Inactive' | 'Planned';
   /** Optional contact or owning team */
   owner?: string;
 }

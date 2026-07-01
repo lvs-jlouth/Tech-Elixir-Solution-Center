@@ -909,123 +909,138 @@ export const MOCK_INTEGRATIONS: IIntegration[] = [
   // ── Finance Elixir ────────────────────────────────────────────────────────
   {
     id: 'FE-INT-001', appId: '1', name: 'Finance SharePoint Site',
-    type: 'SharePoint', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Primary SharePoint site collection hosting Finance Elixir lists and pages.',
+    systemType: 'SharePoint', direction: 'Bidirectional', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Internal', environment: Environment.Production, status: 'Active',
     url: 'https://your-sharepoint-site/sites/FinanceElixir',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/Architecture.docx',
+    notes: 'Primary SharePoint site collection hosting Finance Elixir lists and pages.',
     owner: 'Finance Team'
   },
   {
     id: 'FE-INT-002', appId: '1', name: 'Finance Power BI Workspace',
-    type: 'PowerBI', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Power BI workspace with embedded financial dashboards and reports.',
+    systemType: 'External API', direction: 'Inbound', authenticationType: 'Service Principal',
+    dataClassification: 'Confidential', environment: Environment.Production, status: 'Active',
     url: 'https://app.powerbi.com/groups/me/reports/finance-elixir',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/DataFlow.vsdx',
+    notes: 'Power BI workspace with embedded financial dashboards and reports.',
     owner: 'Finance Team'
   },
   {
     id: 'FE-INT-003', appId: '1', name: 'Budget Approval Power Automate Flow',
-    type: 'PowerAutomate', environment: Environment.Production,
-    healthStatus: HealthStatus.Yellow,
-    description: 'Multi-level budget approval flow. Currently under review for Q2 approval threshold changes.',
+    systemType: 'Power Automate', direction: 'Bidirectional', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Confidential', environment: Environment.Production, status: 'Degraded',
     url: 'https://make.powerautomate.com/environments/default/flows/budget-approval-flow',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/FlowDocs.md',
+    notes: 'Multi-level budget approval flow under review for Q2 approval threshold changes.',
     owner: 'Finance Team'
   },
   {
     id: 'FE-INT-004', appId: '1', name: 'Expense Tracker Dataverse',
-    type: 'Dataverse', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Dataverse table storing employee expense records.',
+    systemType: 'Dataverse', direction: 'Bidirectional', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Confidential', environment: Environment.Production, status: 'Active',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/DataModel.md',
+    notes: 'Dataverse table storing employee expense records.',
     owner: 'Finance Team'
   },
   {
     id: 'FE-INT-005', appId: '1', name: 'Microsoft Teams Finance Channel',
-    type: 'Teams', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Teams channel integration for approval notifications.',
+    systemType: 'External API', direction: 'Outbound', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Internal', environment: Environment.Production, status: 'Active',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FinanceElixir/Notifications.md',
+    notes: 'Teams channel integration for approval notifications.',
     owner: 'Finance Team'
   },
 
   // ── Fitness Elixir ────────────────────────────────────────────────────────
   {
     id: 'FIT-INT-001', appId: '2', name: 'Wellness SharePoint Site',
-    type: 'SharePoint', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'SharePoint site hosting Fitness Elixir activity lists and leaderboard web part.',
+    systemType: 'SharePoint', direction: 'Bidirectional', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Confidential', environment: Environment.Production, status: 'Active',
     url: 'https://your-sharepoint-site/sites/FitnessElixir',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FitnessElixir/Architecture.docx',
+    notes: 'SharePoint site hosting Fitness Elixir activity lists and leaderboard web part.',
     owner: 'HR & Wellness Team'
   },
   {
     id: 'FIT-INT-002', appId: '2', name: 'Fitness Activity Logger Power App',
-    type: 'PowerAutomate', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Canvas app allowing employees to log daily fitness activities.',
+    systemType: 'Power Apps', direction: 'Inbound', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Confidential', environment: Environment.Production, status: 'Active',
     url: 'https://make.powerapps.com/environments/default/apps/fitness-logger',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FitnessElixir/UserGuide.pdf',
+    notes: 'Canvas app allowing employees to log daily fitness activities.',
     owner: 'HR & Wellness Team'
   },
   {
     id: 'FIT-INT-003', appId: '2', name: 'Challenge Notification Flow',
-    type: 'PowerAutomate', environment: Environment.Production,
-    healthStatus: HealthStatus.Yellow,
-    description: 'Weekly challenge reminder and leaderboard update notifications via Teams. Occasional delays reported.',
+    systemType: 'Power Automate', direction: 'Outbound', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Internal', environment: Environment.Production, status: 'Degraded',
     url: 'https://make.powerautomate.com/environments/default/flows/challenge-notification',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FitnessElixir/FlowInventory.md',
+    notes: 'Weekly challenge reminders and leaderboard updates via Teams; occasional delays reported.',
     owner: 'HR & Wellness Team'
   },
   {
     id: 'FIT-INT-004', appId: '2', name: 'Microsoft Teams Wellness Channel',
-    type: 'Teams', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Teams channel used for challenge announcements and wellness tips.',
+    systemType: 'External API', direction: 'Outbound', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Internal', environment: Environment.Production, status: 'Active',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/FitnessElixir/CommsGuide.md',
+    notes: 'Teams channel used for challenge announcements and wellness tips.',
     owner: 'HR & Wellness Team'
   },
 
   // ── Script Elixir ─────────────────────────────────────────────────────────
   {
     id: 'SE-INT-001', appId: '3', name: 'Script Catalog SharePoint Site',
-    type: 'SharePoint', environment: Environment.Development,
-    healthStatus: HealthStatus.Yellow,
-    description: 'Dev SharePoint site hosting the script catalog list. Not yet promoted to production.',
+    systemType: 'SharePoint', direction: 'Bidirectional', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Internal', environment: Environment.Development, status: 'Degraded',
     url: 'https://your-sharepoint-site/sites/ScriptElixir-Dev',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/ScriptElixir/ArchitectureDraft.docx',
+    notes: 'Dev site hosting the script catalog list; not yet promoted to production.',
     owner: 'IT/SharePoint Admin Team'
   },
   {
     id: 'SE-INT-002', appId: '3', name: 'Microsoft Graph API',
-    type: 'Graph', environment: Environment.Development,
-    healthStatus: HealthStatus.Unknown,
-    description: 'Graph API used for user profile lookups and script permissions. Integration not yet finalized.',
+    systemType: 'Microsoft Graph', direction: 'Bidirectional', authenticationType: 'Service Principal',
+    dataClassification: 'Internal', environment: Environment.Development, status: 'Planned',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/ScriptElixir/GraphIntegration.md',
+    notes: 'Used for profile lookups and script permissions; integration not yet finalized.',
     owner: 'IT/SharePoint Admin Team'
   },
   {
     id: 'SE-INT-003', appId: '3', name: 'Script Approval Power Automate Flow',
-    type: 'PowerAutomate', environment: Environment.Development,
-    healthStatus: HealthStatus.Red,
-    description: 'Script peer-review approval flow. Currently broken – awaiting SPO permissions fix.',
+    systemType: 'Power Automate', direction: 'Bidirectional', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Internal', environment: Environment.Development, status: 'Inactive',
+    documentationUrl: 'https://your-sharepoint-site/sites/TechElixir/Shared%20Documents/ScriptElixir/FlowDesign.md',
+    notes: 'Script peer-review approval flow currently broken; awaiting SharePoint permissions fix.',
     owner: 'IT/SharePoint Admin Team'
   },
   {
     id: 'SE-INT-004', appId: '3', name: 'GitHub Script Elixir Repository',
-    type: 'GitHub', environment: Environment.Development,
-    healthStatus: HealthStatus.Green,
-    description: 'Source control for script catalog source code.',
+    systemType: 'GitHub', direction: 'Inbound', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Public', environment: Environment.Development, status: 'Active',
     url: 'https://github.com/lvs-jlouth/script-elixir',
+    documentationUrl: 'https://github.com/lvs-jlouth/script-elixir/wiki',
+    notes: 'Source control and PR workflow for script catalog source code.',
     owner: 'IT/SharePoint Admin Team'
   },
 
   // ── Tech Elixir Solution Center ───────────────────────────────────────────
   {
     id: 'TESC-INT-001', appId: '4', name: 'TechElixir SharePoint Site',
-    type: 'SharePoint', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Host SharePoint site for the Solution Center web part.',
+    systemType: 'SharePoint', direction: 'Bidirectional', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Internal', environment: Environment.Production, status: 'Active',
     url: 'https://your-sharepoint-site/sites/TechElixir',
+    documentationUrl: 'https://github.com/lvs-jlouth/Tech-Elixir-Solution-Center/blob/main/README.md',
+    notes: 'Host SharePoint site for the Solution Center web part.',
     owner: 'Tech Elixir Core Team'
   },
   {
     id: 'TESC-INT-002', appId: '4', name: 'GitHub Tech-Elixir-Solution-Center Repository',
-    type: 'GitHub', environment: Environment.Production,
-    healthStatus: HealthStatus.Green,
-    description: 'Source control, CI/CD, and issue tracking for the Solution Center.',
+    systemType: 'GitHub', direction: 'Inbound', authenticationType: 'OAuth 2.0',
+    dataClassification: 'Public', environment: Environment.Production, status: 'Active',
     url: 'https://github.com/lvs-jlouth/Tech-Elixir-Solution-Center',
+    documentationUrl: 'https://github.com/lvs-jlouth/Tech-Elixir-Solution-Center/wiki',
+    notes: 'Source control, CI/CD, and issue tracking for the Solution Center.',
     owner: 'Tech Elixir Core Team'
   }
 ];
