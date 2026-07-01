@@ -12,7 +12,9 @@ import {
 
 import { ITechElixirSolutionCenterProps } from './ITechElixirSolutionCenterProps';
 import { IApplication } from '../models';
+import { IHealthSummary } from '../models/IMockDataTypes';
 import { AppDataService } from '../services/AppDataService';
+import { MockDataService } from '../services/MockDataService';
 import { AppOverviewCard } from './AppOverviewCard/AppOverviewCard';
 import { DocCompletenessBar } from './DocCompletenessBar/DocCompletenessBar';
 import { ArchitectureDocs } from './ArchitectureDocs/ArchitectureDocs';
@@ -27,6 +29,7 @@ import styles from './TechElixirSolutionCenter.module.scss';
 
 interface ITechElixirSolutionCenterState {
   apps: IApplication[];
+  healthSummaries: IHealthSummary[];
   isLoading: boolean;
   error: string | undefined;
 }
@@ -36,12 +39,15 @@ export default class TechElixirSolutionCenter extends React.Component<
   ITechElixirSolutionCenterState
 > {
   private _dataService: AppDataService;
+  private _mockDataService: MockDataService;
 
   constructor(props: ITechElixirSolutionCenterProps) {
     super(props);
     this._dataService = new AppDataService(props.context, props.listName);
+    this._mockDataService = new MockDataService();
     this.state = {
       apps: [],
+      healthSummaries: [],
       isLoading: true,
       error: undefined
     };
@@ -60,17 +66,19 @@ export default class TechElixirSolutionCenter extends React.Component<
 
   private _loadApps(): void {
     this.setState({ isLoading: true, error: undefined });
-    this._dataService
-      .getApplications()
-      .then(apps => {
+    Promise.all([
+      this._dataService.getApplications(),
+      this._mockDataService.getAllHealthSummaries()
+    ])
+      .then(([apps, healthSummaries]) => {
         const filtered =
           this.props.selectedApp
             ? apps.filter(a => a.name.toLowerCase().includes(this.props.selectedApp.toLowerCase()))
             : apps;
-        this.setState({ apps: filtered, isLoading: false });
+        this.setState({ apps: filtered, healthSummaries, isLoading: false });
       })
       .catch(err => {
-        this.setState({ isLoading: false, error: `Failed to load application data: ${err.message}` });
+        this.setState({ isLoading: false, healthSummaries: [], error: `Failed to load application data: ${err.message}` });
       });
   }
 
@@ -92,11 +100,21 @@ export default class TechElixirSolutionCenter extends React.Component<
   }
 
   private _renderCardsOverview(): JSX.Element {
-    const { apps } = this.state;
+    const { apps, healthSummaries } = this.state;
     return (
-      <div className={styles.appGrid}>
+      <div
+        className={styles.appGrid}
+        role="list"
+        aria-label="Solution applications"
+      >
         {apps.map(app => (
-          <AppOverviewCard key={app.id} app={app} compact />
+          <div key={app.id} role="listitem">
+            <AppOverviewCard
+              app={app}
+              compact
+              healthSummary={healthSummaries.find(h => h.appId === app.id)}
+            />
+          </div>
         ))}
       </div>
     );
