@@ -1,0 +1,213 @@
+.emptyState {
+  max-width: 720px;
+  margin: 32px auto;
+  padding: 0 16px;
+}
+
+/* ── Hero icon ─────────────────────────────────────────────────────────────── */
+
+.hero {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.heroIcon {
+  font-size: 56px;
+  color: #0078d4;
+  display: block;
+  margin: 0 auto;
+}
+
+/* ── Title / lead ──────────────────────────────────────────────────────────── */
+
+.heading {
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--bodyText, #323130);
+  text-align: center;
+  margin: 0 0 10px;
+}
+
+.lead {
+  font-size: 14px;
+  color: var(--bodyText, #605e5c);
+  text-align: center;
+  line-height: 1.6;
+  margin: 0 0 32px;
+}
+
+/* ── Numbered steps ────────────────────────────────────────────────────────── */
+
+.sections {
+  /* Stack handles gap via tokens */
+}
+
+.section {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #faf9f8;
+  border: 1px solid #edebe9;
+  border-radius: 6px;
+  padding: 20px;
+}
+
+.stepBadge {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0078d4;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.stepBadgeTip {
+  background: #8a8886;
+  font-size: 16px;
+}
+
+.sectionBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--bodyText, #323130);
+  margin: 0 0 8px;
+}
+
+.sectionText {
+  font-size: 14px;
+  color: var(--bodyText, #605e5c);
+  line-height: 1.6;
+  margin: 0 0 10px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* ── Required list table ───────────────────────────────────────────────────── */
+
+.listTable {
+  list-style: none;
+  margin: 8px 0 12px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.listRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 13px;
+  padding: 4px 0;
+  border-bottom: 1px solid #edebe9;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.listDefault {
+  font-weight: 500;
+  color: #323130;
+}
+
+.listConfigured {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #605e5c;
+}
+
+.editIcon {
+  font-size: 11px;
+  color: #8a8886;
+}
+
+/* ── Code inline ───────────────────────────────────────────────────────────── */
+
+.code {
+  font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+  font-size: 12px;
+  background: #eff6fc;
+  color: #0078d4;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── Hint row ──────────────────────────────────────────────────────────────── */
+
+.hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: #605e5c;
+  background: #eff6fc;
+  border-left: 3px solid #0078d4;
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.hintIcon {
+  font-size: 14px;
+  color: #0078d4;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Action links ──────────────────────────────────────────────────────────── */
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.actionLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  color: #0078d4;
+  padding: 6px 14px;
+  border: 1px solid #0078d4;
+  border-radius: 4px;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover,
+  &:focus {
+    background: #0078d4;
+    color: #ffffff;
+    text-decoration: none;
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #0078d4;
+    outline-offset: 2px;
+  }
+}
+
+.actionLinkIcon {
+  font-size: 14px;
+}

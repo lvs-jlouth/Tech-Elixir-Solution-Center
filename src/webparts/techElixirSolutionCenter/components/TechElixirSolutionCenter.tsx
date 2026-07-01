@@ -9,6 +9,7 @@ import {
   Stack,
   Text
 } from '@fluentui/react';
+import { EmptyState } from './EmptyState/EmptyState';
 
 import { ITechElixirSolutionCenterProps } from './ITechElixirSolutionCenterProps';
 import { IApplication } from '../models';
@@ -190,9 +191,11 @@ export default class TechElixirSolutionCenter extends React.Component<
         {isLoading ? (
           <Spinner size={SpinnerSize.large} label='Loading applications…' />
         ) : apps.length === 0 ? (
-          <MessageBar messageBarType={MessageBarType.info}>
-            No applications found. Add apps to the SharePoint list or configure mock data.
-          </MessageBar>
+          <EmptyState
+            listNames={this._buildListNames(this.props)}
+            useMockData={this.props.useMockData}
+            siteUrl={this.props.context.pageContext.web.absoluteUrl}
+          />
         ) : (
           <Pivot className={styles.pivot} aria-label='Application tabs'>
             <PivotItem headerText='All Apps' itemIcon='ViewAll'>
