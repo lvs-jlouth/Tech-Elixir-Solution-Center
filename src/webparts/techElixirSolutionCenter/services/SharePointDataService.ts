@@ -28,21 +28,24 @@ interface IListNames {
   accessibilityChecks: string;
 }
 
+const DEFAULT_LIST_NAMES: IListNames = {
+  solutions: 'Solution Registry',
+  documents: 'Solution Documents',
+  releases: 'Solution Releases',
+  technicalDebt: 'Solution Technical Debt',
+  architectureAssets: 'Solution Architecture Assets',
+  integrations: 'Solution Integrations',
+  accessibilityChecks: 'Solution Accessibility Checks'
+};
+
 export class SharePointDataService {
   private _sp: SPFI;
 
-  private readonly _lists: IListNames = {
-    solutions: 'Solution Registry',
-    documents: 'Solution Documents',
-    releases: 'Solution Releases',
-    technicalDebt: 'Solution Technical Debt',
-    architectureAssets: 'Solution Architecture Assets',
-    integrations: 'Solution Integrations',
-    accessibilityChecks: 'Solution Accessibility Checks'
-  };
+  private readonly _lists: IListNames;
 
-  constructor(context: WebPartContext) {
+  constructor(context: WebPartContext, listNames?: Partial<IListNames>) {
     this._sp = spfi().using(SPFx(context));
+    this._lists = { ...DEFAULT_LIST_NAMES, ...listNames };
   }
 
   public async getSolutions(): Promise<IApplication[]> {

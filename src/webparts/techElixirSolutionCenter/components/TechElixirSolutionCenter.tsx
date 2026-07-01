@@ -47,7 +47,7 @@ export default class TechElixirSolutionCenter extends React.Component<
   constructor(props: ITechElixirSolutionCenterProps) {
     super(props);
     this._mockDataService = new MockDataService();
-    this._spDataService = new SharePointDataService(props.context);
+    this._spDataService = new SharePointDataService(props.context, this._buildListNames(props));
     this.state = {
       apps: [],
       healthSummaries: [],
@@ -62,15 +62,35 @@ export default class TechElixirSolutionCenter extends React.Component<
   }
 
   public componentDidUpdate(prevProps: ITechElixirSolutionCenterProps): void {
-    if (
-      prevProps.useMockData !== this.props.useMockData ||
-      prevProps.listName !== this.props.listName
-    ) {
+    const listNamesChanged =
+      prevProps.solutionRegistryListName !== this.props.solutionRegistryListName ||
+      prevProps.documentsListName !== this.props.documentsListName ||
+      prevProps.releasesListName !== this.props.releasesListName ||
+      prevProps.technicalDebtListName !== this.props.technicalDebtListName ||
+      prevProps.architectureAssetsListName !== this.props.architectureAssetsListName ||
+      prevProps.integrationsListName !== this.props.integrationsListName ||
+      prevProps.accessibilityChecksListName !== this.props.accessibilityChecksListName;
+
+    if (prevProps.useMockData !== this.props.useMockData || listNamesChanged) {
       if (!this.props.useMockData) {
-        this._spDataService = new SharePointDataService(this.props.context);
+        this._spDataService = new SharePointDataService(this.props.context, this._buildListNames(this.props));
       }
       this._loadApps();
+    } else if (prevProps.defaultSelectedSolution !== this.props.defaultSelectedSolution) {
+      this._loadApps();
     }
+  }
+
+  private _buildListNames(props: ITechElixirSolutionCenterProps): { solutions: string; documents: string; releases: string; technicalDebt: string; architectureAssets: string; integrations: string; accessibilityChecks: string } {
+    return {
+      solutions: props.solutionRegistryListName || 'Solution Registry',
+      documents: props.documentsListName || 'Solution Documents',
+      releases: props.releasesListName || 'Solution Releases',
+      technicalDebt: props.technicalDebtListName || 'Solution Technical Debt',
+      architectureAssets: props.architectureAssetsListName || 'Solution Architecture Assets',
+      integrations: props.integrationsListName || 'Solution Integrations',
+      accessibilityChecks: props.accessibilityChecksListName || 'Solution Accessibility Checks'
+    };
   }
 
   private _getActiveService(): IDetailDataService {
@@ -90,8 +110,8 @@ export default class TechElixirSolutionCenter extends React.Component<
     ])
       .then(([apps, healthSummaries]) => {
         const filtered =
-          this.props.selectedApp
-            ? apps.filter(a => a.name.toLowerCase().includes(this.props.selectedApp.toLowerCase()))
+          this.props.defaultSelectedSolution
+            ? apps.filter(a => a.name.toLowerCase().includes(this.props.defaultSelectedSolution.toLowerCase()))
             : apps;
         this.setState({ apps: filtered, healthSummaries, isLoading: false });
       })
@@ -101,6 +121,7 @@ export default class TechElixirSolutionCenter extends React.Component<
   }
 
   private _renderAppDetail(app: IApplication): JSX.Element {
+    const { showGitHubLinks, showPowerPlatformLinks, showAccessibilityDashboard } = this.props;
     return (
       <Stack tokens={{ childrenGap: 16 }} key={app.id}>
         <AppOverviewCard app={app} />
@@ -108,10 +129,10 @@ export default class TechElixirSolutionCenter extends React.Component<
         <QuickLinks app={app} />
         <ArchitectureAssets app={app} />
         <ReleaseNotes app={app} />
-        <GitHubLinks app={app} />
-        <PowerPlatformRefs app={app} />
+        {showGitHubLinks !== false && <GitHubLinks app={app} />}
+        {showPowerPlatformLinks !== false && <PowerPlatformRefs app={app} />}
         <TechnicalDebt app={app} />
-        <AccessibilityDashboard app={app} />
+        {showAccessibilityDashboard !== false && <AccessibilityDashboard app={app} />}
         <SecurityStatus app={app} />
       </Stack>
     );
@@ -119,6 +140,7 @@ export default class TechElixirSolutionCenter extends React.Component<
 
   private _renderCardsOverview(): JSX.Element {
     const { apps, healthSummaries } = this.state;
+    const { compactMode } = this.props;
     return (
       <div
         className={styles.appGrid}
@@ -129,7 +151,7 @@ export default class TechElixirSolutionCenter extends React.Component<
           <div key={app.id} role="listitem">
             <AppOverviewCard
               app={app}
-              compact
+              compact={compactMode !== false}
               healthSummary={healthSummaries.find(h => h.appId === app.id)}
               onSelect={(id) => this.setState({ selectedAppId: id })}
             />
@@ -140,7 +162,7 @@ export default class TechElixirSolutionCenter extends React.Component<
   }
 
   public render(): React.ReactElement<ITechElixirSolutionCenterProps> {
-    const { isDarkTheme, displayMode } = this.props;
+    const { isDarkTheme, webPartTitle } = this.props;
     const { apps, healthSummaries, isLoading, error, selectedAppId } = this.state;
     const selectedApp = selectedAppId ? apps.find(a => a.id === selectedAppId) : undefined;
 
@@ -148,7 +170,7 @@ export default class TechElixirSolutionCenter extends React.Component<
       <div className={`${styles.container} ${isDarkTheme ? styles.darkTheme : ''}`}>
         <div className={styles.header}>
           <Text className={styles.title} as='h1'>
-            Tech Elixir Solution Center
+            {webPartTitle || 'Tech Elixir Solution Center'}
           </Text>
           <Text className={styles.subtitle}>
             Living documentation and engineering dashboard for SharePoint-based app builds
@@ -171,7 +193,7 @@ export default class TechElixirSolutionCenter extends React.Component<
           <MessageBar messageBarType={MessageBarType.info}>
             No applications found. Add apps to the SharePoint list or configure mock data.
           </MessageBar>
-        ) : displayMode === 'cards' ? (
+        ) : (
           <Pivot className={styles.pivot} aria-label='Application tabs'>
             <PivotItem headerText='All Apps' itemIcon='ViewAll'>
               {this._renderCardsOverview()}
@@ -184,16 +206,6 @@ export default class TechElixirSolutionCenter extends React.Component<
               </PivotItem>
             ))}
           </Pivot>
-        ) : (
-          /* List display mode: show all apps in a single scrollable section */
-          <Stack tokens={{ childrenGap: 32 }}>
-            {apps.map(app => (
-              <Stack key={app.id} tokens={{ childrenGap: 12 }}>
-                <Text className={styles.sectionHeading}>{app.name}</Text>
-                {this._renderAppDetail(app)}
-              </Stack>
-            ))}
-          </Stack>
         )}
 
         {/* Detail panel — opens when a card is selected from the grid */}
