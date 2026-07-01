@@ -24,7 +24,7 @@ import { HealthStatus, DocumentationStatus, DOCUMENTATION_SECTIONS } from '../..
 import { calculateDocCompleteness } from '../../utils/docCompleteness';
 import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
 import { ArchitectureDocs } from '../ArchitectureDocs/ArchitectureDocs';
-import { TechnicalDebt } from '../TechnicalDebt/TechnicalDebt';
+import { TechnicalDebtRegister } from '../TechnicalDebtRegister/TechnicalDebtRegister';
 import { AccessibilityReview } from '../AccessibilityReview/AccessibilityReview';
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
 import { DocumentMatrix } from '../DocumentMatrix/DocumentMatrix';
@@ -511,7 +511,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
 
         <PivotItem headerText="Technical Debt" itemIcon="Warning" aria-label="Technical debt tab">
           <div className={styles.tabContent}>
-            <TechnicalDebt app={app} />
+            <TechnicalDebtRegister app={app} />
           </div>
         </PivotItem>
 

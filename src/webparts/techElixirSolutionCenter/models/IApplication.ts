@@ -15,9 +15,15 @@ export interface ITechnicalDebtItem {
   id: string;
   title: string;
   description: string;
+  category: 'Architecture' | 'Security' | 'Accessibility' | 'Performance' | 'Documentation' | 'Maintainability' | 'Power Platform' | 'SharePoint' | 'DevOps';
   severity: 'Critical' | 'High' | 'Medium' | 'Low';
+  impact: string;
+  suggestedRemediation: string;
+  owner: string;
+  targetRelease: string;
   status: 'Open' | 'InProgress' | 'Resolved';
   createdDate: string;
+  lastUpdatedDate: string;
 }
 
 export interface IAccessibilityItem {

@@ -110,27 +110,51 @@ export const MOCK_APPLICATIONS: IApplication[] = [
         title: 'Upgrade SPFx version from 1.15 to 1.18',
         description:
           'The web part was originally built on SPFx 1.15. Upgrading to 1.18.2 would bring Viva Connections support and improved build tooling.',
+        category: 'DevOps',
         severity: 'Medium',
+        impact:
+          'Continued use of older toolchain increases maintenance overhead and limits compatibility with newer SPFx capabilities.',
+        suggestedRemediation:
+          'Plan and execute an SPFx framework upgrade, then run full regression validation in development and production environments.',
+        owner: 'Tech Elixir Core Team',
+        targetRelease: 'v2.2.0',
         status: 'Open',
-        createdDate: '2024-01-10'
+        createdDate: '2024-01-10',
+        lastUpdatedDate: '2024-04-18'
       },
       {
         id: 'FE-TD-002',
         title: 'Replace hardcoded SharePoint site URL',
         description:
           'Several components reference a hardcoded site URL instead of using context.pageContext.site.absoluteUrl.',
+        category: 'SharePoint',
         severity: 'High',
+        impact:
+          'Hardcoded URLs can break deployments across tenants and environments, causing runtime failures and broken links.',
+        suggestedRemediation:
+          'Refactor all URL references to derive the base site URL from SharePoint context and centralize URL composition.',
+        owner: 'Finance Team',
+        targetRelease: 'v2.1.1',
         status: 'InProgress',
-        createdDate: '2024-02-05'
+        createdDate: '2024-02-05',
+        lastUpdatedDate: '2024-04-16'
       },
       {
         id: 'FE-TD-003',
         title: 'Add unit tests for AppDataService',
         description:
           'The data service layer has zero test coverage. Jest tests should be added.',
+        category: 'Maintainability',
         severity: 'Low',
+        impact:
+          'Lack of automated tests makes future refactors riskier and slows delivery confidence.',
+        suggestedRemediation:
+          'Add Jest unit tests for list mapping, fallback behavior, and error handling in AppDataService.',
+        owner: 'Finance Team',
+        targetRelease: 'v2.2.0',
         status: 'Open',
-        createdDate: '2024-03-01'
+        createdDate: '2024-03-01',
+        lastUpdatedDate: '2024-04-12'
       }
     ],
     accessibilityItems: [
@@ -264,18 +288,34 @@ export const MOCK_APPLICATIONS: IApplication[] = [
         title: 'Documentation coverage below 60%',
         description:
           'Architecture documentation, API reference, and user guide are incomplete.',
+        category: 'Documentation',
         severity: 'High',
+        impact:
+          'Incomplete documentation increases onboarding time and raises support effort for operations and enhancements.',
+        suggestedRemediation:
+          'Complete architecture, API, and user documentation and enforce doc updates in release readiness checks.',
+        owner: 'HR & Wellness Team',
+        targetRelease: 'v1.4.0',
         status: 'Open',
-        createdDate: '2024-01-20'
+        createdDate: '2024-01-20',
+        lastUpdatedDate: '2024-04-11'
       },
       {
         id: 'FIT-TD-002',
         title: 'Leaderboard calculation is O(n²)',
         description:
           'The leaderboard ranking algorithm iterates over all records for each user. Needs optimization for orgs with 500+ users.',
+        category: 'Performance',
         severity: 'Medium',
+        impact:
+          'Performance degrades as participant counts grow, causing slow page loads and delayed ranking updates.',
+        suggestedRemediation:
+          'Replace nested iteration with a grouped aggregation approach and cache computed rankings.',
+        owner: 'HR & Wellness Team',
+        targetRelease: 'v1.5.0',
         status: 'Open',
-        createdDate: '2024-03-10'
+        createdDate: '2024-03-10',
+        lastUpdatedDate: '2024-04-19'
       }
     ],
     accessibilityItems: [
@@ -381,27 +421,51 @@ export const MOCK_APPLICATIONS: IApplication[] = [
         title: 'No automated tests',
         description:
           'Zero test coverage across all components. Needs Jest unit tests and integration tests.',
+        category: 'Maintainability',
         severity: 'Critical',
+        impact:
+          'Without tests, regressions are likely and release risk remains high for every code change.',
+        suggestedRemediation:
+          'Implement baseline unit and integration test suites and include them in CI quality gates.',
+        owner: 'IT/SharePoint Admin Team',
+        targetRelease: 'v0.3.0',
         status: 'Open',
-        createdDate: '2024-03-15'
+        createdDate: '2024-03-15',
+        lastUpdatedDate: '2024-04-20'
       },
       {
         id: 'SE-TD-002',
         title: 'Script execution security model undefined',
         description:
           'The mechanism for safely executing scripts needs a formal security review and sandboxing approach.',
+        category: 'Security',
         severity: 'Critical',
+        impact:
+          'Undefined execution controls could expose administrative scripts to misuse or privilege escalation.',
+        suggestedRemediation:
+          'Define and approve a least-privilege execution model with sandboxing, audit logging, and policy enforcement.',
+        owner: 'IT/SharePoint Admin Team',
+        targetRelease: 'v0.3.0',
         status: 'Open',
-        createdDate: '2024-03-15'
+        createdDate: '2024-03-15',
+        lastUpdatedDate: '2024-04-21'
       },
       {
         id: 'SE-TD-003',
         title: 'Architecture documentation incomplete',
         description:
           'Only a draft architecture document exists; full solution design not yet documented.',
+        category: 'Architecture',
         severity: 'High',
+        impact:
+          'Incomplete architecture decisions hinder design reviews and delay readiness for broader rollout.',
+        suggestedRemediation:
+          'Publish complete architecture documentation including data flow, trust boundaries, and operational model.',
+        owner: 'IT/SharePoint Admin Team',
+        targetRelease: 'v0.3.0',
         status: 'Open',
-        createdDate: '2024-04-01'
+        createdDate: '2024-04-01',
+        lastUpdatedDate: '2024-04-22'
       }
     ],
     accessibilityItems: [
@@ -491,9 +555,17 @@ export const MOCK_APPLICATIONS: IApplication[] = [
         title: 'Wire real SharePoint list data',
         description:
           'AppDataService currently falls back to mock data when list is empty. Needs full list-to-model mapping.',
+        category: 'SharePoint',
         severity: 'Medium',
+        impact:
+          'Reliance on mock fallback can obscure data quality issues and limits production readiness.',
+        suggestedRemediation:
+          'Implement robust SharePoint list mapping with explicit validation and telemetry for missing fields.',
+        owner: 'Tech Elixir Core Team',
+        targetRelease: 'v1.1.0',
         status: 'Open',
-        createdDate: '2024-04-15'
+        createdDate: '2024-04-15',
+        lastUpdatedDate: '2024-04-23'
       }
     ],
     accessibilityItems: [
