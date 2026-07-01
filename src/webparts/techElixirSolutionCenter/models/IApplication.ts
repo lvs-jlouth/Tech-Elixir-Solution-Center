@@ -38,8 +38,14 @@ export interface IArchitectureDoc {
 export interface IReleaseNote {
   version: string;
   date: string;
+  releaseType?: 'Major' | 'Minor' | 'Patch' | 'Hotfix' | 'Beta' | 'Preview' | 'GeneralAvailability';
   summary: string;
   changes: string[];
+  documentationChanges?: string[];
+  githubReleaseUrl?: string;
+  deploymentStatus?: 'Deployed' | 'InProgress' | 'Planned' | 'RolledBack' | 'Failed';
+  releaseOwner?: string;
+  knownIssues?: string[];
 }
 
 export type SecurityDocStatus = 'Complete' | 'InProgress' | 'NotStarted' | 'NeedsReview';

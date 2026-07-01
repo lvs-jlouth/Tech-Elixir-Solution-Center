@@ -22,7 +22,7 @@ import { IHealthSummary, IIntegration, IDocument } from '../../models/IMockDataT
 import { MockDataService } from '../../services/MockDataService';
 import { HealthStatus, DocumentationStatus, DOCUMENTATION_SECTIONS } from '../../constants';
 import { calculateDocCompleteness } from '../../utils/docCompleteness';
-import { ReleaseNotes } from '../ReleaseNotes/ReleaseNotes';
+import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
 import { ArchitectureDocs } from '../ArchitectureDocs/ArchitectureDocs';
 import { TechnicalDebt } from '../TechnicalDebt/TechnicalDebt';
 import { AccessibilityReview } from '../AccessibilityReview/AccessibilityReview';
@@ -493,7 +493,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
 
         <PivotItem headerText="Releases" itemIcon="ReleaseGate" aria-label="Releases tab">
           <div className={styles.tabContent}>
-            <ReleaseNotes app={app} />
+            <ReleaseTimeline app={app} />
           </div>
         </PivotItem>
 

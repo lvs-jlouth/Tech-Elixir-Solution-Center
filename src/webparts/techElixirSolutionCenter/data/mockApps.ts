@@ -28,7 +28,18 @@ export const mockApps: IApplication[] = [
       {
         version: '2.1.0',
         date: '2024-04-01',
+        releaseType: 'Minor',
         summary: 'Added Power BI embedded reports and improved budget approval workflow.',
+        documentationChanges: [
+          'Updated architecture documentation for Power BI embedding flow',
+          'Revised budget approval runbook with multi-level escalation steps'
+        ],
+        githubReleaseUrl: 'https://github.com/lvs-jlouth/finance-elixir/releases/tag/v2.1.0',
+        deploymentStatus: 'Deployed',
+        releaseOwner: 'Finance Team',
+        knownIssues: [
+          'Budget export can be slow for datasets over 20,000 records'
+        ],
         changes: [
           'Integrated Power BI dashboard into the SharePoint page',
           'Added multi-level budget approval workflow via Power Automate',
@@ -39,7 +50,18 @@ export const mockApps: IApplication[] = [
       {
         version: '2.0.0',
         date: '2024-01-15',
+        releaseType: 'Major',
         summary: 'Major redesign with Fluent UI v8 components and PnPjs v3.',
+        documentationChanges: [
+          'Published migration guide for Fluent UI v8 controls',
+          'Added release notes for role-based report visibility'
+        ],
+        githubReleaseUrl: 'https://github.com/lvs-jlouth/finance-elixir/releases/tag/v2.0.0',
+        deploymentStatus: 'Deployed',
+        releaseOwner: 'Finance Team',
+        knownIssues: [
+          'Legacy browser support for CSV export formatting remains limited'
+        ],
         changes: [
           'Migrated to Fluent UI v8',
           'Upgraded PnPjs to v3',
@@ -157,7 +179,18 @@ export const mockApps: IApplication[] = [
       {
         version: '1.3.0',
         date: '2024-03-20',
+        releaseType: 'Minor',
         summary: 'Team challenge features and improved leaderboard.',
+        documentationChanges: [
+          'Extended user guide with team challenge configuration',
+          'Added leaderboard scoring logic to operations notes'
+        ],
+        githubReleaseUrl: 'https://github.com/lvs-jlouth/fitness-elixir/releases/tag/v1.3.0',
+        deploymentStatus: 'Deployed',
+        releaseOwner: 'HR & Wellness Team',
+        knownIssues: [
+          'Leaderboard refresh may lag by up to 5 minutes after activity submission'
+        ],
         changes: [
           'Added team-based fitness challenges',
           'Introduced leaderboard web part',
@@ -168,7 +201,18 @@ export const mockApps: IApplication[] = [
       {
         version: '1.2.0',
         date: '2023-12-05',
+        releaseType: 'Minor',
         summary: 'Power Apps integration and mobile improvements.',
+        documentationChanges: [
+          'Added mobile usage guide for Fitness Power App',
+          'Documented SharePoint-to-Power Automate sync configuration'
+        ],
+        githubReleaseUrl: 'https://github.com/lvs-jlouth/fitness-elixir/releases/tag/v1.2.0',
+        deploymentStatus: 'Deployed',
+        releaseOwner: 'HR & Wellness Team',
+        knownIssues: [
+          'Older iOS devices may require a manual refresh after first login'
+        ],
         changes: [
           'Launched Fitness Elixir Power App for mobile activity logging',
           'Integrated with SharePoint lists via Power Automate',
@@ -265,7 +309,19 @@ export const mockApps: IApplication[] = [
       {
         version: '0.2.0-beta',
         date: '2024-04-10',
+        releaseType: 'Beta',
         summary: 'Beta release of script catalog and search functionality.',
+        documentationChanges: [
+          'Published beta rollout checklist for script submission',
+          'Added initial governance notes for script approval'
+        ],
+        githubReleaseUrl: 'https://github.com/lvs-jlouth/script-elixir/releases/tag/v0.2.0-beta',
+        deploymentStatus: 'InProgress',
+        releaseOwner: 'IT/SharePoint Admin Team',
+        knownIssues: [
+          'Script execution wrapper does not yet support parallel runs',
+          'Search index must be manually refreshed after bulk uploads'
+        ],
         changes: [
           'Implemented script catalog SharePoint list',
           'Added full-text search for scripts',
@@ -357,7 +413,18 @@ export const mockApps: IApplication[] = [
       {
         version: '1.0.0',
         date: '2024-04-15',
+        releaseType: 'GeneralAvailability',
         summary: 'Initial release with full dashboard structure.',
+        documentationChanges: [
+          'Published initial solution architecture and setup guide in README',
+          'Added component catalog and mock data structure notes'
+        ],
+        githubReleaseUrl: 'https://github.com/lvs-jlouth/Tech-Elixir-Solution-Center/releases/tag/v1.0.0',
+        deploymentStatus: 'Deployed',
+        releaseOwner: 'Tech Elixir Core Team',
+        knownIssues: [
+          'Some security and accessibility statuses are still pending review'
+        ],
         changes: [
           'SPFx 1.18.2 project scaffolding',
           'React component library with Fluent UI v8',
