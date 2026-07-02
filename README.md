@@ -1,5 +1,8 @@
 # Tech Elixir Solution Center
 
+> **Full documentation is in the [`docs/`](docs/) folder.**  
+> Start with [docs/00-overview.md](docs/00-overview.md) for a high-level introduction.
+
 A **SharePoint Framework (SPFx) React web part** that acts as a living documentation and application engineering dashboard for SharePoint-based app builds.
 
 It supports multiple internal applications — **Finance Elixir**, **Fitness Elixir**, **Script Elixir**, and other Tech Elixir projects — and surfaces the following information for each:
