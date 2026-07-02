@@ -16,6 +16,7 @@ import { DOCUMENTATION_SECTIONS } from '../../constants';
 import { IApplication, IHealthSummary, IDocument, IIntegration } from '../../models';
 import { IGitHubMetadata } from '../../models/IGitHubMetadata';
 import { IGitHubService } from '../../services/IGitHubService';
+import { telemetry } from '../../utils/telemetry';
 import { calculateDocCompleteness } from '../../utils/docCompleteness';
 import {
   deriveEnvironment,
@@ -64,19 +65,19 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
   const [documents, setDocuments] = React.useState<IDocument[]>([]);
   const [loadingDetails, setLoadingDetails] = React.useState(false);
   const [detailsError, setDetailsError] = React.useState<string | undefined>(undefined);
+  const [detailsErrorDetails, setDetailsErrorDetails] = React.useState<string | undefined>(undefined);
   const [githubMetadata, setGitHubMetadata] = React.useState<IGitHubMetadata | undefined>(undefined);
 
-  React.useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
+  const loadDetails = React.useCallback((): (() => void) => {
     let isMounted = true;
     setLoadingDetails(true);
     setDetailsError(undefined);
+    setDetailsErrorDetails(undefined);
     setGitHubMetadata(undefined);
 
-    const loadDetails = async (): Promise<void> => {
+    const startMs = Date.now();
+
+    const doLoad = async (): Promise<void> => {
       try {
         const loadedValues = await Promise.all([dataService.getIntegrations(app.id), dataService.getDocuments(app.id)]);
         const loadedIntegrations = loadedValues[0];
@@ -86,6 +87,8 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
           return;
         }
 
+        const durationMs = Date.now() - startMs;
+        telemetry.trackLoadTime('detailPanel', durationMs, { appId: app.id });
         setIntegrations(loadedIntegrations);
         setDocuments(loadedDocuments);
       } catch (error) {
@@ -93,8 +96,10 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
           return;
         }
 
-        const message = error instanceof Error ? error.message : 'Unknown error';
-        setDetailsError(`Failed to load solution details: ${message}`);
+        const technicalMessage = error instanceof Error ? error.message : String(error);
+        telemetry.trackError(error, 'SolutionDetailPanel.loadDetails', { appId: app.id });
+        setDetailsError('Some details could not be loaded. Please try again.');
+        setDetailsErrorDetails(technicalMessage);
         setIntegrations([]);
         setDocuments([]);
       }
@@ -104,7 +109,7 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
       }
     };
 
-    loadDetails().catch(() => undefined);
+    doLoad().catch(() => undefined);
 
     if (githubService && app.githubRepoUrl) {
       githubService
@@ -114,13 +119,24 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
             setGitHubMetadata(metadata);
           }
         })
-        .catch(() => undefined);
+        .catch(err => {
+          telemetry.trackError(err, 'SolutionDetailPanel.loadGitHubMetadata', { appId: app.id });
+        });
     }
 
     return () => {
       isMounted = false;
     };
-  }, [app.githubRepoUrl, app.id, dataService, githubService, isOpen]);
+  }, [app.githubRepoUrl, app.id, dataService, githubService]);
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    telemetry.trackEvent('DetailPanelOpened', { appId: app.id, appName: app.name });
+    return loadDetails();
+  }, [app.id, isOpen, loadDetails]);
 
   const statusAppearance = APP_STATUS_APPEARANCE[app.status];
   const latestRelease = getLatestRelease(app);
@@ -290,7 +306,13 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
     }
 
     if (detailsError) {
-      return <ErrorState message={detailsError} />;
+      return (
+        <ErrorState
+          message={detailsError}
+          technicalDetails={detailsErrorDetails}
+          onRetry={() => { loadDetails(); }}
+        />
+      );
     }
 
     const completeness = calculateDocCompleteness(DOCUMENTATION_SECTIONS, documents);
@@ -349,7 +371,13 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
     }
 
     if (detailsError) {
-      return <ErrorState message={detailsError} />;
+      return (
+        <ErrorState
+          message={detailsError}
+          technicalDetails={detailsErrorDetails}
+          onRetry={() => { loadDetails(); }}
+        />
+      );
     }
 
     return (

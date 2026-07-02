@@ -37,6 +37,8 @@ export interface ISolutionDashboardProps {
   isDarkTheme: boolean;
   isLoading: boolean;
   error: string | undefined;
+  errorDetails?: string;
+  onRetry?: () => void;
   useMockData: boolean;
   compactMode: boolean;
   showGitHubLinks: boolean;
@@ -78,6 +80,8 @@ export const SolutionDashboard: React.FC<ISolutionDashboardProps> = ({
   isDarkTheme,
   isLoading,
   error,
+  errorDetails,
+  onRetry,
   useMockData,
   compactMode,
   showGitHubLinks,
@@ -144,7 +148,7 @@ export const SolutionDashboard: React.FC<ISolutionDashboardProps> = ({
         </Text>
       </div>
 
-      {error && <ErrorState message={error} />}
+      {error && <ErrorState message={error} technicalDetails={errorDetails} onRetry={onRetry} />}
 
       {isLoading ? (
         <LoadingState label="Loading applications…" />

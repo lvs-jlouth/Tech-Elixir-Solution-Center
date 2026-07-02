@@ -13,6 +13,7 @@ import {
   sortSolutions,
   SortField
 } from '../utils/solutionDisplay';
+import { telemetry } from '../utils/telemetry';
 import { IDetailDataService } from './AppDetailPanel/AppDetailPanel';
 import { IEmptyStateListNames } from './EmptyState/EmptyState';
 import { ITechElixirSolutionCenterProps } from './ITechElixirSolutionCenterProps';
@@ -23,6 +24,7 @@ interface ITechElixirSolutionCenterState {
   healthSummaries: IHealthSummary[];
   isLoading: boolean;
   error: string | undefined;
+  errorDetails: string | undefined;
   selectedAppId: string | undefined;
   searchText: string;
   environmentFilter: string;
@@ -49,6 +51,7 @@ export default class TechElixirSolutionCenter extends React.Component<
       healthSummaries: [],
       isLoading: true,
       error: undefined,
+      errorDetails: undefined,
       selectedAppId: undefined,
       searchText: '',
       environmentFilter: 'All',
@@ -101,7 +104,9 @@ export default class TechElixirSolutionCenter extends React.Component<
   }
 
   private _loadApps(): void {
-    this.setState({ isLoading: true, error: undefined });
+    this.setState({ isLoading: true, error: undefined, errorDetails: undefined });
+
+    const startMs = Date.now();
 
     const appsPromise: Promise<IApplication[]> = this.props.useMockData
       ? this._mockDataService.getApplications()
@@ -109,6 +114,9 @@ export default class TechElixirSolutionCenter extends React.Component<
 
     Promise.all([appsPromise, this._mockDataService.getAllHealthSummaries()])
       .then(([apps, healthSummaries]) => {
+        const durationMs = Date.now() - startMs;
+        telemetry.trackLoadTime('appList', durationMs, { appCount: apps.length, useMockData: this.props.useMockData });
+
         const filteredApps = this.props.defaultSelectedSolution
           ? apps.filter(app =>
               app.name.toLowerCase().indexOf(this.props.defaultSelectedSolution.toLowerCase()) >= 0
@@ -117,11 +125,18 @@ export default class TechElixirSolutionCenter extends React.Component<
 
         this.setState({ apps: filteredApps, healthSummaries, isLoading: false });
       })
-      .catch((error: Error) => {
+      .catch((error: unknown) => {
+        const durationMs = Date.now() - startMs;
+        const technicalMessage = error instanceof Error ? error.message : String(error);
+        telemetry.trackError(error, 'TechElixirSolutionCenter._loadApps', {
+          durationMs,
+          useMockData: this.props.useMockData
+        });
         this.setState({
           isLoading: false,
           healthSummaries: [],
-          error: `Failed to load application data: ${error.message}`
+          error: 'We were unable to load solution data. Please try again, or contact your administrator if the problem persists.',
+          errorDetails: technicalMessage
         });
       });
   }
@@ -144,6 +159,7 @@ export default class TechElixirSolutionCenter extends React.Component<
       healthSummaries,
       isLoading,
       error,
+      errorDetails,
       selectedAppId,
       searchText,
       environmentFilter,
@@ -181,6 +197,8 @@ export default class TechElixirSolutionCenter extends React.Component<
         isDarkTheme={this.props.isDarkTheme}
         isLoading={isLoading}
         error={error}
+        errorDetails={errorDetails}
+        onRetry={this._loadApps.bind(this)}
         useMockData={this.props.useMockData}
         compactMode={this.props.compactMode}
         showGitHubLinks={this.props.showGitHubLinks}
