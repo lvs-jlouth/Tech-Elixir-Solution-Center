@@ -194,7 +194,7 @@ export default class TechElixirSolutionCenter extends React.Component<
     return (
       <SolutionDashboard
         webPartTitle={this.props.webPartTitle}
-        webPartVersion="1.0.0"
+        webPartVersion={this.props.webPartVersion}
         userDisplayName={this.props.context.pageContext.user?.displayName}
         siteTitle={this.props.context.pageContext.web?.title}
         isDarkTheme={this.props.isDarkTheme}

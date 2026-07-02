@@ -3,6 +3,7 @@ import { Stack, Text, Link } from '@fluentui/react';
 import { IApplication, IReleaseNote } from '../../models';
 import { sortReleasesByDate } from '../../utils/solutionDisplay';
 import { RELEASE_DEPLOYMENT_APPEARANCE } from '../../utils/statusPresentation';
+import { sanitizeUrl } from '../../utils/urlUtils';
 import { StatusBadge } from '../StatusBadge/StatusBadge';
 
 interface IReleaseTimelineProps {
@@ -88,7 +89,7 @@ export const ReleaseTimeline: React.FC<IReleaseTimelineProps> = ({ app }) => {
                     <dt><Text variant="smallPlus" styles={{ root: { fontWeight: 600 } }}>GitHub Release</Text></dt>
                     <dd style={{ margin: '2px 0 8px' }}>
                       {release.githubReleaseUrl ? (
-                        <Link href={release.githubReleaseUrl} target="_blank" rel="noopener noreferrer">
+                        <Link href={sanitizeUrl(release.githubReleaseUrl)} target="_blank" rel="noopener noreferrer">
                           Open GitHub release
                         </Link>
                       ) : (

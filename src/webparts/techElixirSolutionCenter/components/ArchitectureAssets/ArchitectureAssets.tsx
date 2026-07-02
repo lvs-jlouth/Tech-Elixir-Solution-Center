@@ -6,6 +6,7 @@ import {
   inferArchitectureAssetType,
   isImageArchitectureAssetType
 } from '../../utils/architectureAssets';
+import { sanitizeUrl } from '../../utils/urlUtils';
 
 interface IArchitectureAssetsProps {
   app: IApplication;
@@ -43,7 +44,7 @@ export const ArchitectureAssets: React.FC<IArchitectureAssetsProps> = ({ app }) 
 
             {previewUrl && isImage && (
               <img
-                src={previewUrl}
+                src={sanitizeUrl(previewUrl)}
                 alt={`${doc.title} preview thumbnail`}
                 style={{ width: 180, height: 110, objectFit: 'cover', borderRadius: 4, border: '1px solid #edebe9' }}
               />
@@ -59,7 +60,7 @@ export const ArchitectureAssets: React.FC<IArchitectureAssetsProps> = ({ app }) 
               <Text variant='small'><strong>Preview available:</strong> {previewAvailable ? 'Yes' : 'No'}</Text>
               <Text variant='small'>
                 <strong>Document URL:</strong>{' '}
-                <Link href={doc.url} target='_blank' rel='noopener noreferrer'>
+                <Link href={sanitizeUrl(doc.url)} target='_blank' rel='noopener noreferrer'>
                   {previewAvailable && isImage ? 'Open full document' : 'Open / Download'}
                 </Link>
               </Text>

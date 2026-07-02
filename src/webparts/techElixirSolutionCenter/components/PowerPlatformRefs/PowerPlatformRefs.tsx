@@ -10,6 +10,7 @@ import {
   Icon
 } from '@fluentui/react';
 import { IApplication, IPowerPlatformComponent } from '../../models';
+import { sanitizeUrl } from '../../utils/urlUtils';
 
 interface IPowerPlatformRefsProps {
   app: IApplication;
@@ -57,7 +58,7 @@ export const PowerPlatformRefs: React.FC<IPowerPlatformRefsProps> = ({ app }) =>
       maxWidth: 280,
       onRender: (item: IPowerPlatformComponent) =>
         item.url ? (
-          <Link href={item.url} target='_blank' rel='noopener noreferrer' styles={{ root: { fontSize: 13 } }}>
+          <Link href={sanitizeUrl(item.url)} target='_blank' rel='noopener noreferrer' styles={{ root: { fontSize: 13 } }}>
             {item.name}
           </Link>
         ) : (

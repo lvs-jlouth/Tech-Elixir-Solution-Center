@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Stack, Text, Link, Icon } from '@fluentui/react';
 import { IApplication } from '../../models';
+import { sanitizeUrl } from '../../utils/urlUtils';
 
 interface IQuickLinksProps {
   app: IApplication;
@@ -18,7 +19,7 @@ export const QuickLinks: React.FC<IQuickLinksProps> = ({ app }) => {
         {app.quickLinks.map((link, idx) => (
           <Link
             key={idx}
-            href={link.url}
+            href={sanitizeUrl(link.url)}
             target='_blank'
             rel='noopener noreferrer'
             styles={{

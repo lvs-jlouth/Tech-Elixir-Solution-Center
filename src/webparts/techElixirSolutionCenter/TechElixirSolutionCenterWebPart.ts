@@ -39,6 +39,7 @@ export default class TechElixirSolutionCenterWebPart extends BaseClientSideWebPa
       TechElixirSolutionCenter,
       {
         webPartTitle: this.properties.webPartTitle || 'Tech Elixir Solution Center',
+        webPartVersion: this.manifest.version,
         useMockData: this.properties.useMockData !== false,
         solutionRegistryListName: this.properties.solutionRegistryListName || 'Solution Registry',
         documentsListName: this.properties.documentsListName || 'Solution Documents',

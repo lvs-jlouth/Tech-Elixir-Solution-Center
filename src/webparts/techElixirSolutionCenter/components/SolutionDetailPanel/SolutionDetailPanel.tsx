@@ -36,6 +36,7 @@ import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
 import { StatusBadge } from '../StatusBadge/StatusBadge';
 import { TechnicalDebtRegister } from '../TechnicalDebtRegister/TechnicalDebtRegister';
+import { sanitizeUrl } from '../../utils/urlUtils';
 import styles from '../AppDetailPanel/AppDetailPanel.module.scss';
 
 export interface IDetailDataService {
@@ -207,7 +208,7 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
               <div className={styles.linkRow}>
                 <Icon iconName="CodeEdit" styles={{ root: { color: '#0078d4', fontSize: 16, flexShrink: 0 } }} aria-hidden />
                 <span className={styles.linkRowLabel}>GitHub Repository</span>
-                <Link href={app.githubRepoUrl} target="_blank" rel="noopener noreferrer">
+                <Link href={sanitizeUrl(app.githubRepoUrl)} target="_blank" rel="noopener noreferrer">
                   {app.githubRepoUrl}
                 </Link>
               </div>
@@ -216,7 +217,7 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
               <div className={styles.linkRow}>
                 <Icon iconName="SharepointLogo" styles={{ root: { color: '#0078d4', fontSize: 16, flexShrink: 0 } }} aria-hidden />
                 <span className={styles.linkRowLabel}>SharePoint Site</span>
-                <Link href={sharepointLink} target="_blank" rel="noopener noreferrer">
+                <Link href={sanitizeUrl(sharepointLink)} target="_blank" rel="noopener noreferrer">
                   View SharePoint Site
                 </Link>
               </div>
@@ -225,7 +226,7 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
               <div className={styles.linkRow}>
                 <Icon iconName="Documentation" styles={{ root: { color: '#0078d4', fontSize: 16, flexShrink: 0 } }} aria-hidden />
                 <span className={styles.linkRowLabel}>Documentation Library</span>
-                <Link href={architectureLink} target="_blank" rel="noopener noreferrer">
+                <Link href={sanitizeUrl(architectureLink)} target="_blank" rel="noopener noreferrer">
                   View Architecture Docs
                 </Link>
               </div>
@@ -238,7 +239,7 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
                   aria-hidden
                 />
                 <span className={styles.linkRowLabel}>{quickLink.label}</span>
-                <Link href={quickLink.url} target="_blank" rel="noopener noreferrer">
+                <Link href={sanitizeUrl(quickLink.url)} target="_blank" rel="noopener noreferrer">
                   Open
                 </Link>
               </div>

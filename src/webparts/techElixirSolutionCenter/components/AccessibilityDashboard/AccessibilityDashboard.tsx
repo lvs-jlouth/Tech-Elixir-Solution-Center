@@ -19,6 +19,7 @@ import {
   IApplication
 } from '../../models';
 import { ACCESSIBILITY_STATUS_APPEARANCE } from '../../utils/statusPresentation';
+import { sanitizeUrl } from '../../utils/urlUtils';
 import { StatusBadge } from '../StatusBadge/StatusBadge';
 
 interface IAccessibilityDashboardProps {
@@ -194,7 +195,7 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
       maxWidth: 160,
       onRender: (item: IAccessibilityCheck) =>
         item.relatedDocumentUrl ? (
-          <Link href={item.relatedDocumentUrl} target="_blank" rel="noopener noreferrer" styles={{ root: { fontSize: 12 } }}>
+          <Link href={sanitizeUrl(item.relatedDocumentUrl)} target="_blank" rel="noopener noreferrer" styles={{ root: { fontSize: 12 } }}>
             View document
           </Link>
         ) : (

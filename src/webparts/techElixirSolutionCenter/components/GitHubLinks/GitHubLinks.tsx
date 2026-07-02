@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Stack, Text, Link, Icon } from '@fluentui/react';
 import { IApplication } from '../../models';
+import { sanitizeUrl } from '../../utils/urlUtils';
 
 interface IGitHubLinksProps {
   app: IApplication;
@@ -26,7 +27,7 @@ export const GitHubLinks: React.FC<IGitHubLinksProps> = ({ app }) => {
         styles={{ root: { padding: '10px 14px', border: '1px solid #edebe9', borderRadius: 4 } }}
       >
         <Icon iconName='CodeEdit' styles={{ root: { fontSize: 20, color: '#0078d4' } }} aria-hidden />
-        <Link href={app.githubRepoUrl} target='_blank' rel='noopener noreferrer'>
+        <Link href={sanitizeUrl(app.githubRepoUrl)} target='_blank' rel='noopener noreferrer'>
           {app.githubRepoUrl}
         </Link>
         <Icon
@@ -44,7 +45,7 @@ export const GitHubLinks: React.FC<IGitHubLinksProps> = ({ app }) => {
         ].map(item => (
           <Link
             key={item.label}
-            href={`${app.githubRepoUrl}${item.path}`}
+            href={sanitizeUrl(`${app.githubRepoUrl}${item.path}`)}
             target='_blank'
             rel='noopener noreferrer'
             styles={{

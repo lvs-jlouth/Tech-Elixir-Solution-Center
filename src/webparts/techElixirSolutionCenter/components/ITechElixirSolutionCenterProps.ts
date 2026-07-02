@@ -2,6 +2,7 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 export interface ITechElixirSolutionCenterProps {
   webPartTitle: string;
+  webPartVersion: string;
   useMockData: boolean;
   solutionRegistryListName: string;
   documentsListName: string;
