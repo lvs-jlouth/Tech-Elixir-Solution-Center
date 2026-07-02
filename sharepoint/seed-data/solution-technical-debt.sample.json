@@ -1,0 +1,62 @@
+[
+  {
+    "Title": "Migrate budget export worker to managed identity",
+    "SolutionId": "1",
+    "AppId": "1",
+    "Description": "Current export worker still references legacy secret rotation flow.",
+    "Category": "Security",
+    "Severity": "High",
+    "Impact": "Credential management risk and audit overhead.",
+    "SuggestedRemediation": "Switch to managed identity and remove shared secret usage.",
+    "Owner": "Platform Security",
+    "TargetRelease": "2.4.0",
+    "Status": "InProgress",
+    "CreatedDate": "2026-05-20",
+    "LastUpdatedDate": "2026-06-27"
+  },
+  {
+    "Title": "Refactor challenge aggregation query",
+    "SolutionId": "2",
+    "AppId": "2",
+    "Description": "Current aggregation query causes latency during peak activity periods.",
+    "Category": "Performance",
+    "Severity": "Medium",
+    "Impact": "Dashboard load time exceeds 4 seconds in large sites.",
+    "SuggestedRemediation": "Introduce indexed filter strategy and cached rollups.",
+    "Owner": "Wellness Engineering",
+    "TargetRelease": "1.5.0",
+    "Status": "Open",
+    "CreatedDate": "2026-06-02",
+    "LastUpdatedDate": "2026-06-19"
+  },
+  {
+    "Title": "Increase test coverage for runbook parsing",
+    "SolutionId": "3",
+    "AppId": "3",
+    "Description": "Critical parser paths have limited unit coverage.",
+    "Category": "Maintainability",
+    "Severity": "Low",
+    "Impact": "Higher regression risk for parser updates.",
+    "SuggestedRemediation": "Add deterministic parser fixtures and CI assertions.",
+    "Owner": "Automation Team",
+    "TargetRelease": "3.1.0",
+    "Status": "Open",
+    "CreatedDate": "2026-06-05",
+    "LastUpdatedDate": "2026-06-25"
+  },
+  {
+    "Title": "Define portal integration reference architecture",
+    "SolutionId": "4",
+    "AppId": "4",
+    "Description": "Portal requires a formal integration blueprint across dependent services.",
+    "Category": "Architecture",
+    "Severity": "Medium",
+    "Impact": "Unclear integration boundaries may slow release readiness.",
+    "SuggestedRemediation": "Publish target architecture and data-flow artifacts.",
+    "Owner": "Architecture Guild",
+    "TargetRelease": "1.0.0",
+    "Status": "InProgress",
+    "CreatedDate": "2026-06-12",
+    "LastUpdatedDate": "2026-06-30"
+  }
+]

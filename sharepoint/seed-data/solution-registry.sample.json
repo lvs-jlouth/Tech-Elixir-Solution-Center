@@ -1,0 +1,46 @@
+[
+  {
+    "Title": "Finance Elixir",
+    "Description": "Financial management and reporting workspace for budgeting and expense governance.",
+    "SolutionStatus": "Active",
+    "AppStatus": "Active",
+    "Owner": "Finance Team",
+    "AppOwner": "Finance CoE",
+    "DocCompleteness": 82,
+    "GithubRepoUrl": "https://github.com/lvs-jlouth/finance-elixir",
+    "Tags": "Finance;SharePoint;Power Platform;Reporting"
+  },
+  {
+    "Title": "Fitness Elixir",
+    "Description": "Wellness operations portal for challenge tracking, participation, and health insights.",
+    "SolutionStatus": "InDevelopment",
+    "AppStatus": "InDevelopment",
+    "Owner": "Wellness Engineering",
+    "AppOwner": "Fitness Product Team",
+    "DocCompleteness": 67,
+    "GithubRepoUrl": "https://github.com/lvs-jlouth/fitness-elixir",
+    "Tags": "Wellness;SPFx;Power Automate"
+  },
+  {
+    "Title": "Script Elixir",
+    "Description": "Automation library and execution dashboard for scripted operational workflows.",
+    "SolutionStatus": "Active",
+    "AppStatus": "Active",
+    "Owner": "Automation Team",
+    "AppOwner": "Platform Engineering",
+    "DocCompleteness": 74,
+    "GithubRepoUrl": "https://github.com/lvs-jlouth/script-elixir",
+    "Tags": "Automation;DevOps;Scripts"
+  },
+  {
+    "Title": "Tech Elixir Portal",
+    "Description": "Unified portal for cross-solution visibility, governance, and engineering standards.",
+    "SolutionStatus": "Planned",
+    "AppStatus": "Planned",
+    "Owner": "Tech Elixir Core Team",
+    "AppOwner": "Architecture Guild",
+    "DocCompleteness": 45,
+    "GithubRepoUrl": "https://github.com/lvs-jlouth/tech-elixir-portal",
+    "Tags": "Portal;Governance;Architecture"
+  }
+]

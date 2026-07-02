@@ -1,0 +1,54 @@
+[
+  {
+    "Title": "Overview",
+    "SolutionId": "1",
+    "AppId": "1",
+    "SectionKey": "00-overview",
+    "SectionNumber": "00",
+    "SectionTitle": "Overview",
+    "Status": "Current",
+    "Url": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/FinanceElixir/00-Overview.docx",
+    "LastUpdated": "2026-06-20",
+    "Owner": "Finance Team",
+    "Notes": "Validated for Q3 planning."
+  },
+  {
+    "Title": "Architecture",
+    "SolutionId": "2",
+    "AppId": "2",
+    "SectionKey": "01-architecture",
+    "SectionNumber": "01",
+    "SectionTitle": "Architecture",
+    "Status": "InReview",
+    "Url": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/FitnessElixir/01-Architecture.docx",
+    "LastUpdated": "2026-06-18",
+    "Owner": "Wellness Engineering",
+    "Notes": "Awaiting security sign-off."
+  },
+  {
+    "Title": "Deployment Guide",
+    "SolutionId": "3",
+    "AppId": "3",
+    "SectionKey": "06-deployment-guide",
+    "SectionNumber": "06",
+    "SectionTitle": "Deployment Guide",
+    "Status": "Draft",
+    "Url": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/ScriptElixir/06-Deployment-Guide.docx",
+    "LastUpdated": "2026-06-10",
+    "Owner": "Automation Team",
+    "Notes": "Add rollback screenshots."
+  },
+  {
+    "Title": "Security",
+    "SolutionId": "4",
+    "AppId": "4",
+    "SectionKey": "05-security",
+    "SectionNumber": "05",
+    "SectionTitle": "Security",
+    "Status": "Missing",
+    "Url": "",
+    "LastUpdated": "",
+    "Owner": "Architecture Guild",
+    "Notes": "To be authored before production onboarding."
+  }
+]
