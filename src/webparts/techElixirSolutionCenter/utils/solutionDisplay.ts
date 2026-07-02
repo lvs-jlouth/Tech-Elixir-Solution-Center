@@ -57,7 +57,7 @@ export function formatDisplayDate(dateText: string | undefined, fallback: string
   }
 
   const date = new Date(dateText);
-  if (Number.isNaN(date.getTime())) {
+  if (isNaN(date.getTime())) {
     return dateText;
   }
 
@@ -127,7 +127,13 @@ export function getHealthSummaryForApp(
   healthSummaries: ReadonlyArray<IHealthSummary>,
   appId: string
 ): IHealthSummary | undefined {
-  return healthSummaries.find(summary => summary.appId === appId);
+  for (const summary of healthSummaries) {
+    if (summary.appId === appId) {
+      return summary;
+    }
+  }
+
+  return undefined;
 }
 
 export function matchesSolutionSearch(app: IApplication, searchTerm: string): boolean {

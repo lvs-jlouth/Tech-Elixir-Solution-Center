@@ -8,7 +8,6 @@ import {
   buildDistinctOptions,
   filterSolutions,
   getDerivedAppType,
-  getHealthSummaryForApp,
   getStatusDisplayLabel,
   deriveEnvironment,
   sortSolutions,
@@ -168,9 +167,13 @@ export default class TechElixirSolutionCenter extends React.Component<
       sortBy
     );
 
-    const selectedApp = selectedAppId
-      ? filteredApps.find(app => app.id === selectedAppId) || apps.find(app => app.id === selectedAppId)
-      : undefined;
+    let selectedApp: IApplication | undefined;
+
+    if (selectedAppId) {
+      const selectedFromFiltered = filteredApps.filter(app => app.id === selectedAppId);
+      const selectedFromAll = apps.filter(app => app.id === selectedAppId);
+      selectedApp = selectedFromFiltered.length > 0 ? selectedFromFiltered[0] : selectedFromAll[0];
+    }
 
     return (
       <SolutionDashboard

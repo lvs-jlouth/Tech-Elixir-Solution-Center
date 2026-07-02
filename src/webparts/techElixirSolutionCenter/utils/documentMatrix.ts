@@ -64,7 +64,7 @@ export function formatDocumentDate(dateText: string | undefined): string {
   }
 
   const date = new Date(dateText);
-  if (Number.isNaN(date.getTime())) {
+  if (isNaN(date.getTime())) {
     return dateText;
   }
 
@@ -80,7 +80,15 @@ export function buildDocumentMatrixRows(
   documents: ReadonlyArray<IDocument>
 ): IMatrixRow[] {
   return sections.map(section => {
-    const doc = documents.find(item => item.sectionKey === section.key);
+    let doc: IDocument | undefined;
+
+    for (const item of documents) {
+      if (item.sectionKey === section.key) {
+        doc = item;
+        break;
+      }
+    }
+
     const status = doc ? doc.status : DocumentationStatus.Missing;
 
     return {

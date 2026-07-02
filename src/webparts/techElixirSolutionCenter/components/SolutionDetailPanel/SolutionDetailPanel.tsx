@@ -52,10 +52,6 @@ export interface ISolutionDetailPanelProps {
   githubService?: IGitHubService;
 }
 
-const sectionHeadingStyles = {
-  root: { fontWeight: 600, display: 'block', marginBottom: 10 }
-};
-
 export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
   app,
   healthSummary,
@@ -78,38 +74,44 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
     let isMounted = true;
     setLoadingDetails(true);
     setDetailsError(undefined);
-    setGithubMetadata(undefined);
+    setGitHubMetadata(undefined);
 
-    Promise.all([dataService.getIntegrations(app.id), dataService.getDocuments(app.id)])
-      .then(([loadedIntegrations, loadedDocuments]) => {
+    const loadDetails = async (): Promise<void> => {
+      try {
+        const loadedValues = await Promise.all([dataService.getIntegrations(app.id), dataService.getDocuments(app.id)]);
+        const loadedIntegrations = loadedValues[0];
+        const loadedDocuments = loadedValues[1];
+
         if (!isMounted) {
           return;
         }
 
         setIntegrations(loadedIntegrations);
         setDocuments(loadedDocuments);
-      })
-      .catch((error: Error) => {
+      } catch (error) {
         if (!isMounted) {
           return;
         }
 
-        setDetailsError(`Failed to load solution details: ${error.message}`);
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        setDetailsError(`Failed to load solution details: ${message}`);
         setIntegrations([]);
         setDocuments([]);
-      })
-      .finally(() => {
-        if (isMounted) {
-          setLoadingDetails(false);
-        }
-      });
+      }
+
+      if (isMounted) {
+        setLoadingDetails(false);
+      }
+    };
+
+    loadDetails().catch(() => undefined);
 
     if (githubService && app.githubRepoUrl) {
       githubService
         .getRepositoryMetadata(app.githubRepoUrl)
         .then(metadata => {
           if (isMounted) {
-            setGithubMetadata(metadata);
+            setGitHubMetadata(metadata);
           }
         })
         .catch(() => undefined);
@@ -123,20 +125,29 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
   const statusAppearance = APP_STATUS_APPEARANCE[app.status];
   const latestRelease = getLatestRelease(app);
   const environment = deriveEnvironment(app.status);
-  const sharepointLink = app.quickLinks.find(linkItem => linkItem.url.toLowerCase().indexOf('sharepoint') >= 0)?.url;
+  const sharePointLinks = app.quickLinks.filter(linkItem => linkItem.url.toLowerCase().indexOf('sharepoint') >= 0);
+  const sharepointLink = sharePointLinks.length > 0 ? sharePointLinks[0].url : undefined;
   const architectureLink = app.architectureDocs.length > 0 ? app.architectureDocs[0].url : undefined;
 
   const renderOverviewTab = (): JSX.Element => (
     <Stack tokens={{ childrenGap: 24 }}>
       <section aria-labelledby="panel-desc-heading">
-        <Text id="panel-desc-heading" variant="mediumPlus" styles={sectionHeadingStyles}>
+        <Text
+          id="panel-desc-heading"
+          variant="mediumPlus"
+          styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+        >
           Description
         </Text>
         <Text>{app.description}</Text>
       </section>
 
       <section aria-labelledby="panel-meta-heading">
-        <Text id="panel-meta-heading" variant="mediumPlus" styles={sectionHeadingStyles}>
+        <Text
+          id="panel-meta-heading"
+          variant="mediumPlus"
+          styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+        >
           Details
         </Text>
         <dl className={styles.detailGrid}>
@@ -169,7 +180,11 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
 
       {(app.githubRepoUrl || sharepointLink || architectureLink || app.quickLinks.length > 0) && (
         <section aria-labelledby="panel-links-heading">
-          <Text id="panel-links-heading" variant="mediumPlus" styles={sectionHeadingStyles}>
+          <Text
+            id="panel-links-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+          >
             Links
           </Text>
           <div>
@@ -219,7 +234,11 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
 
       {healthSummary && (
         <section aria-labelledby="panel-health-heading">
-          <Text id="panel-health-heading" variant="mediumPlus" styles={sectionHeadingStyles}>
+          <Text
+            id="panel-health-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+          >
             Health Indicators
           </Text>
           <div className={styles.healthGrid} role="list" aria-label="Health indicators">
@@ -253,7 +272,11 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
       )}
 
       <section aria-labelledby="panel-github-heading">
-        <Text id="panel-github-heading" variant="mediumPlus" styles={sectionHeadingStyles}>
+        <Text
+          id="panel-github-heading"
+          variant="mediumPlus"
+          styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+        >
           GitHub Metadata
         </Text>
         <GitHubMetadataSection repositoryUrl={app.githubRepoUrl} metadata={githubMetadata} />
@@ -272,11 +295,19 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
 
     const completeness = calculateDocCompleteness(DOCUMENTATION_SECTIONS, documents);
     const barColor = getDocBarColor(completeness.completenessPercentage);
+    const missingTitles = completeness.missingSectionKeys.map(sectionKey => {
+      const matches = DOCUMENTATION_SECTIONS.filter(section => section.key === sectionKey);
+      return matches.length > 0 ? matches[0].title : sectionKey;
+    });
 
     return (
       <Stack tokens={{ childrenGap: 20 }}>
         <section aria-labelledby="docs-completeness-heading">
-          <Text id="docs-completeness-heading" variant="mediumPlus" styles={{ root: { ...sectionHeadingStyles.root, marginBottom: 8 } }}>
+          <Text
+            id="docs-completeness-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
+          >
             Documentation Completeness
           </Text>
           <ProgressIndicator
@@ -288,20 +319,22 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
           />
         </section>
 
-        {completeness.missingSectionKeys.length > 0 && (
+        {missingTitles.length > 0 && (
           <div className={styles.missingSectionsAlert} role="alert" aria-label="Missing required sections">
             <Icon iconName="ErrorBadge" styles={{ root: { color: '#a80000', fontSize: 14, flexShrink: 0 } }} aria-hidden />
             <span>
               <strong>Missing required sections: </strong>
-              {completeness.missingSectionKeys
-                .map(sectionKey => DOCUMENTATION_SECTIONS.find(section => section.key === sectionKey)?.title || sectionKey)
-                .join(', ')}
+              {missingTitles.join(', ')}
             </span>
           </div>
         )}
 
         <section aria-labelledby="docs-sections-heading">
-          <Text id="docs-sections-heading" variant="mediumPlus" styles={{ root: { ...sectionHeadingStyles.root, marginBottom: 8 } }}>
+          <Text
+            id="docs-sections-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 8 } }}
+          >
             Documentation Sections
           </Text>
           <DocumentMatrix app={app} documents={documents} sections={DOCUMENTATION_SECTIONS} />

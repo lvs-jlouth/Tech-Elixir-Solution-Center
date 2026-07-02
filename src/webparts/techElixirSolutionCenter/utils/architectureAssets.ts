@@ -4,26 +4,30 @@ export type ResolvedArchitectureAssetType = ArchitectureAssetType | 'Unknown';
 
 const IMAGE_ASSET_TYPES: ReadonlyArray<ArchitectureAssetType> = ['SVG', 'PNG', 'JPG'];
 
+function hasSuffix(value: string, suffix: string): boolean {
+  return value.slice(-suffix.length) === suffix;
+}
+
 export function inferArchitectureAssetType(doc: IArchitectureDoc): ResolvedArchitectureAssetType {
   if (doc.assetType) {
     return doc.assetType;
   }
 
   const lowerUrl = (doc.url || '').toLowerCase();
-  if (lowerUrl.endsWith('.svg')) return 'SVG';
-  if (lowerUrl.endsWith('.png')) return 'PNG';
-  if (lowerUrl.endsWith('.jpg') || lowerUrl.endsWith('.jpeg')) return 'JPG';
-  if (lowerUrl.endsWith('.pdf')) return 'PDF';
-  if (lowerUrl.endsWith('.vsdx')) return 'VSDX';
-  if (lowerUrl.endsWith('.drawio') || lowerUrl.endsWith('.dio')) return 'Draw.io';
-  if (lowerUrl.endsWith('.md') || lowerUrl.endsWith('.markdown')) return 'Markdown';
-  if (lowerUrl.endsWith('.doc') || lowerUrl.endsWith('.docx')) return 'Word document';
-  if (lowerUrl.endsWith('.ppt') || lowerUrl.endsWith('.pptx')) return 'PowerPoint';
+  if (hasSuffix(lowerUrl, '.svg')) return 'SVG';
+  if (hasSuffix(lowerUrl, '.png')) return 'PNG';
+  if (hasSuffix(lowerUrl, '.jpg') || hasSuffix(lowerUrl, '.jpeg')) return 'JPG';
+  if (hasSuffix(lowerUrl, '.pdf')) return 'PDF';
+  if (hasSuffix(lowerUrl, '.vsdx')) return 'VSDX';
+  if (hasSuffix(lowerUrl, '.drawio') || hasSuffix(lowerUrl, '.dio')) return 'Draw.io';
+  if (hasSuffix(lowerUrl, '.md') || hasSuffix(lowerUrl, '.markdown')) return 'Markdown';
+  if (hasSuffix(lowerUrl, '.doc') || hasSuffix(lowerUrl, '.docx')) return 'Word document';
+  if (hasSuffix(lowerUrl, '.ppt') || hasSuffix(lowerUrl, '.pptx')) return 'PowerPoint';
   return 'Unknown';
 }
 
 export function isImageArchitectureAssetType(assetType: ResolvedArchitectureAssetType): boolean {
-  return IMAGE_ASSET_TYPES.indexOf(assetType as ArchitectureAssetType) >= 0;
+  return IMAGE_ASSET_TYPES.indexOf(assetType) >= 0;
 }
 
 export function getArchitectureAssetIcon(assetType: ResolvedArchitectureAssetType): string {
