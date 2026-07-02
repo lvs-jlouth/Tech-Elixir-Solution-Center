@@ -1,40 +1,23 @@
 import * as React from 'react';
-import {
-  Pivot,
-  PivotItem,
-  Spinner,
-  SpinnerSize,
-  MessageBar,
-  MessageBarType,
-  Stack,
-  Text,
-  TextField,
-  Dropdown,
-  IDropdownOption,
-  DefaultButton
-} from '@fluentui/react';
-import { EmptyState } from './EmptyState/EmptyState';
 
-import { ITechElixirSolutionCenterProps } from './ITechElixirSolutionCenterProps';
 import { IApplication } from '../models';
 import { IHealthSummary } from '../models/IMockDataTypes';
 import { MockDataService } from '../services/MockDataService';
 import { SharePointDataService } from '../services/SharePointDataService';
+import {
+  buildDistinctOptions,
+  filterSolutions,
+  getDerivedAppType,
+  getHealthSummaryForApp,
+  getStatusDisplayLabel,
+  deriveEnvironment,
+  sortSolutions,
+  SortField
+} from '../utils/solutionDisplay';
 import { IDetailDataService } from './AppDetailPanel/AppDetailPanel';
-import { AppOverviewCard } from './AppOverviewCard/AppOverviewCard';
-import { AppDetailPanel } from './AppDetailPanel/AppDetailPanel';
-import { DocCompletenessBar } from './DocCompletenessBar/DocCompletenessBar';
-import { ArchitectureAssets } from './ArchitectureAssets/ArchitectureAssets';
-import { ReleaseNotes } from './ReleaseNotes/ReleaseNotes';
-import { GitHubLinks } from './GitHubLinks/GitHubLinks';
-import { PowerPlatformRefs } from './PowerPlatformRefs/PowerPlatformRefs';
-import { TechnicalDebt } from './TechnicalDebt/TechnicalDebt';
-import { AccessibilityDashboard } from './AccessibilityDashboard/AccessibilityDashboard';
-import { SecurityStatus } from './SecurityStatus/SecurityStatus';
-import { QuickLinks } from './QuickLinks/QuickLinks';
-import styles from './TechElixirSolutionCenter.module.scss';
-
-type SortField = 'default' | 'title' | 'lastUpdated' | 'health' | 'docCompleteness' | 'environment' | 'version';
+import { IEmptyStateListNames } from './EmptyState/EmptyState';
+import { ITechElixirSolutionCenterProps } from './ITechElixirSolutionCenterProps';
+import { SolutionDashboard } from './SolutionDashboard/SolutionDashboard';
 
 interface ITechElixirSolutionCenterState {
   apps: IApplication[];
@@ -102,7 +85,7 @@ export default class TechElixirSolutionCenter extends React.Component<
     }
   }
 
-  private _buildListNames(props: ITechElixirSolutionCenterProps): { solutions: string; documents: string; releases: string; technicalDebt: string; architectureAssets: string; integrations: string; accessibilityChecks: string } {
+  private _buildListNames(props: ITechElixirSolutionCenterProps): IEmptyStateListNames {
     return {
       solutions: props.solutionRegistryListName || 'Solution Registry',
       documents: props.documentsListName || 'Solution Documents',
@@ -125,211 +108,23 @@ export default class TechElixirSolutionCenter extends React.Component<
       ? this._mockDataService.getApplications()
       : this._spDataService.getSolutions();
 
-    Promise.all([
-      appsPromise,
-      this._mockDataService.getAllHealthSummaries()
-    ])
+    Promise.all([appsPromise, this._mockDataService.getAllHealthSummaries()])
       .then(([apps, healthSummaries]) => {
-        const filtered =
-          this.props.defaultSelectedSolution
-            ? apps.filter(a => a.name.toLowerCase().includes(this.props.defaultSelectedSolution.toLowerCase()))
-            : apps;
-        this.setState({ apps: filtered, healthSummaries, isLoading: false });
+        const filteredApps = this.props.defaultSelectedSolution
+          ? apps.filter(app =>
+              app.name.toLowerCase().indexOf(this.props.defaultSelectedSolution.toLowerCase()) >= 0
+            )
+          : apps;
+
+        this.setState({ apps: filteredApps, healthSummaries, isLoading: false });
       })
-      .catch(err => {
-        this.setState({ isLoading: false, healthSummaries: [], error: `Failed to load application data: ${err.message}` });
+      .catch((error: Error) => {
+        this.setState({
+          isLoading: false,
+          healthSummaries: [],
+          error: `Failed to load application data: ${error.message}`
+        });
       });
-  }
-
-  private _renderAppDetail(app: IApplication): JSX.Element {
-    const { showGitHubLinks, showPowerPlatformLinks, showAccessibilityDashboard } = this.props;
-    return (
-      <Stack tokens={{ childrenGap: 16 }} key={app.id}>
-        <AppOverviewCard app={app} />
-        <DocCompletenessBar app={app} />
-        <QuickLinks app={app} />
-        <ArchitectureAssets app={app} />
-        <ReleaseNotes app={app} />
-        {showGitHubLinks !== false && <GitHubLinks app={app} />}
-        {showPowerPlatformLinks !== false && <PowerPlatformRefs app={app} />}
-        <TechnicalDebt app={app} />
-        {showAccessibilityDashboard !== false && <AccessibilityDashboard app={app} />}
-        <SecurityStatus app={app} />
-      </Stack>
-    );
-  }
-
-  private _getDerivedEnvironment(app: IApplication): string {
-    if (app.status === 'Active' || app.status === 'Deprecated') {
-      return 'Production';
-    }
-
-    if (app.status === 'InDevelopment' || app.status === 'Planned') {
-      return 'Development';
-    }
-
-    return 'Unknown';
-  }
-
-  private _getDerivedShortName(app: IApplication): string {
-    if (app.shortName && app.shortName.trim().length > 0) {
-      return app.shortName;
-    }
-
-    return app.name
-      .split(/\s+/)
-      .filter(part => part.length > 0)
-      .map(part => part[0].toUpperCase())
-      .join('');
-  }
-
-  private _getDerivedAppType(app: IApplication): string {
-    if (app.appType && app.appType.trim().length > 0) {
-      return app.appType;
-    }
-
-    const normalizedTags = (app.tags || []).map(tag => tag.toLowerCase());
-    const componentTypes = app.powerPlatformComponents.map(component => component.type);
-
-    if (componentTypes.indexOf('PowerApp') >= 0 || componentTypes.indexOf('PowerAutomate') >= 0) {
-      return 'PowerApp';
-    }
-
-    if (normalizedTags.some(tag => tag.includes('spfx') || tag.includes('sharepoint'))) {
-      return 'SPFxWebPart';
-    }
-
-    if (normalizedTags.some(tag => tag.includes('copilot'))) {
-      return 'CopilotAgent';
-    }
-
-    if (normalizedTags.some(tag => tag.includes('azure'))) {
-      return 'AzureSolution';
-    }
-
-    return 'HybridSolution';
-  }
-
-  private _getStatusLabel(status: string): string {
-    return status === 'InDevelopment' ? 'In Development' : status;
-  }
-
-  private _matchesSearch(app: IApplication, searchTerm: string): boolean {
-    if (!searchTerm) {
-      return true;
-    }
-
-    const normalizedStatus = this._getStatusLabel(app.status).toLowerCase();
-    const valuesToSearch = [
-      app.name,
-      this._getDerivedShortName(app),
-      app.description,
-      app.owner,
-      app.status,
-      normalizedStatus
-    ]
-      .filter(Boolean)
-      .map(value => value.toLowerCase());
-
-    return valuesToSearch.some(value => value.indexOf(searchTerm) >= 0);
-  }
-
-  private _getFilteredApps(): IApplication[] {
-    const {
-      apps,
-      healthSummaries,
-      searchText,
-      environmentFilter,
-      statusFilter,
-      healthFilter,
-      accessibilityFilter,
-      appTypeFilter
-    } = this.state;
-
-    const normalizedSearch = searchText.trim().toLowerCase();
-
-    return apps.filter(app => {
-      const summary = healthSummaries.find(item => item.appId === app.id);
-      const derivedEnvironment = this._getDerivedEnvironment(app);
-      const derivedAppType = this._getDerivedAppType(app);
-      const overallHealth = summary ? summary.overall : 'Unknown';
-      const accessibilityHealth = summary ? summary.accessibility : 'Unknown';
-
-      return (
-        this._matchesSearch(app, normalizedSearch) &&
-        (environmentFilter === 'All' || derivedEnvironment === environmentFilter) &&
-        (statusFilter === 'All' || app.status === statusFilter) &&
-        (healthFilter === 'All' || overallHealth === healthFilter) &&
-        (accessibilityFilter === 'All' || accessibilityHealth === accessibilityFilter) &&
-        (appTypeFilter === 'All' || derivedAppType === appTypeFilter)
-      );
-    });
-  }
-
-  private _getLatestReleaseDate(app: IApplication): string {
-    if (!app.releaseNotes || app.releaseNotes.length === 0) {
-      return '';
-    }
-    return app.releaseNotes
-      .map(r => r.date)
-      .sort((a, b) => b.localeCompare(a))[0];
-  }
-
-  private _getCurrentVersion(app: IApplication): string {
-    if (!app.releaseNotes || app.releaseNotes.length === 0) {
-      return '';
-    }
-    const latest = app.releaseNotes
-      .slice()
-      .sort((a, b) => b.date.localeCompare(a.date))[0];
-    return latest ? latest.version : '';
-  }
-
-  private _healthRank(health: string): number {
-    const ranks: Record<string, number> = { Healthy: 0, Warning: 1, Critical: 2, Unknown: 3 };
-    return ranks[health] !== undefined ? ranks[health] : 3;
-  }
-
-  private _getSortedApps(apps: IApplication[]): IApplication[] {
-    const { sortBy, healthSummaries } = this.state;
-    if (sortBy === 'default') {
-      return apps;
-    }
-    return apps.slice().sort((a, b) => {
-      switch (sortBy) {
-        case 'title':
-          return a.name.localeCompare(b.name);
-        case 'lastUpdated': {
-          const dateA = this._getLatestReleaseDate(a);
-          const dateB = this._getLatestReleaseDate(b);
-          return dateB.localeCompare(dateA);
-        }
-        case 'health': {
-          const summaryA = healthSummaries.find(s => s.appId === a.id);
-          const summaryB = healthSummaries.find(s => s.appId === b.id);
-          const rankA = this._healthRank(summaryA ? summaryA.overall : 'Unknown');
-          const rankB = this._healthRank(summaryB ? summaryB.overall : 'Unknown');
-          return rankA - rankB;
-        }
-        case 'docCompleteness':
-          return b.docCompleteness - a.docCompleteness;
-        case 'environment':
-          return this._getDerivedEnvironment(a).localeCompare(this._getDerivedEnvironment(b));
-        case 'version':
-          return this._getCurrentVersion(b).localeCompare(this._getCurrentVersion(a));
-        default:
-          return 0;
-      }
-    });
-  }
-
-  private _buildFilterOptions(values: string[]): IDropdownOption[] {
-    return [{ key: 'All', text: 'All' }].concat(
-      values
-        .filter((value, index, list) => value && list.indexOf(value) === index)
-        .sort((a, b) => a.localeCompare(b))
-        .map(value => ({ key: value, text: value }))
-    );
   }
 
   private _resetFilters = (): void => {
@@ -344,31 +139,7 @@ export default class TechElixirSolutionCenter extends React.Component<
     });
   };
 
-  private _renderCardsOverview(apps: IApplication[]): JSX.Element {
-    const { healthSummaries } = this.state;
-    const { compactMode } = this.props;
-    return (
-      <div
-        className={styles.appGrid}
-        role="list"
-        aria-label="Solution applications"
-      >
-        {apps.map(app => (
-          <div key={app.id} role="listitem">
-            <AppOverviewCard
-              app={app}
-              compact={compactMode !== false}
-              healthSummary={healthSummaries.find(h => h.appId === app.id)}
-              onSelect={(id) => this.setState({ selectedAppId: id })}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   public render(): React.ReactElement<ITechElixirSolutionCenterProps> {
-    const { isDarkTheme, webPartTitle } = this.props;
     const {
       apps,
       healthSummaries,
@@ -383,155 +154,65 @@ export default class TechElixirSolutionCenter extends React.Component<
       appTypeFilter,
       sortBy
     } = this.state;
-    const filteredApps = this._getSortedApps(this._getFilteredApps());
-    const selectedApp = selectedAppId ? filteredApps.find(a => a.id === selectedAppId) : undefined;
-    const environmentOptions = this._buildFilterOptions(apps.map(app => this._getDerivedEnvironment(app)));
-    const statusOptions = this._buildFilterOptions(apps.map(app => app.status).map(status => this._getStatusLabel(status)));
-    const healthOptions = this._buildFilterOptions(healthSummaries.map(summary => summary.overall));
-    const accessibilityOptions = this._buildFilterOptions(healthSummaries.map(summary => summary.accessibility));
-    const appTypeOptions = this._buildFilterOptions(apps.map(app => this._getDerivedAppType(app)));
-    const selectedStatusKey = statusFilter === 'InDevelopment' ? 'In Development' : statusFilter;
+
+    const filteredApps = sortSolutions(
+      filterSolutions(apps, healthSummaries, {
+        searchText,
+        environmentFilter,
+        statusFilter,
+        healthFilter,
+        accessibilityFilter,
+        appTypeFilter
+      }),
+      healthSummaries,
+      sortBy
+    );
+
+    const selectedApp = selectedAppId
+      ? filteredApps.find(app => app.id === selectedAppId) || apps.find(app => app.id === selectedAppId)
+      : undefined;
 
     return (
-      <div className={`${styles.container} ${isDarkTheme ? styles.darkTheme : ''}`}>
-        <div className={styles.header}>
-          <Text className={styles.title} as='h1'>
-            {webPartTitle || 'Tech Elixir Solution Center'}
-          </Text>
-          <Text className={styles.subtitle}>
-            Living documentation and engineering dashboard for SharePoint-based app builds
-          </Text>
-        </div>
-
-        {error && (
-          <MessageBar
-            messageBarType={MessageBarType.error}
-            className={styles.errorBanner}
-            isMultiline={false}
-          >
-            {error}
-          </MessageBar>
-        )}
-
-        {isLoading ? (
-          <Spinner size={SpinnerSize.large} label='Loading applications…' />
-        ) : apps.length === 0 ? (
-          <EmptyState
-            listNames={this._buildListNames(this.props)}
-            useMockData={this.props.useMockData}
-            siteUrl={this.props.context.pageContext.web.absoluteUrl}
-          />
-        ) : (
-          <>
-            <section className={styles.filterSection} aria-label='Solution search and filters'>
-              <Stack tokens={{ childrenGap: 12 }}>
-                <Text as='h2' className={styles.filterHeading}>Search and filter solutions</Text>
-                <Stack horizontal wrap tokens={{ childrenGap: 12 }}>
-                  <div className={styles.filterControl}>
-                    <TextField
-                      label='Search solutions'
-                      value={searchText}
-                      onChange={(_, value) => this.setState({ searchText: value || '' })}
-                      placeholder='Search by title, short name, description, owner, or status'
-                    />
-                  </div>
-                  <div className={styles.filterControl}>
-                    <Dropdown
-                      label='Environment'
-                      selectedKey={environmentFilter}
-                      options={environmentOptions}
-                      onChange={(_, option) => this.setState({ environmentFilter: String(option ? option.key : 'All') })}
-                    />
-                  </div>
-                  <div className={styles.filterControl}>
-                    <Dropdown
-                      label='Status'
-                      selectedKey={selectedStatusKey}
-                      options={statusOptions}
-                      onChange={(_, option) =>
-                        this.setState({ statusFilter: option && option.key === 'In Development' ? 'InDevelopment' : String(option ? option.key : 'All') })
-                      }
-                    />
-                  </div>
-                  <div className={styles.filterControl}>
-                    <Dropdown
-                      label='Health status'
-                      selectedKey={healthFilter}
-                      options={healthOptions}
-                      onChange={(_, option) => this.setState({ healthFilter: String(option ? option.key : 'All') })}
-                    />
-                  </div>
-                  <div className={styles.filterControl}>
-                    <Dropdown
-                      label='Accessibility status'
-                      selectedKey={accessibilityFilter}
-                      options={accessibilityOptions}
-                      onChange={(_, option) => this.setState({ accessibilityFilter: String(option ? option.key : 'All') })}
-                    />
-                  </div>
-                  <div className={styles.filterControl}>
-                    <Dropdown
-                      label='App type'
-                      selectedKey={appTypeFilter}
-                      options={appTypeOptions}
-                      onChange={(_, option) => this.setState({ appTypeFilter: String(option ? option.key : 'All') })}
-                    />
-                  </div>
-                  <div className={styles.filterControl}>
-                    <Dropdown
-                      label='Sort by'
-                      selectedKey={sortBy}
-                      options={[
-                        { key: 'default', text: 'Default' },
-                        { key: 'title', text: 'Title' },
-                        { key: 'lastUpdated', text: 'Last updated' },
-                        { key: 'health', text: 'Health status' },
-                        { key: 'docCompleteness', text: 'Documentation completeness' },
-                        { key: 'environment', text: 'Environment' },
-                        { key: 'version', text: 'Current version' }
-                      ]}
-                      onChange={(_, option) => this.setState({ sortBy: (option ? option.key : 'default') as SortField })}
-                      ariaLabel='Sort solutions by field'
-                    />
-                  </div>
-                </Stack>
-                <Stack horizontal horizontalAlign='space-between' verticalAlign='center'>
-                  <Text className={styles.visibleCount} aria-live='polite' aria-atomic='true'>{filteredApps.length} solution{filteredApps.length === 1 ? '' : 's'} visible</Text>
-                  <DefaultButton
-                    text='Reset filters'
-                    onClick={this._resetFilters}
-                    ariaLabel='Reset all search and filter controls'
-                  />
-                </Stack>
-              </Stack>
-            </section>
-
-            <Pivot className={styles.pivot} aria-label='Application tabs'>
-            <PivotItem headerText='All Apps' itemIcon='ViewAll'>
-              {this._renderCardsOverview(filteredApps)}
-            </PivotItem>
-            {filteredApps.map(app => (
-              <PivotItem key={app.id} headerText={app.name} itemIcon='AppIconDefault'>
-                <div className={styles.appSection}>
-                  {this._renderAppDetail(app)}
-                </div>
-              </PivotItem>
-            ))}
-            </Pivot>
-          </>
-        )}
-
-        {/* Detail panel — opens when a card is selected from the grid */}
-        {selectedApp && (
-          <AppDetailPanel
-            app={selectedApp}
-            healthSummary={healthSummaries.find(h => h.appId === selectedApp.id)}
-            isOpen={true}
-            onDismiss={() => this.setState({ selectedAppId: undefined })}
-            dataService={this._getActiveService()}
-          />
-        )}
-      </div>
+      <SolutionDashboard
+        webPartTitle={this.props.webPartTitle}
+        isDarkTheme={this.props.isDarkTheme}
+        isLoading={isLoading}
+        error={error}
+        useMockData={this.props.useMockData}
+        compactMode={this.props.compactMode}
+        showGitHubLinks={this.props.showGitHubLinks}
+        showPowerPlatformLinks={this.props.showPowerPlatformLinks}
+        showAccessibilityDashboard={this.props.showAccessibilityDashboard}
+        listNames={this._buildListNames(this.props)}
+        siteUrl={this.props.context.pageContext.web.absoluteUrl}
+        apps={apps}
+        healthSummaries={healthSummaries}
+        filteredApps={filteredApps}
+        selectedApp={selectedApp}
+        searchText={searchText}
+        environmentFilter={environmentFilter}
+        statusFilter={statusFilter}
+        healthFilter={healthFilter}
+        accessibilityFilter={accessibilityFilter}
+        appTypeFilter={appTypeFilter}
+        sortBy={sortBy}
+        environmentOptions={buildDistinctOptions(apps.map(app => deriveEnvironment(app.status)))}
+        statusOptions={buildDistinctOptions(apps.map(app => getStatusDisplayLabel(app.status)))}
+        healthOptions={buildDistinctOptions(healthSummaries.map(summary => summary.overall))}
+        accessibilityOptions={buildDistinctOptions(healthSummaries.map(summary => summary.accessibility))}
+        appTypeOptions={buildDistinctOptions(apps.map(app => getDerivedAppType(app)))}
+        onSearchTextChange={value => this.setState({ searchText: value })}
+        onEnvironmentFilterChange={value => this.setState({ environmentFilter: value })}
+        onStatusFilterChange={value => this.setState({ statusFilter: value })}
+        onHealthFilterChange={value => this.setState({ healthFilter: value })}
+        onAccessibilityFilterChange={value => this.setState({ accessibilityFilter: value })}
+        onAppTypeFilterChange={value => this.setState({ appTypeFilter: value })}
+        onSortByChange={value => this.setState({ sortBy: value })}
+        onResetFilters={this._resetFilters}
+        onSelectApp={appId => this.setState({ selectedAppId: appId })}
+        onDismissDetailPanel={() => this.setState({ selectedAppId: undefined })}
+        dataService={this._getActiveService()}
+      />
     );
   }
 }

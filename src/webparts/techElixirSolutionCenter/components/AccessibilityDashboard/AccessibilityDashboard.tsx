@@ -1,83 +1,62 @@
 import * as React from 'react';
 import {
-  Stack,
-  Text,
-  Icon,
   DetailsList,
   DetailsListLayoutMode,
-  IColumn,
-  SelectionMode,
   Dropdown,
+  IColumn,
   IDropdownOption,
-  Link
+  Link,
+  SelectionMode,
+  Stack,
+  Text,
+  Icon
 } from '@fluentui/react';
-import { IApplication, IAccessibilityCheck, AccessibilityCheckStatus, AccessibilityImpactArea } from '../../models';
+
+import {
+  AccessibilityCheckStatus,
+  AccessibilityImpactArea,
+  IAccessibilityCheck,
+  IApplication
+} from '../../models';
+import { ACCESSIBILITY_STATUS_APPEARANCE } from '../../utils/statusPresentation';
+import { StatusBadge } from '../StatusBadge/StatusBadge';
 
 interface IAccessibilityDashboardProps {
   app: IApplication;
 }
 
-interface IStatusConfig {
-  icon: string;
-  color: string;
-  background: string;
-  label: string;
-}
-
-const STATUS_CONFIG: Record<AccessibilityCheckStatus, IStatusConfig> = {
-  Pass:           { icon: 'CheckMark',   color: '#107c10', background: '#dff6dd', label: 'Pass' },
-  NeedsAttention: { icon: 'Warning',     color: '#8a5700', background: '#fff4ce', label: 'Needs Attention' },
-  Blocked:        { icon: 'BlockedSite', color: '#a80000', background: '#fde7e9', label: 'Blocked' },
-  NotReviewed:    { icon: 'Clock',       color: '#605e5c', background: '#f3f2f1', label: 'Not Reviewed' }
-};
+type StatusFilter = 'All' | AccessibilityCheckStatus;
+type ImpactAreaFilter = 'All' | AccessibilityImpactArea;
 
 const STATUS_FILTER_OPTIONS: IDropdownOption[] = [
   { key: 'All', text: 'All statuses' },
-  { key: 'Pass',           text: 'Pass' },
+  { key: 'Pass', text: 'Pass' },
   { key: 'NeedsAttention', text: 'Needs Attention' },
-  { key: 'Blocked',        text: 'Blocked' },
-  { key: 'NotReviewed',    text: 'Not Reviewed' }
+  { key: 'Blocked', text: 'Blocked' },
+  { key: 'NotReviewed', text: 'Not Reviewed' }
 ];
 
 const IMPACT_AREA_OPTIONS: IDropdownOption[] = [
   { key: 'All', text: 'All impact areas' },
-  { key: 'Visual',             text: 'Visual' },
-  { key: 'Auditory',           text: 'Auditory' },
-  { key: 'Mobility',           text: 'Mobility' },
-  { key: 'Cognitive',          text: 'Cognitive' },
+  { key: 'Visual', text: 'Visual' },
+  { key: 'Auditory', text: 'Auditory' },
+  { key: 'Mobility', text: 'Mobility' },
+  { key: 'Cognitive', text: 'Cognitive' },
   { key: 'Keyboard Navigation', text: 'Keyboard Navigation' },
-  { key: 'Screen Reader',      text: 'Screen Reader' },
-  { key: 'Color Contrast',     text: 'Color Contrast' },
+  { key: 'Screen Reader', text: 'Screen Reader' },
+  { key: 'Color Contrast', text: 'Color Contrast' },
   { key: 'Motion Sensitivity', text: 'Motion Sensitivity' }
 ];
 
-function StatusBadge({ status }: { status: AccessibilityCheckStatus }): JSX.Element {
-  const cfg = STATUS_CONFIG[status];
-  return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 4,
-        background: cfg.background,
-        color: cfg.color,
-        borderRadius: 10,
-        padding: '2px 8px',
-        fontSize: 11,
-        fontWeight: 600,
-        whiteSpace: 'nowrap'
-      }}
-      aria-label={`Status: ${cfg.label}`}
-    >
-      <Icon iconName={cfg.icon} styles={{ root: { fontSize: 11 } }} aria-hidden />
-      {cfg.label}
-    </span>
-  );
-}
-
-function SummaryCard({ count, label, icon, color, background }: {
-  count: number; label: string; icon: string; color: string; background: string;
+function SummaryCard(props: {
+  count: number;
+  label: string;
+  icon: string;
+  color: string;
+  background: string;
 }): JSX.Element {
+  const { count, label, icon, color, background } = props;
+
   return (
     <div
       style={{
@@ -102,30 +81,32 @@ function SummaryCard({ count, label, icon, color, background }: {
 }
 
 export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({ app }) => {
-  const [selectedStatus, setSelectedStatus]         = React.useState<string>('All');
-  const [selectedImpactArea, setSelectedImpactArea] = React.useState<string>('All');
+  const [selectedStatus, setSelectedStatus] = React.useState<StatusFilter>('All');
+  const [selectedImpactArea, setSelectedImpactArea] = React.useState<ImpactAreaFilter>('All');
 
-  const checks: IAccessibilityCheck[] = app.accessibilityChecks || [];
-
-  const totalChecks       = checks.length;
-  const passedChecks      = checks.filter(c => c.status === 'Pass').length;
-  const attentionChecks   = checks.filter(c => c.status === 'NeedsAttention').length;
-  const blockedChecks     = checks.filter(c => c.status === 'Blocked').length;
-  const notReviewedChecks = checks.filter(c => c.status === 'NotReviewed').length;
+  const checks = app.accessibilityChecks || [];
+  const totalChecks = checks.length;
+  const passedChecks = checks.filter(check => check.status === 'Pass').length;
+  const attentionChecks = checks.filter(check => check.status === 'NeedsAttention').length;
+  const blockedChecks = checks.filter(check => check.status === 'Blocked').length;
+  const notReviewedChecks = checks.filter(check => check.status === 'NotReviewed').length;
 
   const filteredChecks = React.useMemo(
     () =>
-      checks.filter(c =>
-        (selectedStatus === 'All'     || c.status     === selectedStatus) &&
-        (selectedImpactArea === 'All' || c.impactArea === (selectedImpactArea as AccessibilityImpactArea))
-      ),
-    [checks, selectedStatus, selectedImpactArea]
+      checks.filter(check => {
+        const matchesStatus = selectedStatus === 'All' || check.status === selectedStatus;
+        const matchesImpactArea = selectedImpactArea === 'All' || check.impactArea === selectedImpactArea;
+        return matchesStatus && matchesImpactArea;
+      }),
+    [checks, selectedImpactArea, selectedStatus]
   );
 
   if (totalChecks === 0) {
     return (
       <Stack tokens={{ childrenGap: 8 }}>
-        <Text variant="mediumPlus" styles={{ root: { fontWeight: 600 } }}>Accessibility Dashboard</Text>
+        <Text variant="mediumPlus" styles={{ root: { fontWeight: 600 } }}>
+          Accessibility Dashboard
+        </Text>
         <Text variant="small" styles={{ root: { color: '#a19f9d' } }}>
           No accessibility checks tracked for this solution.
         </Text>
@@ -139,7 +120,12 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
       name: 'Status',
       minWidth: 120,
       maxWidth: 140,
-      onRender: (item: IAccessibilityCheck) => <StatusBadge status={item.status} />
+      onRender: (item: IAccessibilityCheck) => (
+        <StatusBadge
+          {...ACCESSIBILITY_STATUS_APPEARANCE[item.status]}
+          ariaLabel={`Status: ${ACCESSIBILITY_STATUS_APPEARANCE[item.status].label}`}
+        />
+      )
     },
     {
       key: 'requirement',
@@ -148,7 +134,9 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
       maxWidth: 260,
       isMultiline: true,
       onRender: (item: IAccessibilityCheck) => (
-        <Text variant="small" styles={{ root: { fontWeight: 600 } }}>{item.requirement}</Text>
+        <Text variant="small" styles={{ root: { fontWeight: 600 } }}>
+          {item.requirement}
+        </Text>
       )
     },
     {
@@ -156,18 +144,14 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
       name: 'WCAG Reference',
       minWidth: 140,
       maxWidth: 180,
-      onRender: (item: IAccessibilityCheck) => (
-        <Text variant="small">{item.wcagReference || '—'}</Text>
-      )
+      onRender: (item: IAccessibilityCheck) => <Text variant="small">{item.wcagReference || '—'}</Text>
     },
     {
       key: 'impactArea',
       name: 'Impact Area',
       minWidth: 130,
       maxWidth: 160,
-      onRender: (item: IAccessibilityCheck) => (
-        <Text variant="small">{item.impactArea}</Text>
-      )
+      onRender: (item: IAccessibilityCheck) => <Text variant="small">{item.impactArea}</Text>
     },
     {
       key: 'notes',
@@ -187,27 +171,21 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
       minWidth: 200,
       maxWidth: 280,
       isMultiline: true,
-      onRender: (item: IAccessibilityCheck) => (
-        <Text variant="small">{item.remediationGuidance || '—'}</Text>
-      )
+      onRender: (item: IAccessibilityCheck) => <Text variant="small">{item.remediationGuidance || '—'}</Text>
     },
     {
       key: 'owner',
       name: 'Owner',
       minWidth: 110,
       maxWidth: 150,
-      onRender: (item: IAccessibilityCheck) => (
-        <Text variant="small">{item.owner || '—'}</Text>
-      )
+      onRender: (item: IAccessibilityCheck) => <Text variant="small">{item.owner || '—'}</Text>
     },
     {
       key: 'targetDate',
       name: 'Target Date',
       minWidth: 95,
       maxWidth: 115,
-      onRender: (item: IAccessibilityCheck) => (
-        <Text variant="small">{item.targetDate || '—'}</Text>
-      )
+      onRender: (item: IAccessibilityCheck) => <Text variant="small">{item.targetDate || '—'}</Text>
     },
     {
       key: 'relatedDocumentUrl',
@@ -220,16 +198,19 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
             View document
           </Link>
         ) : (
-          <Text variant="small" styles={{ root: { color: '#a19f9d' } }}>—</Text>
+          <Text variant="small" styles={{ root: { color: '#a19f9d' } }}>
+            —
+          </Text>
         )
     }
   ];
 
   return (
     <Stack tokens={{ childrenGap: 16 }}>
-      <Text variant="mediumPlus" styles={{ root: { fontWeight: 600 } }}>Accessibility Dashboard</Text>
+      <Text variant="mediumPlus" styles={{ root: { fontWeight: 600 } }}>
+        Accessibility Dashboard
+      </Text>
 
-      {/* Summary section */}
       <section aria-labelledby="a11y-summary-heading">
         <Text
           id="a11y-summary-heading"
@@ -239,58 +220,27 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
           Summary
         </Text>
         <Stack horizontal wrap tokens={{ childrenGap: 8 }}>
-          <SummaryCard
-            count={totalChecks}
-            label="Total Checks"
-            icon="CheckList"
-            color="#0078d4"
-            background="#f0f6ff"
-          />
-          <SummaryCard
-            count={passedChecks}
-            label="Passed"
-            icon="CheckMark"
-            color="#107c10"
-            background="#dff6dd"
-          />
-          <SummaryCard
-            count={attentionChecks}
-            label="Needs Attention"
-            icon="Warning"
-            color="#8a5700"
-            background="#fff4ce"
-          />
-          <SummaryCard
-            count={blockedChecks}
-            label="Blocked"
-            icon="BlockedSite"
-            color="#a80000"
-            background="#fde7e9"
-          />
-          <SummaryCard
-            count={notReviewedChecks}
-            label="Not Reviewed"
-            icon="Clock"
-            color="#605e5c"
-            background="#f3f2f1"
-          />
+          <SummaryCard count={totalChecks} label="Total Checks" icon="CheckList" color="#0078d4" background="#f0f6ff" />
+          <SummaryCard count={passedChecks} label="Passed" icon="CheckMark" color="#107c10" background="#dff6dd" />
+          <SummaryCard count={attentionChecks} label="Needs Attention" icon="Warning" color="#8a5700" background="#fff4ce" />
+          <SummaryCard count={blockedChecks} label="Blocked" icon="BlockedSite" color="#a80000" background="#fde7e9" />
+          <SummaryCard count={notReviewedChecks} label="Not Reviewed" icon="Clock" color="#605e5c" background="#f3f2f1" />
         </Stack>
       </section>
 
-      {/* Filters */}
       <Stack horizontal wrap tokens={{ childrenGap: 12 }}>
         <Dropdown
           label="Filter by status"
           selectedKey={selectedStatus}
           options={STATUS_FILTER_OPTIONS}
-          onChange={(_, option) => setSelectedStatus(String(option?.key || 'All'))}
+          onChange={(_, option) => setSelectedStatus((option?.key || 'All') as StatusFilter)}
           styles={{ dropdown: { width: 200 } }}
         />
         <Dropdown
           label="Filter by impact area"
           selectedKey={selectedImpactArea}
           options={IMPACT_AREA_OPTIONS}
-          onChange={(_, option) => setSelectedImpactArea(String(option?.key || 'All'))}
+          onChange={(_, option) => setSelectedImpactArea((option?.key || 'All') as ImpactAreaFilter)}
           styles={{ dropdown: { width: 220 } }}
         />
       </Stack>
@@ -299,7 +249,6 @@ export const AccessibilityDashboard: React.FC<IAccessibilityDashboardProps> = ({
         Showing {filteredChecks.length} of {totalChecks} check(s)
       </Text>
 
-      {/* Checks table */}
       <DetailsList
         items={filteredChecks}
         columns={columns}

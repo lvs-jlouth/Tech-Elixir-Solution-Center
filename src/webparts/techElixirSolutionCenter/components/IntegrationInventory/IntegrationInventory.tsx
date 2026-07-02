@@ -11,6 +11,9 @@ import {
   SelectionMode
 } from '@fluentui/react';
 import { IIntegration } from '../../models/IMockDataTypes';
+import { buildDistinctOptions } from '../../utils/solutionDisplay';
+import { INTEGRATION_STATUS_APPEARANCE } from '../../utils/statusPresentation';
+import { StatusBadge } from '../StatusBadge/StatusBadge';
 
 interface IIntegrationInventoryProps {
   integrations: IIntegration[];
@@ -20,7 +23,7 @@ interface IIntegrationInventoryProps {
 
 type FilterValue = string | undefined;
 
-const SUPPORTED_SYSTEM_TYPES: string[] = [
+const SUPPORTED_SYSTEM_TYPES: ReadonlyArray<IIntegration['systemType']> = [
   'SharePoint',
   'Dataverse',
   'Power Automate',
@@ -34,10 +37,6 @@ const SUPPORTED_SYSTEM_TYPES: string[] = [
   'On-premises System'
 ];
 
-function buildOptions(values: string[]): IDropdownOption[] {
-  return [{ key: '__all__', text: 'All' }].concat(values.map(v => ({ key: v, text: v })));
-}
-
 export const IntegrationInventory: React.FC<IIntegrationInventoryProps> = ({
   integrations,
   title = 'Integration Inventory',
@@ -49,19 +48,19 @@ export const IntegrationInventory: React.FC<IIntegrationInventoryProps> = ({
   const [dataClassificationFilter, setDataClassificationFilter] = React.useState<FilterValue>(undefined);
 
   const systemTypeOptions = React.useMemo(
-    () => buildOptions(SUPPORTED_SYSTEM_TYPES),
+    () => buildDistinctOptions(SUPPORTED_SYSTEM_TYPES.slice(), '__all__', 'All'),
     []
   );
   const environmentOptions = React.useMemo(
-    () => buildOptions(Array.from(new Set(integrations.map(i => i.environment))).sort()),
+    () => buildDistinctOptions(Array.from(new Set(integrations.map(i => i.environment))), '__all__', 'All'),
     [integrations]
   );
   const statusOptions = React.useMemo(
-    () => buildOptions(Array.from(new Set(integrations.map(i => i.status))).sort()),
+    () => buildDistinctOptions(Array.from(new Set(integrations.map(i => i.status))), '__all__', 'All'),
     [integrations]
   );
   const dataClassificationOptions = React.useMemo(
-    () => buildOptions(Array.from(new Set(integrations.map(i => i.dataClassification))).sort()),
+    () => buildDistinctOptions(Array.from(new Set(integrations.map(i => i.dataClassification))), '__all__', 'All'),
     [integrations]
   );
 
@@ -100,21 +99,7 @@ export const IntegrationInventory: React.FC<IIntegrationInventoryProps> = ({
       name: 'Status',
       minWidth: 90,
       maxWidth: 110,
-      onRender: (item: IIntegration) => (
-        <span
-          style={{
-            borderRadius: 10,
-            padding: '1px 8px',
-            fontSize: 11,
-            fontWeight: 600,
-            background: item.status === 'Active' ? '#dff6dd' : item.status === 'Degraded' ? '#fff4ce' : item.status === 'Inactive' ? '#fde7e9' : '#f3f2f1',
-            color: item.status === 'Active' ? '#107c10' : item.status === 'Degraded' ? '#8a5700' : item.status === 'Inactive' ? '#a80000' : '#605e5c'
-          }}
-          aria-label={`Status: ${item.status}`}
-        >
-          {item.status}
-        </span>
-      )
+      onRender: (item: IIntegration) => <StatusBadge {...INTEGRATION_STATUS_APPEARANCE[item.status]} ariaLabel={`Status: ${item.status}`} />
     },
     {
       key: 'documentationUrl',

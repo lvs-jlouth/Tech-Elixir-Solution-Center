@@ -1,23 +1,12 @@
 import * as React from 'react';
-import { Stack, Text, Link, Icon } from '@fluentui/react';
+import { Stack, Text, Link } from '@fluentui/react';
 import { IApplication, IReleaseNote } from '../../models';
+import { sortReleasesByDate } from '../../utils/solutionDisplay';
+import { RELEASE_DEPLOYMENT_APPEARANCE } from '../../utils/statusPresentation';
+import { StatusBadge } from '../StatusBadge/StatusBadge';
 
 interface IReleaseTimelineProps {
   app: IApplication;
-}
-
-const DEPLOYMENT_STATUS_CONFIG: Record<string, { label: string; icon: string }> = {
-  Deployed: { label: 'Deployed', icon: 'Completed' },
-  InProgress: { label: 'In Progress', icon: 'Sync' },
-  Planned: { label: 'Planned', icon: 'Calendar' },
-  RolledBack: { label: 'Rolled Back', icon: 'Undo' },
-  Failed: { label: 'Failed', icon: 'StatusErrorFull' }
-};
-
-function getSortedReleases(releases: IReleaseNote[]): IReleaseNote[] {
-  return [...releases].sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
 }
 
 function renderListOrFallback(items: string[] | undefined, fallback: string): JSX.Element {
@@ -38,7 +27,7 @@ function renderListOrFallback(items: string[] | undefined, fallback: string): JS
 
 export const ReleaseTimeline: React.FC<IReleaseTimelineProps> = ({ app }) => {
   const sortedReleases = React.useMemo(
-    () => getSortedReleases(app.releaseNotes || []),
+    () => sortReleasesByDate(app.releaseNotes || []),
     [app.releaseNotes]
   );
 
@@ -65,9 +54,9 @@ export const ReleaseTimeline: React.FC<IReleaseTimelineProps> = ({ app }) => {
 
       <ol style={{ margin: 0, paddingLeft: 20 }} aria-label={`${app.name} releases in newest first order`}>
         {sortedReleases.map((release, index) => {
-          const deployment =
-            DEPLOYMENT_STATUS_CONFIG[release.deploymentStatus || ''] ||
-            { label: 'Not specified', icon: 'Unknown' };
+        const deployment = release.deploymentStatus
+          ? RELEASE_DEPLOYMENT_APPEARANCE[release.deploymentStatus]
+          : undefined;
 
           return (
             <li key={`${release.version}-${release.date}-${index}`} style={{ marginBottom: 18 }}>
@@ -109,10 +98,11 @@ export const ReleaseTimeline: React.FC<IReleaseTimelineProps> = ({ app }) => {
 
                     <dt><Text variant="smallPlus" styles={{ root: { fontWeight: 600 } }}>Deployment Status</Text></dt>
                     <dd style={{ margin: '2px 0 8px' }}>
-                      <Stack horizontal verticalAlign="center" tokens={{ childrenGap: 6 }}>
-                        <Icon iconName={deployment.icon} aria-hidden />
-                        <Text variant="small">{deployment.label}</Text>
-                      </Stack>
+                      {deployment ? (
+                        <StatusBadge {...deployment} ariaLabel={`Deployment status: ${deployment.label}`} />
+                      ) : (
+                        <Text variant="small">Not specified</Text>
+                      )}
                     </dd>
 
                     <dt><Text variant="smallPlus" styles={{ root: { fontWeight: 600 } }}>Release Owner</Text></dt>

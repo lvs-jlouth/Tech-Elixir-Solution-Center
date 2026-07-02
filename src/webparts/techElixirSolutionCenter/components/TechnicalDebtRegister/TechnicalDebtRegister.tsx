@@ -10,6 +10,11 @@ import {
   IDropdownOption
 } from '@fluentui/react';
 import { IApplication, ITechnicalDebtItem } from '../../models';
+import {
+  TECHNICAL_DEBT_SEVERITY_APPEARANCE,
+  TECHNICAL_DEBT_STATUS_APPEARANCE
+} from '../../utils/statusPresentation';
+import { StatusBadge } from '../StatusBadge/StatusBadge';
 
 interface ITechnicalDebtRegisterProps {
   app: IApplication;
@@ -43,10 +48,6 @@ const STATUS_OPTIONS: IDropdownOption[] = [
   { key: 'Resolved', text: 'Resolved' }
 ];
 
-function StatusText(status: string): string {
-  return status === 'InProgress' ? 'In Progress' : status;
-}
-
 export const TechnicalDebtRegister: React.FC<ITechnicalDebtRegisterProps> = ({ app }) => {
   const [selectedSeverity, setSelectedSeverity] = React.useState<string>('All');
   const [selectedCategory, setSelectedCategory] = React.useState<string>('All');
@@ -75,12 +76,12 @@ export const TechnicalDebtRegister: React.FC<ITechnicalDebtRegisterProps> = ({ a
     { key: 'title', name: 'Title', minWidth: 180, maxWidth: 250, onRender: (item: ITechnicalDebtItem) => <Text variant="small" styles={{ root: { fontWeight: 600 } }}>{item.title}</Text> },
     { key: 'description', name: 'Description', minWidth: 220, maxWidth: 320, isMultiline: true, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.description}</Text> },
     { key: 'category', name: 'Category', minWidth: 120, maxWidth: 150, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.category}</Text> },
-    { key: 'severity', name: 'Severity', minWidth: 80, maxWidth: 90, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.severity}</Text> },
+    { key: 'severity', name: 'Severity', minWidth: 80, maxWidth: 90, onRender: (item: ITechnicalDebtItem) => <StatusBadge {...TECHNICAL_DEBT_SEVERITY_APPEARANCE[item.severity]} ariaLabel={`Severity: ${item.severity}`} /> },
     { key: 'impact', name: 'Impact', minWidth: 180, maxWidth: 260, isMultiline: true, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.impact}</Text> },
     { key: 'suggestedRemediation', name: 'Suggested Remediation', minWidth: 220, maxWidth: 300, isMultiline: true, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.suggestedRemediation}</Text> },
     { key: 'owner', name: 'Owner', minWidth: 120, maxWidth: 160, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.owner}</Text> },
     { key: 'targetRelease', name: 'Target Release', minWidth: 120, maxWidth: 130, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.targetRelease}</Text> },
-    { key: 'status', name: 'Status', minWidth: 95, maxWidth: 105, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{StatusText(item.status)}</Text> },
+    { key: 'status', name: 'Status', minWidth: 95, maxWidth: 105, onRender: (item: ITechnicalDebtItem) => <StatusBadge {...TECHNICAL_DEBT_STATUS_APPEARANCE[item.status]} ariaLabel={`Status: ${item.status}`} /> },
     { key: 'createdDate', name: 'Created Date', minWidth: 105, maxWidth: 120, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.createdDate}</Text> },
     { key: 'lastUpdatedDate', name: 'Last Updated Date', minWidth: 120, maxWidth: 145, onRender: (item: ITechnicalDebtItem) => <Text variant="small">{item.lastUpdatedDate}</Text> }
   ];
