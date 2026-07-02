@@ -44,6 +44,7 @@ export const PowerPlatformRefs: React.FC<IPowerPlatformRefsProps> = ({ app }) =>
           <Icon
             iconName={TYPE_ICONS[item.type] || 'Puzzle'}
             styles={{ root: { color: '#742774', fontSize: 16 } }}
+            aria-hidden
           />
           <Text variant='small'>{item.type}</Text>
         </Stack>
@@ -84,6 +85,7 @@ export const PowerPlatformRefs: React.FC<IPowerPlatformRefsProps> = ({ app }) =>
         selectionMode={SelectionMode.none}
         isHeaderVisible={true}
         compact
+        ariaLabel={`${app.name} Power Platform components`}
       />
     </Stack>
   );

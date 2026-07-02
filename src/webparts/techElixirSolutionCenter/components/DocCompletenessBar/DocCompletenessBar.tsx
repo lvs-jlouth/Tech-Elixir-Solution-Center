@@ -29,6 +29,7 @@ export const DocCompletenessBar: React.FC<IDocCompletenessBarProps> = ({ app }) 
           itemName: { color }
         }}
         barHeight={10}
+        ariaLabel={`Documentation completeness: ${app.docCompleteness} percent`}
       />
     </Stack>
   );

@@ -92,7 +92,6 @@ function SummaryCard({ count, label, icon, color, background }: {
         background,
         flex: 1
       }}
-      role="status"
       aria-label={`${label}: ${count}`}
     >
       <Icon iconName={icon} styles={{ root: { fontSize: 20, color, marginBottom: 4 } }} aria-hidden />

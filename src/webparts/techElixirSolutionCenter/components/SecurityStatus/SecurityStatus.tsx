@@ -22,7 +22,7 @@ function SecurityRow({ label, status, tooltip }: { label: string; status: Securi
       tokens={{ childrenGap: 10 }}
       styles={{ root: { padding: '6px 12px', borderBottom: '1px solid #f3f2f1' } }}
     >
-      <Icon iconName={cfg.icon} styles={{ root: { color: cfg.color, fontSize: 16, width: 20 } }} aria-label={cfg.label} />
+      <Icon iconName={cfg.icon} styles={{ root: { color: cfg.color, fontSize: 16, width: 20 } }} aria-hidden />
       <Text variant='small' styles={{ root: { flex: 1 } }}>{label}</Text>
       <span style={{ background: cfg.color === '#107c10' ? '#dff6dd' : cfg.color === '#a80000' ? '#fde7e9' : '#fff4ce',
                      color: cfg.color, borderRadius: 3, padding: '1px 8px', fontSize: 11, fontWeight: 600 }}>
@@ -46,7 +46,7 @@ export const SecurityStatus: React.FC<ISecurityStatusProps> = ({ app }) => {
       </Stack>
       {securityStatus.notes && (
         <Text variant='small' styles={{ root: { color: '#605e5c', fontStyle: 'italic', padding: '0 4px' } }}>
-          📝 {securityStatus.notes}
+          <span aria-hidden='true'>📝</span>{' '}{securityStatus.notes}
         </Text>
       )}
     </Stack>

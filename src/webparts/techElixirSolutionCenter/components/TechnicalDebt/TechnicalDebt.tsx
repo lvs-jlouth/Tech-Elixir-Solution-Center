@@ -113,6 +113,7 @@ export const TechnicalDebt: React.FC<ITechnicalDebtProps> = ({ app }) => {
         selectionMode={SelectionMode.none}
         isHeaderVisible={true}
         compact
+        ariaLabel={`${app.name} technical debt items`}
       />
     </Stack>
   );

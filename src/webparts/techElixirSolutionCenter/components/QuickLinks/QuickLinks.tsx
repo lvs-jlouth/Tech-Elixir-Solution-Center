@@ -40,7 +40,7 @@ export const QuickLinks: React.FC<IQuickLinksProps> = ({ app }) => {
             }}
           >
             {link.iconName && (
-              <Icon iconName={link.iconName} styles={{ root: { fontSize: 15 } }} />
+              <Icon iconName={link.iconName} styles={{ root: { fontSize: 15 } }} aria-hidden />
             )}
             {link.label}
           </Link>

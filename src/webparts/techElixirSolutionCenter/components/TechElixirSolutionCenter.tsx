@@ -496,7 +496,7 @@ export default class TechElixirSolutionCenter extends React.Component<
                   </div>
                 </Stack>
                 <Stack horizontal horizontalAlign='space-between' verticalAlign='center'>
-                  <Text className={styles.visibleCount}>{filteredApps.length} solution{filteredApps.length === 1 ? '' : 's'} visible</Text>
+                  <Text className={styles.visibleCount} aria-live='polite' aria-atomic='true'>{filteredApps.length} solution{filteredApps.length === 1 ? '' : 's'} visible</Text>
                   <DefaultButton
                     text='Reset filters'
                     onClick={this._resetFilters}

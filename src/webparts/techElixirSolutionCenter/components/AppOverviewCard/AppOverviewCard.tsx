@@ -54,26 +54,35 @@ export const AppOverviewCard: React.FC<IAppOverviewCardProps> = ({ app, compact,
   const a11yHealth = healthSummary ? HEALTH_CONFIG[healthSummary.accessibility] : null;
   const secHealth = healthSummary ? HEALTH_CONFIG[healthSummary.security] : null;
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>): void => {
-    if (onSelect && (e.key === 'Enter' || e.key === ' ')) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>): void => {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onSelect(app.id);
+      onSelect!(app.id);
     }
   };
 
   return (
     <article
       className={`${styles.card} ${compact ? styles.compactCard : ''} ${onSelect ? styles.clickable : ''}`}
-      tabIndex={0}
-      role={onSelect ? 'button' : undefined}
-      aria-label={onSelect ? `${app.name} — press Enter to view details` : `${app.name} application card`}
-      onKeyDown={onSelect ? handleKeyDown : undefined}
-      onClick={onSelect ? () => onSelect(app.id) : undefined}
+      aria-label={`${app.name} application card`}
     >
       {/* ── Header: title + status/health badges ── */}
       <header className={styles.cardHeader}>
         <div className={styles.cardTitleGroup}>
-          <h2 className={styles.appName}>{app.name}</h2>
+          <h2 className={styles.appName}>
+            {onSelect ? (
+              <button
+                className={styles.appNameButton}
+                onClick={() => onSelect(app.id)}
+                onKeyDown={handleKeyDown}
+                aria-label={`${app.name} — view details`}
+              >
+                {app.name}
+              </button>
+            ) : (
+              app.name
+            )}
+          </h2>
           <p className={styles.owner}>{app.owner}</p>
         </div>
         <div className={styles.badges}>
