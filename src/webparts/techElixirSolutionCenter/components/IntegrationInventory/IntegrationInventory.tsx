@@ -13,6 +13,7 @@ import {
 import { IIntegration } from '../../models/IMockDataTypes';
 import { buildDistinctOptions } from '../../utils/solutionDisplay';
 import { INTEGRATION_STATUS_APPEARANCE } from '../../utils/statusPresentation';
+import { sanitizeUrl } from '../../utils/urlUtils';
 import { StatusBadge } from '../StatusBadge/StatusBadge';
 
 interface IIntegrationInventoryProps {
@@ -83,7 +84,7 @@ export const IntegrationInventory: React.FC<IIntegrationInventoryProps> = ({
       maxWidth: 220,
       onRender: (item: IIntegration) =>
         item.url ? (
-          <Link href={item.url} target='_blank' rel='noopener noreferrer'>{item.name}</Link>
+          <Link href={sanitizeUrl(item.url)} target='_blank' rel='noopener noreferrer'>{item.name}</Link>
         ) : (
           <Text variant='small'>{item.name}</Text>
         )
@@ -108,7 +109,7 @@ export const IntegrationInventory: React.FC<IIntegrationInventoryProps> = ({
       maxWidth: 160,
       onRender: (item: IIntegration) =>
         item.documentationUrl ? (
-          <Link href={item.documentationUrl} target='_blank' rel='noopener noreferrer'>Open docs</Link>
+          <Link href={sanitizeUrl(item.documentationUrl)} target='_blank' rel='noopener noreferrer'>Open docs</Link>
         ) : (
           <Text variant='small'>—</Text>
         )

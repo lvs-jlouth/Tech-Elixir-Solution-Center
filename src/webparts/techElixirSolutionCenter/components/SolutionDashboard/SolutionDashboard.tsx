@@ -244,9 +244,9 @@ export const SolutionDashboard: React.FC<ISolutionDashboardProps> = ({
                 </div>
               </Stack>
               <Stack horizontal horizontalAlign="space-between" verticalAlign="center">
-                <Text className={styles.visibleCount} aria-live="polite" aria-atomic="true">
+                <span role="status" aria-live="polite" aria-atomic="true" className={styles.visibleCount}>
                   {filteredApps.length} solution{filteredApps.length === 1 ? '' : 's'} visible
-                </Text>
+                </span>
                 <DefaultButton
                   text="Reset filters"
                   onClick={onResetFilters}

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Icon, Link } from '@fluentui/react';
 import { IGitHubMetadata } from '../../models/IGitHubMetadata';
+import { sanitizeUrl } from '../../utils/urlUtils';
 import styles from './GitHubMetadataSection.module.scss';
 
 interface IGitHubMetadataSectionProps {
@@ -55,7 +56,7 @@ export const GitHubMetadataSection: React.FC<IGitHubMetadataSectionProps> = ({
         <h3 id="github-meta-heading" className={styles.sectionTitle}>GitHub Repository</h3>
         {repoUrl && (
           <Link
-            href={repoUrl}
+            href={sanitizeUrl(repoUrl)}
             target="_blank"
             rel="noopener noreferrer"
             className={styles.repoLink}

@@ -60,6 +60,7 @@ function SummaryCard(props: {
 
   return (
     <div
+      role="group"
       style={{
         display: 'flex',
         flexDirection: 'column',

@@ -27,6 +27,7 @@ import {
   IMatrixRow
 } from '../../utils/documentMatrix';
 import { DOCUMENT_STATUS_APPEARANCE } from '../../utils/statusPresentation';
+import { sanitizeUrl } from '../../utils/urlUtils';
 import { StatusBadge } from '../StatusBadge/StatusBadge';
 import styles from './DocumentMatrix.module.scss';
 
@@ -127,7 +128,7 @@ export const DocumentMatrix: React.FC<IDocumentMatrixProps> = ({ app, documents,
       maxWidth: 180,
       onRender: (row: IMatrixRow) =>
         row.url ? (
-          <Link href={row.url} target="_blank" rel="noopener noreferrer">
+          <Link href={sanitizeUrl(row.url)} target="_blank" rel="noopener noreferrer">
             Open document
           </Link>
         ) : (

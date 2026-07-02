@@ -1,20 +1,15 @@
 import * as React from 'react';
 import { ProgressIndicator, Stack, Text } from '@fluentui/react';
 import { IApplication } from '../../models';
+import { getDocBarColor } from '../../utils/solutionDisplay';
 
 interface IDocCompletenessBarProps {
   app: IApplication;
 }
 
-function getColor(pct: number): string {
-  if (pct >= 80) return '#107c10';
-  if (pct >= 50) return '#8a5700';
-  return '#a80000';
-}
-
 export const DocCompletenessBar: React.FC<IDocCompletenessBarProps> = ({ app }) => {
   const pct = Math.min(100, Math.max(0, app.docCompleteness)) / 100;
-  const color = getColor(app.docCompleteness);
+  const color = getDocBarColor(app.docCompleteness);
 
   return (
     <Stack tokens={{ childrenGap: 4 }}>

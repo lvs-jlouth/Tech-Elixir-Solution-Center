@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Stack, Text, Link } from '@fluentui/react';
 import { IApplication, IReleaseNote } from '../../models';
-import { sortReleasesByDate } from '../../utils/solutionDisplay';
+import { formatDisplayDate, sortReleasesByDate } from '../../utils/solutionDisplay';
 import { RELEASE_DEPLOYMENT_APPEARANCE } from '../../utils/statusPresentation';
 import { sanitizeUrl } from '../../utils/urlUtils';
 import { StatusBadge } from '../StatusBadge/StatusBadge';
@@ -67,7 +67,7 @@ export const ReleaseTimeline: React.FC<IReleaseTimelineProps> = ({ app }) => {
                     <Text variant="medium" styles={{ root: { fontWeight: 600 } }}>
                       Version {release.version}
                     </Text>
-                    <Text variant="small">Date: {release.date}</Text>
+                    <Text variant="small">Date: <time dateTime={release.date}>{formatDisplayDate(release.date)}</time></Text>
                   </Stack>
 
                   <dl style={{ margin: 0 }}>
