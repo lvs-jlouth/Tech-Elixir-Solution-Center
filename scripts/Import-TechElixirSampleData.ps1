@@ -99,12 +99,7 @@ function Convert-InputValue {
         }
 
         switch ($FieldName) {
-            'LastUpdated'
-            'Date'
-            'ReleaseDate'
-            'CreatedDate'
-            'LastUpdatedDate'
-            'TargetDate' {
+            { $_ -in @('LastUpdated', 'Date', 'ReleaseDate', 'CreatedDate', 'LastUpdatedDate', 'TargetDate') } {
                 return [DateTime]::Parse($trimmedValue, [System.Globalization.CultureInfo]::InvariantCulture)
             }
             default {
@@ -271,6 +266,7 @@ function Find-ExistingListItem {
 }
 
 function Upsert-ListItem {
+    [CmdletBinding(SupportsShouldProcess)]
     param (
         [Parameter(Mandatory = $true)]
         [string]$ListName,
