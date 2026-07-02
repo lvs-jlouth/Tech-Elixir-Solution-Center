@@ -22,7 +22,7 @@ import { DocCompletenessBar } from '../DocCompletenessBar/DocCompletenessBar';
 import { EmptyState, IEmptyStateListNames } from '../EmptyState/EmptyState';
 import { ErrorState } from '../ErrorState/ErrorState';
 import { GitHubLinks } from '../GitHubLinks/GitHubLinks';
-import { LoadingState } from '../LoadingState/LoadingState';
+import { LoadingSkeleton } from '../LoadingState/LoadingSkeleton';
 import { PowerPlatformRefs } from '../PowerPlatformRefs/PowerPlatformRefs';
 import { QuickLinks } from '../QuickLinks/QuickLinks';
 import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
@@ -151,7 +151,7 @@ export const SolutionDashboard: React.FC<ISolutionDashboardProps> = ({
       {error && <ErrorState message={error} technicalDetails={errorDetails} onRetry={onRetry} />}
 
       {isLoading ? (
-        <LoadingState label="Loading applications…" />
+        <LoadingSkeleton variant="dashboard" />
       ) : apps.length === 0 ? (
         <EmptyState listNames={listNames} useMockData={useMockData} siteUrl={siteUrl} />
       ) : (

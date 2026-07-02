@@ -7,7 +7,6 @@ import {
   Pivot,
   PivotItem,
   ProgressIndicator,
-  SpinnerSize,
   Stack,
   Text
 } from '@fluentui/react';
@@ -32,7 +31,7 @@ import { ErrorState } from '../ErrorState/ErrorState';
 import { GitHubMetadataSection } from '../GitHubMetadataSection/GitHubMetadataSection';
 import { HealthIndicator } from '../HealthIndicator/HealthIndicator';
 import { IntegrationInventory } from '../IntegrationInventory/IntegrationInventory';
-import { LoadingState } from '../LoadingState/LoadingState';
+import { LoadingSkeleton } from '../LoadingState/LoadingSkeleton';
 import { ReleaseTimeline } from '../ReleaseTimeline/ReleaseTimeline';
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
 import { StatusBadge } from '../StatusBadge/StatusBadge';
@@ -302,7 +301,7 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
 
   const renderDocumentsTab = (): JSX.Element => {
     if (loadingDetails) {
-      return <LoadingState label="Loading documents…" size={SpinnerSize.medium} />;
+      return <LoadingSkeleton variant="documents" />;
     }
 
     if (detailsError) {
@@ -367,7 +366,7 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
 
   const renderIntegrationsTab = (): JSX.Element => {
     if (loadingDetails) {
-      return <LoadingState label="Loading integrations…" size={SpinnerSize.medium} />;
+      return <LoadingSkeleton variant="integrations" />;
     }
 
     if (detailsError) {
@@ -389,6 +388,34 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
     );
   };
 
+  const renderReleasesTab = (): JSX.Element => {
+    if (loadingDetails) {
+      return <LoadingSkeleton variant="releases" />;
+    }
+    return <ReleaseTimeline app={app} />;
+  };
+
+  const renderArchitectureTab = (): JSX.Element => {
+    if (loadingDetails) {
+      return <LoadingSkeleton variant="architecture" />;
+    }
+    return <ArchitectureAssets app={app} />;
+  };
+
+  const renderTechnicalDebtTab = (): JSX.Element => {
+    if (loadingDetails) {
+      return <LoadingSkeleton variant="technicalDebt" />;
+    }
+    return <TechnicalDebtRegister app={app} />;
+  };
+
+  const renderAccessibilityTab = (): JSX.Element => {
+    if (loadingDetails) {
+      return <LoadingSkeleton variant="accessibility" />;
+    }
+    return <AccessibilityDashboard app={app} />;
+  };
+
   return (
     <Panel
       isOpen={isOpen}
@@ -405,33 +432,27 @@ export const SolutionDetailPanel: React.FC<ISolutionDetailPanelProps> = ({
     >
       <Pivot aria-label={`${app.name} detail sections`} styles={{ root: { marginTop: 4, borderBottom: '1px solid #edebe9' } }}>
         <PivotItem headerText="Overview" itemIcon="Info" aria-label="Overview tab">
-          <div className={styles.tabContent}>{renderOverviewTab()}</div>
+          <div className={styles.tabContent}>
+            {loadingDetails ? <LoadingSkeleton variant="detailPanel" /> : renderOverviewTab()}
+          </div>
         </PivotItem>
         <PivotItem headerText="Documents" itemIcon="Documentation" aria-label="Documents tab">
           <div className={styles.tabContent}>{renderDocumentsTab()}</div>
         </PivotItem>
         <PivotItem headerText="Releases" itemIcon="ReleaseGate" aria-label="Releases tab">
-          <div className={styles.tabContent}>
-            <ReleaseTimeline app={app} />
-          </div>
+          <div className={styles.tabContent}>{renderReleasesTab()}</div>
         </PivotItem>
         <PivotItem headerText="Architecture" itemIcon="Flow" aria-label="Architecture tab">
-          <div className={styles.tabContent}>
-            <ArchitectureAssets app={app} />
-          </div>
+          <div className={styles.tabContent}>{renderArchitectureTab()}</div>
         </PivotItem>
         <PivotItem headerText="Integrations" itemIcon="PlugConnected" aria-label="Integrations tab">
           <div className={styles.tabContent}>{renderIntegrationsTab()}</div>
         </PivotItem>
         <PivotItem headerText="Technical Debt" itemIcon="Warning" aria-label="Technical debt tab">
-          <div className={styles.tabContent}>
-            <TechnicalDebtRegister app={app} />
-          </div>
+          <div className={styles.tabContent}>{renderTechnicalDebtTab()}</div>
         </PivotItem>
         <PivotItem headerText="Accessibility" itemIcon="Accessibility" aria-label="Accessibility tab">
-          <div className={styles.tabContent}>
-            <AccessibilityDashboard app={app} />
-          </div>
+          <div className={styles.tabContent}>{renderAccessibilityTab()}</div>
         </PivotItem>
         <PivotItem headerText="Security" itemIcon="Shield" aria-label="Security tab">
           <div className={styles.tabContent}>
