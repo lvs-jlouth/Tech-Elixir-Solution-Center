@@ -1,4 +1,4 @@
-import { DocumentationStatus, Environment } from '../constants';
+import { DocumentationStatus, Environment, HealthStatus } from '../constants';
 
 /**
  * Represents the completeness/status of a single documentation section for an app.
