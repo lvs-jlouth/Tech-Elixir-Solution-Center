@@ -115,7 +115,7 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
 
     const githubPromise =
       githubService && app.githubRepoUrl
-        ? githubService.getMetadata(app.githubRepoUrl).then(meta => setGitHubMetadata(meta)).catch(() => undefined)
+        ? githubService.getRepositoryMetadata(app.githubRepoUrl).then(meta => setGitHubMetadata(meta)).catch(() => undefined)
         : Promise.resolve();
 
     Promise.all([detailsPromise, githubPromise])

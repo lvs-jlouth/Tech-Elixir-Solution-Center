@@ -7,8 +7,48 @@ import { IGitHubMetadata } from '../models/IGitHubMetadata';
  */
 export interface IGitHubService {
   /**
-   * Fetch GitHub metadata for the given repository URL.
+   * Fetch summary metadata for the given repository URL.
    * @param repositoryUrl - The full URL to the GitHub repository.
    */
-  getMetadata(repositoryUrl: string): Promise<IGitHubMetadata>;
+  getRepositoryMetadata(repositoryUrl: string): Promise<IGitHubMetadata>;
+
+  /**
+   * Fetch the latest release details for the given repository URL.
+   * Returns undefined when no release is available.
+   */
+  getLatestRelease(repositoryUrl: string): Promise<IGitHubRelease | undefined>;
+
+  /** Fetch open issues for the given repository URL. */
+  getOpenIssues(repositoryUrl: string): Promise<IGitHubIssue[]>;
+
+  /** Fetch open pull requests for the given repository URL. */
+  getOpenPullRequests(repositoryUrl: string): Promise<IGitHubPullRequest[]>;
+}
+
+export interface IGitHubRelease {
+  id: number;
+  tagName: string;
+  name?: string;
+  url?: string;
+  publishedAt?: string;
+}
+
+export interface IGitHubIssue {
+  id: number;
+  number: number;
+  title: string;
+  url: string;
+  author?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IGitHubPullRequest {
+  id: number;
+  number: number;
+  title: string;
+  url: string;
+  author?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
