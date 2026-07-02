@@ -208,9 +208,9 @@ Get-OrCreateList -ListName 'Solution Registry' | Out-Null
 
 Add-FieldIfMissing -ListName 'Solution Registry' -InternalName 'Description'       -DisplayName 'Description'       -Type Note
 Add-FieldIfMissing -ListName 'Solution Registry' -InternalName 'SolutionStatus'    -DisplayName 'Solution Status'   -Type Choice `
-    -Choices @('Active','Inactive','InDevelopment','Deprecated','Retired')
+    -Choices @('Active','Inactive','InDevelopment','Deprecated','Planned','Retired')
 Add-FieldIfMissing -ListName 'Solution Registry' -InternalName 'AppStatus'         -DisplayName 'App Status'        -Type Choice `
-    -Choices @('Active','Inactive','InDevelopment','Deprecated','Retired')
+    -Choices @('Active','Inactive','InDevelopment','Deprecated','Planned','Retired')
 Add-FieldIfMissing -ListName 'Solution Registry' -InternalName 'Owner'             -DisplayName 'Owner'             -Type Text
 Add-FieldIfMissing -ListName 'Solution Registry' -InternalName 'AppOwner'          -DisplayName 'App Owner'         -Type Text
 Add-FieldIfMissing -ListName 'Solution Registry' -InternalName 'DocCompleteness'   -DisplayName 'Doc Completeness'  -Type Number
@@ -286,7 +286,7 @@ Add-FieldIfMissing -ListName 'Solution Releases' -InternalName 'Version'        
 Add-FieldIfMissing -ListName 'Solution Releases' -InternalName 'Date'                  -DisplayName 'Date'                    -Type DateTime
 Add-FieldIfMissing -ListName 'Solution Releases' -InternalName 'ReleaseDate'           -DisplayName 'Release Date'            -Type DateTime -Required $true
 Add-FieldIfMissing -ListName 'Solution Releases' -InternalName 'ReleaseType'           -DisplayName 'Release Type'            -Type Choice `
-    -Choices @('Major','Minor','Patch','Hotfix','PreRelease')
+    -Choices @('Major','Minor','Patch','Hotfix','Preview','PreRelease')
 Add-FieldIfMissing -ListName 'Solution Releases' -InternalName 'Summary'               -DisplayName 'Summary'                 -Type Note
 Add-FieldIfMissing -ListName 'Solution Releases' -InternalName 'Changes'               -DisplayName 'Changes'                 -Type Note
 Add-FieldIfMissing -ListName 'Solution Releases' -InternalName 'DocumentationChanges'  -DisplayName 'Documentation Changes'   -Type Note
@@ -372,7 +372,7 @@ Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'Solut
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'AppId'            -DisplayName 'App Id'            -Type Text
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'Url'              -DisplayName 'Url'               -Type URL     -Required $true
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'AssetType'        -DisplayName 'Asset Type'        -Type Choice  -Required $true `
-    -Choices @('SVG','PNG','PDF','VSDX','DRAWIO','MERMAID','Other')
+    -Choices @('SVG','PNG','PDF','VSDX','Draw.io','MERMAID','PowerPoint','Other')
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'Description'      -DisplayName 'Description'       -Type Note
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'Version'          -DisplayName 'Version'           -Type Text
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'LastUpdated'      -DisplayName 'Last Updated'      -Type DateTime
@@ -380,7 +380,7 @@ Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'Owner
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'PreviewAvailable' -DisplayName 'Preview Available' -Type Boolean
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'PreviewUrl'       -DisplayName 'Preview Url'       -Type URL
 Add-FieldIfMissing -ListName 'Solution Architecture Assets' -InternalName 'Category'         -DisplayName 'Category'          -Type Choice `
-    -Choices @('Current State','Future State','Logical','Physical','Data Flow','Sequence','Other')
+    -Choices @('Current State','Future State','Logical','Physical','Data Flow','Sequence','Deployment','Other')
 
 # Indexes
 Add-IndexIfMissing -ListName 'Solution Architecture Assets' -InternalName 'SolutionId'
@@ -414,11 +414,11 @@ Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'SolutionId' 
 Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'AppId'              -DisplayName 'App Id'              -Type Text
 Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'Name'               -DisplayName 'Name'                -Type Text   -Required $true
 Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'SystemType'         -DisplayName 'System Type'         -Type Choice -Required $true `
-    -Choices @('SharePoint','Dataverse','Power Automate','Azure Service','External API','GitHub','SAP','SQL Database','Other')
+    -Choices @('SharePoint','Dataverse','Power Automate','Azure Service','External API','GitHub','Microsoft Graph','SAP','SQL Database','Other')
 Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'Direction'          -DisplayName 'Direction'           -Type Choice -Required $true `
     -Choices @('Inbound','Outbound','Bidirectional')
 Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'AuthenticationType' -DisplayName 'Authentication Type' -Type Choice -Required $true `
-    -Choices @('OAuth 2.0','API Key','Managed Identity','Basic Auth','Certificate','Anonymous','Other')
+    -Choices @('OAuth 2.0','API Key','Managed Identity','Service Principal','Basic Auth','Certificate','Anonymous','Other')
 Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'DataClassification' -DisplayName 'Data Classification' -Type Choice -Required $true `
     -Choices @('Public','Internal','Confidential','Restricted')
 Add-FieldIfMissing -ListName 'Solution Integrations' -InternalName 'Url'               -DisplayName 'Url'                 -Type URL

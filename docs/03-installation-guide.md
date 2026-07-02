@@ -91,7 +91,7 @@ Install-Module PnP.PowerShell -Scope CurrentUser
 .\scripts\Provision-TechElixirLists.ps1 -SiteUrl "https://YOUR-TENANT.sharepoint.com/sites/TechElixir"
 ```
 
-#### Run with sample data
+#### Run with built-in sample item seeding
 
 Add `-SeedSampleData` to insert one sample record in each list for immediate testing:
 
@@ -100,6 +100,18 @@ Add `-SeedSampleData` to insert one sample record in each list for immediate tes
 ```
 
 The script is **idempotent** — safe to run multiple times. Existing lists and columns are left unchanged; only missing lists or columns are created.
+
+#### Import the bundled JSON sample dataset
+
+To load the full sample dataset from `sharepoint/seed-data`, run:
+
+```powershell
+.\scripts\Import-TechElixirSampleData.ps1 `
+  -SiteUrl "https://YOUR-TENANT.sharepoint.com/sites/TechElixir" `
+  -SampleDataFolder ".\sharepoint\seed-data"
+```
+
+This import is also **idempotent**. Matching records are updated instead of duplicated when the script is rerun.
 
 #### What the script provisions
 
