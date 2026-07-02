@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Stack, Text, Icon } from '@fluentui/react';
-import { IApplication, IAccessibilityItem } from '../../models';
+import { IApplication } from '../../models';
 
 interface IAccessibilityReviewProps {
   app: IApplication;

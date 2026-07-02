@@ -1,6 +1,8 @@
 .container {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   padding: 16px;
+  color: var(--neutralPrimary, #323130);
+  background: var(--bodyBackground, #ffffff);
 }
 
 .header {
@@ -10,17 +12,41 @@
 .title {
   font-size: 24px;
   font-weight: 600;
-  color: var(--bodyText, #323130);
+  color: var(--neutralPrimary, #323130);
   margin: 0 0 4px 0;
 }
 
 .subtitle {
   font-size: 14px;
-  color: var(--bodyText, #605e5c);
+  color: var(--neutralSecondary, #605e5c);
 }
 
 .errorBanner {
   margin-bottom: 16px;
+}
+
+.filterSection {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--neutralQuaternaryAlt, #edebe9);
+  border-radius: 4px;
+  background: var(--bodyBackground, #ffffff);
+}
+
+.filterHeading {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+}
+
+.filterControl {
+  min-width: 220px;
+  flex: 1 1 220px;
+}
+
+.visibleCount {
+  font-size: 14px;
+  color: var(--neutralPrimary, #323130);
 }
 
 .appGrid {
@@ -39,14 +65,21 @@
   font-weight: 600;
   margin: 24px 0 12px;
   padding-bottom: 6px;
-  border-bottom: 2px solid #0078d4;
-  color: var(--bodyText, #323130);
+  border-bottom: 2px solid var(--themePrimary, #0078d4);
+  color: var(--neutralPrimary, #323130);
 }
 
 .pivot {
   margin-top: 8px;
 }
 
+/* Applied when SharePoint reports isDarkTheme = true */
 .darkTheme {
-  color: #ffffff;
+  color: var(--neutralPrimary, #ffffff);
+}
+
+@media (forced-colors: active) {
+  .sectionHeading {
+    border-bottom-color: ButtonText;
+  }
 }

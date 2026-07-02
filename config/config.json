@@ -11,5 +11,8 @@
       ]
     }
   },
-  "externals": {}
+  "externals": {},
+  "localizedResources": {
+    "TechElixirSolutionCenterWebPartStrings": "lib/webparts/techElixirSolutionCenter/loc/{locale}.js"
+  }
 }

@@ -10,6 +10,7 @@ import {
   Icon
 } from '@fluentui/react';
 import { IApplication, IPowerPlatformComponent } from '../../models';
+import { sanitizeUrl } from '../../utils/urlUtils';
 
 interface IPowerPlatformRefsProps {
   app: IApplication;
@@ -44,6 +45,7 @@ export const PowerPlatformRefs: React.FC<IPowerPlatformRefsProps> = ({ app }) =>
           <Icon
             iconName={TYPE_ICONS[item.type] || 'Puzzle'}
             styles={{ root: { color: '#742774', fontSize: 16 } }}
+            aria-hidden
           />
           <Text variant='small'>{item.type}</Text>
         </Stack>
@@ -56,7 +58,7 @@ export const PowerPlatformRefs: React.FC<IPowerPlatformRefsProps> = ({ app }) =>
       maxWidth: 280,
       onRender: (item: IPowerPlatformComponent) =>
         item.url ? (
-          <Link href={item.url} target='_blank' rel='noopener noreferrer' styles={{ root: { fontSize: 13 } }}>
+          <Link href={sanitizeUrl(item.url)} target='_blank' rel='noopener noreferrer' styles={{ root: { fontSize: 13 } }}>
             {item.name}
           </Link>
         ) : (
@@ -84,6 +86,7 @@ export const PowerPlatformRefs: React.FC<IPowerPlatformRefsProps> = ({ app }) =>
         selectionMode={SelectionMode.none}
         isHeaderVisible={true}
         compact
+        ariaLabel={`${app.name} Power Platform components`}
       />
     </Stack>
   );

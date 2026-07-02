@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Stack, Text, Link, Icon } from '@fluentui/react';
 import { IApplication } from '../../models';
+import { sanitizeUrl } from '../../utils/urlUtils';
 
 interface IGitHubLinksProps {
   app: IApplication;
@@ -25,14 +26,14 @@ export const GitHubLinks: React.FC<IGitHubLinksProps> = ({ app }) => {
         tokens={{ childrenGap: 10 }}
         styles={{ root: { padding: '10px 14px', border: '1px solid #edebe9', borderRadius: 4 } }}
       >
-        <Icon iconName='CodeEdit' styles={{ root: { fontSize: 20, color: '#0078d4' } }} />
-        <Link href={app.githubRepoUrl} target='_blank' rel='noopener noreferrer'>
+        <Icon iconName='CodeEdit' styles={{ root: { fontSize: 20, color: '#0078d4' } }} aria-hidden />
+        <Link href={sanitizeUrl(app.githubRepoUrl)} target='_blank' rel='noopener noreferrer'>
           {app.githubRepoUrl}
         </Link>
         <Icon
           iconName='OpenInNewWindow'
           styles={{ root: { fontSize: 12, color: '#0078d4', marginLeft: 4 } }}
-          aria-label='Opens in new tab'
+          aria-hidden
         />
       </Stack>
       <Stack horizontal tokens={{ childrenGap: 8 }} wrap>
@@ -44,7 +45,7 @@ export const GitHubLinks: React.FC<IGitHubLinksProps> = ({ app }) => {
         ].map(item => (
           <Link
             key={item.label}
-            href={`${app.githubRepoUrl}${item.path}`}
+            href={sanitizeUrl(`${app.githubRepoUrl}${item.path}`)}
             target='_blank'
             rel='noopener noreferrer'
             styles={{
@@ -60,7 +61,7 @@ export const GitHubLinks: React.FC<IGitHubLinksProps> = ({ app }) => {
               }
             }}
           >
-            <Icon iconName={item.icon} styles={{ root: { fontSize: 14 } }} />
+            <Icon iconName={item.icon} styles={{ root: { fontSize: 14 } }} aria-hidden />
             {item.label}
           </Link>
         ))}

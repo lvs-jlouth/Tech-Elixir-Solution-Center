@@ -1,0 +1,58 @@
+[
+  {
+    "Title": "Keyboard focus visibility",
+    "SolutionId": "1",
+    "AppId": "1",
+    "Requirement": "All interactive controls expose a visible keyboard focus state",
+    "WcagReference": "2.4.7 Focus Visible (AA)",
+    "Status": "Pass",
+    "ImpactArea": "Keyboard Navigation",
+    "Notes": "Validated with keyboard-only navigation during regression run.",
+    "RemediationGuidance": "No action required.",
+    "Owner": "Finance Team",
+    "TargetDate": "2026-07-05",
+    "RelatedDocumentUrl": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/FinanceElixir/A11Y-Audit-2026Q2.docx"
+  },
+  {
+    "Title": "Color contrast in challenge charts",
+    "SolutionId": "2",
+    "AppId": "2",
+    "Requirement": "Chart labels and bars meet minimum color contrast ratio",
+    "WcagReference": "1.4.3 Contrast Minimum (AA)",
+    "Status": "NeedsAttention",
+    "ImpactArea": "Color Contrast",
+    "Notes": "Some legend values fail 4.5:1 ratio on dark mode.",
+    "RemediationGuidance": "Adjust chart palette and add high-contrast mode token mapping.",
+    "Owner": "Wellness Engineering",
+    "TargetDate": "2026-07-20",
+    "RelatedDocumentUrl": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/FitnessElixir/A11Y-Contrast-Audit.docx"
+  },
+  {
+    "Title": "Screen reader announcements for script execution status",
+    "SolutionId": "3",
+    "AppId": "3",
+    "Requirement": "Execution status updates are announced to assistive technologies",
+    "WcagReference": "4.1.3 Status Messages (AA)",
+    "Status": "Blocked",
+    "ImpactArea": "Screen Reader",
+    "Notes": "Dependent on third-party terminal component update.",
+    "RemediationGuidance": "Introduce aria-live region wrapper once component supports status hooks.",
+    "Owner": "Automation Team",
+    "TargetDate": "2026-08-01",
+    "RelatedDocumentUrl": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/ScriptElixir/A11Y-ScreenReader-Notes.docx"
+  },
+  {
+    "Title": "Portal accessibility baseline assessment",
+    "SolutionId": "4",
+    "AppId": "4",
+    "Requirement": "Complete baseline accessibility assessment before production launch",
+    "WcagReference": "WCAG 2.2 Baseline",
+    "Status": "NotReviewed",
+    "ImpactArea": "Cognitive",
+    "Notes": "Initial assessment planned after portal information architecture is finalized.",
+    "RemediationGuidance": "Run axe-core and manual WCAG walkthrough for all key journeys.",
+    "Owner": "Architecture Guild",
+    "TargetDate": "2026-08-15",
+    "RelatedDocumentUrl": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/TechElixirPortal/A11Y-Baseline-Plan.docx"
+  }
+]

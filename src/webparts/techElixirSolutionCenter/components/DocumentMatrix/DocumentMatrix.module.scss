@@ -1,0 +1,180 @@
+.wrapper {
+  margin-top: 8px;
+}
+
+/* ── Legend ── */
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  list-style: none;
+  padding: 0;
+  margin-left: 0;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--neutralPrimary, #323130);
+}
+
+/* ── Status badge (inline within cells) ── */
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.legendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── Required / Optional badge ── */
+
+.requiredBadge {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--themeLighter, #deecf9);
+  color: var(--themeDarker, #004578);
+}
+
+.optionalBadge {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: var(--neutralLight, #f3f2f1);
+  color: var(--neutralSecondary, #605e5c);
+}
+
+/* ── Action chip ── */
+
+.actionChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 3px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  /* Semantic warning background — kept intentionally hard-coded */
+  background: #fff4ce;
+  color: #8a5700;
+}
+
+.actionNone {
+  font-size: 11px;
+  color: var(--neutralSecondary, #605e5c);
+}
+
+/* ── Section number ── */
+
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+}
+
+.sectionMeta {
+  font-size: 11px;
+  color: var(--neutralSecondary, #605e5c);
+}
+
+.mutedText {
+  font-size: 12px;
+  color: var(--neutralTertiary, #a19f9d);
+}
+
+.notesText {
+  font-size: 12px;
+  color: var(--neutralPrimary, #323130);
+}
+
+/* ── Section number ── */
+
+.sectionNumber {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--neutralSecondary, #605e5c);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Summary bar ── */
+
+.summaryBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summaryStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--neutralLight, #f3f2f1);
+  border-radius: 4px;
+  padding: 8px 16px;
+  min-width: 72px;
+}
+
+.summaryValue {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--neutralPrimary, #323130);
+  line-height: 1.2;
+}
+
+.summaryLabel {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--neutralSecondary, #605e5c);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+  text-align: center;
+}
+
+@media (forced-colors: active) {
+  .statusBadge,
+  .requiredBadge,
+  .optionalBadge {
+    border: 1px solid ButtonText;
+    forced-color-adjust: none;
+  }
+
+  .actionChip {
+    border: 1px solid ButtonText;
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .legendDot {
+    border: 1px solid ButtonText;
+  }
+
+  .summaryStat {
+    border: 1px solid ButtonText;
+  }
+}

@@ -27,7 +27,7 @@ export const ArchitectureDocs: React.FC<IArchitectureDocsProps> = ({ app }) => {
           tokens={{ childrenGap: 10 }}
           styles={{ root: { padding: '8px', border: '1px solid #edebe9', borderRadius: 4 } }}
         >
-          <Icon iconName='Documentation' styles={{ root: { fontSize: 20, color: '#0078d4', marginTop: 2 } }} />
+          <Icon iconName='Documentation' styles={{ root: { fontSize: 20, color: '#0078d4', marginTop: 2 } }} aria-hidden />
           <Stack tokens={{ childrenGap: 2 }}>
             <Link href={doc.url} target='_blank' rel='noopener noreferrer'>
               {doc.title}

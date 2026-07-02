@@ -5,6 +5,7 @@ import '@pnp/sp/items';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 import { IApplication } from '../models';
 import { mockApps } from '../data/mockApps';
+import { telemetry } from '../utils/telemetry';
 
 export class AppDataService {
   private _sp: SPFI;
@@ -60,10 +61,7 @@ export class AppDataService {
         };
       });
     } catch (error) {
-      console.warn(
-        `[AppDataService] Could not read from list "${this._listName}". Falling back to mock data.`,
-        error
-      );
+      telemetry.trackError(error, 'AppDataService.getApplications', { listName: this._listName });
       return mockApps;
     }
   }

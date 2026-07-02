@@ -1,0 +1,58 @@
+[
+  {
+    "Title": "Finance Elixir Current State Architecture",
+    "SolutionId": "1",
+    "AppId": "1",
+    "Url": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/FinanceElixir/CurrentState.vsdx",
+    "AssetType": "VSDX",
+    "Description": "Current state architecture covering SharePoint, Dataverse, and reporting services.",
+    "Version": "1.8",
+    "LastUpdated": "2026-06-22",
+    "Owner": "Finance Team",
+    "PreviewAvailable": true,
+    "PreviewUrl": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/FinanceElixir/CurrentState.png",
+    "Category": "Current State"
+  },
+  {
+    "Title": "Fitness Elixir Data Flow",
+    "SolutionId": "2",
+    "AppId": "2",
+    "Url": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/FitnessElixir/DataFlow.drawio",
+    "AssetType": "Draw.io",
+    "Description": "Data flow for challenge ingestion, scoring, and dashboard rendering.",
+    "Version": "1.3",
+    "LastUpdated": "2026-06-16",
+    "Owner": "Wellness Engineering",
+    "PreviewAvailable": false,
+    "PreviewUrl": "",
+    "Category": "Data Flow"
+  },
+  {
+    "Title": "Script Elixir Deployment Topology",
+    "SolutionId": "3",
+    "AppId": "3",
+    "Url": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/ScriptElixir/DeploymentTopology.pdf",
+    "AssetType": "PDF",
+    "Description": "Deployment topology across development, test, and production agents.",
+    "Version": "2.0",
+    "LastUpdated": "2026-06-28",
+    "Owner": "Automation Team",
+    "PreviewAvailable": true,
+    "PreviewUrl": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/ScriptElixir/DeploymentTopology-preview.png",
+    "Category": "Deployment"
+  },
+  {
+    "Title": "Tech Elixir Portal Future State",
+    "SolutionId": "4",
+    "AppId": "4",
+    "Url": "https://contoso.sharepoint.com/sites/TechElixir/Shared%20Documents/TechElixirPortal/FutureStateArchitecture.pptx",
+    "AssetType": "PowerPoint",
+    "Description": "Future-state design for consolidated solution insights and governance workflows.",
+    "Version": "0.9",
+    "LastUpdated": "2026-06-30",
+    "Owner": "Architecture Guild",
+    "PreviewAvailable": false,
+    "PreviewUrl": "",
+    "Category": "Future State"
+  }
+]

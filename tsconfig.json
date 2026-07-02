@@ -24,6 +24,7 @@
     "lib": [
       "es5",
       "dom",
+      "es2015.core",
       "es2015.collection",
       "es2015.promise",
       "es2015.iterable",
@@ -33,5 +34,9 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
   ]
 }
