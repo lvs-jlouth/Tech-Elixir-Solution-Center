@@ -24,6 +24,9 @@ import { AccessibilityDashboard } from '../AccessibilityDashboard/AccessibilityD
 import { SecurityStatus } from '../SecurityStatus/SecurityStatus';
 import { DocumentMatrix } from '../DocumentMatrix/DocumentMatrix';
 import { IntegrationInventory } from '../IntegrationInventory/IntegrationInventory';
+import { GitHubMetadataSection } from '../GitHubMetadataSection/GitHubMetadataSection';
+import { IGitHubMetadata } from '../../models/IGitHubMetadata';
+import { IGitHubService } from '../../services/IGitHubService';
 import styles from './AppDetailPanel.module.scss';
 
 export interface IDetailDataService {
@@ -37,6 +40,8 @@ export interface IAppDetailPanelProps {
   isOpen: boolean;
   onDismiss: () => void;
   dataService: IDetailDataService;
+  /** Optional GitHub service — when provided, metadata is loaded and displayed in the Overview tab. */
+  githubService?: IGitHubService;
 }
 
 // ── Shared config maps ────────────────────────────────────────────────────────
@@ -89,25 +94,33 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
   healthSummary,
   isOpen,
   onDismiss,
-  dataService
+  dataService,
+  githubService
 }) => {
   const [integrations, setIntegrations] = React.useState<IIntegration[]>([]);
   const [documents, setDocuments] = React.useState<IDocument[]>([]);
   const [loadingDetails, setLoadingDetails] = React.useState(false);
+  const [githubMetadata, setGitHubMetadata] = React.useState<IGitHubMetadata | undefined>(undefined);
 
   React.useEffect(() => {
     if (!isOpen) return;
     setLoadingDetails(true);
-    Promise.all([
+    const detailsPromise = Promise.all([
       dataService.getIntegrations(app.id),
       dataService.getDocuments(app.id)
-    ])
-      .then(([intgs, docs]) => {
-        setIntegrations(intgs);
-        setDocuments(docs);
-        setLoadingDetails(false);
-      })
-      .catch(() => setLoadingDetails(false));
+    ]).then(([intgs, docs]) => {
+      setIntegrations(intgs);
+      setDocuments(docs);
+    });
+
+    const githubPromise =
+      githubService && app.githubRepoUrl
+        ? githubService.getMetadata(app.githubRepoUrl).then(meta => setGitHubMetadata(meta)).catch(() => undefined)
+        : Promise.resolve();
+
+    Promise.all([detailsPromise, githubPromise])
+      .catch(() => undefined)
+      .finally(() => setLoadingDetails(false));
   }, [isOpen, app.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Derived values ──────────────────────────────────────────────────────────
@@ -285,6 +298,21 @@ export const AppDetailPanel: React.FC<IAppDetailPanelProps> = ({
             )}
           </section>
         )}
+
+        {/* GitHub metadata */}
+        <section aria-labelledby="panel-github-heading">
+          <Text
+            id="panel-github-heading"
+            variant="mediumPlus"
+            styles={{ root: { fontWeight: 600, display: 'block', marginBottom: 10 } }}
+          >
+            GitHub Metadata
+          </Text>
+          <GitHubMetadataSection
+            repositoryUrl={app.githubRepoUrl}
+            metadata={githubMetadata}
+          />
+        </section>
       </Stack>
     );
   }

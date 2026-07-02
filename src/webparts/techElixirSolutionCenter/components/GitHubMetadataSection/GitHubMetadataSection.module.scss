@@ -1,0 +1,101 @@
+.section {
+  border: 1px solid #edebe9;
+  border-radius: 4px;
+  padding: 14px 16px;
+  background: #fafafa;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sectionIcon {
+  font-size: 18px;
+  color: #24292f;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #323130;
+  margin: 0;
+  flex: 1;
+}
+
+.repoLink {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.externalIcon {
+  font-size: 11px;
+}
+
+.noRepoNote {
+  font-size: 13px;
+  color: #a19f9d;
+  margin: 0;
+  font-style: italic;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin: 0;
+}
+
+@media (max-width: 480px) {
+  .metaGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.metaRow {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 0;
+  border-bottom: 1px solid #edebe9;
+
+  &:last-child,
+  &:nth-last-child(2):nth-child(odd) {
+    border-bottom: none;
+  }
+}
+
+.metaIcon {
+  font-size: 13px;
+  color: #605e5c;
+  flex-shrink: 0;
+  position: relative;
+  top: 1px;
+}
+
+.metaLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #605e5c;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 110px;
+}
+
+.metaValue {
+  font-size: 13px;
+  color: #323130;
+  word-break: break-word;
+}
+
+.commitMessage {
+  font-style: italic;
+}
