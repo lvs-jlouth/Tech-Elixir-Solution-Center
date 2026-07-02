@@ -18,6 +18,7 @@ import {
 import { AccessibilityDashboard } from '../AccessibilityDashboard/AccessibilityDashboard';
 import { ArchitectureAssets } from '../ArchitectureAssets/ArchitectureAssets';
 import { IDetailDataService } from '../AppDetailPanel/AppDetailPanel';
+import { BuildMetadata } from '../BuildMetadata/BuildMetadata';
 import { DocCompletenessBar } from '../DocCompletenessBar/DocCompletenessBar';
 import { EmptyState, IEmptyStateListNames } from '../EmptyState/EmptyState';
 import { ErrorState } from '../ErrorState/ErrorState';
@@ -34,6 +35,9 @@ import styles from '../TechElixirSolutionCenter.module.scss';
 
 export interface ISolutionDashboardProps {
   webPartTitle: string;
+  webPartVersion: string;
+  userDisplayName: string | undefined;
+  siteTitle: string | undefined;
   isDarkTheme: boolean;
   isLoading: boolean;
   error: string | undefined;
@@ -77,6 +81,9 @@ export interface ISolutionDashboardProps {
 
 export const SolutionDashboard: React.FC<ISolutionDashboardProps> = ({
   webPartTitle,
+  webPartVersion,
+  userDisplayName,
+  siteTitle,
   isDarkTheme,
   isLoading,
   error,
@@ -146,6 +153,12 @@ export const SolutionDashboard: React.FC<ISolutionDashboardProps> = ({
         <Text className={styles.subtitle}>
           Living documentation and engineering dashboard for SharePoint-based app builds
         </Text>
+        <BuildMetadata
+          webPartVersion={webPartVersion}
+          useMockData={useMockData}
+          userDisplayName={userDisplayName}
+          siteTitle={siteTitle}
+        />
       </div>
 
       {error && <ErrorState message={error} technicalDetails={errorDetails} onRetry={onRetry} />}
