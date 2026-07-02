@@ -43,7 +43,7 @@ export const EmptyState: React.FC<IEmptyStateProps> = ({ listNames, useMockData,
       </div>
 
       <Text as="h2" className={styles.heading}>
-        No solutions found – let's get you set up
+        No solutions found &ndash; let&apos;s get you set up
       </Text>
       <Text className={styles.lead}>
         The web part is connected to SharePoint list mode but the{' '}

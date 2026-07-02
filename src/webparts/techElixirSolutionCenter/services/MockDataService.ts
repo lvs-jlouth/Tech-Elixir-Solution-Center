@@ -125,7 +125,7 @@ export class MockDataService {
    */
   public async getTechnicalDebt(
     appId: string,
-    excludeResolved: boolean = false
+    excludeResolved = false
   ): Promise<ITechnicalDebtItem[]> {
     const items = getTechnicalDebtForApp(appId);
     return Promise.resolve(

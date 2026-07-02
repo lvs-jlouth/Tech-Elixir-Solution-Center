@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Stack, Text, Link } from '@fluentui/react';
-import { IApplication, IReleaseNote } from '../../models';
+import { IApplication } from '../../models';
 import { formatDisplayDate, sortReleasesByDate } from '../../utils/solutionDisplay';
 import { RELEASE_DEPLOYMENT_APPEARANCE } from '../../utils/statusPresentation';
 import { sanitizeUrl } from '../../utils/urlUtils';

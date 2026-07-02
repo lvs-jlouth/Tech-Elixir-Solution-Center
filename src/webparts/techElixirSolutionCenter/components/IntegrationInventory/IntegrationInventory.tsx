@@ -4,7 +4,6 @@ import {
   Text,
   Link,
   Dropdown,
-  IDropdownOption,
   DetailsList,
   DetailsListLayoutMode,
   IColumn,

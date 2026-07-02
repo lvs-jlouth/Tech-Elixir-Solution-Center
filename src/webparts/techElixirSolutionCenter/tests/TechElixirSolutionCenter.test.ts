@@ -1,5 +1,4 @@
 import { mockApps } from '../data/mockApps';
-import { IApplication } from '../models';
 
 // ---------------------------------------------------------------------------
 // Model sanity tests

@@ -1,4 +1,4 @@
-import { calculateDocCompleteness, IDocCompletenessResult } from '../utils/docCompleteness';
+import { calculateDocCompleteness } from '../utils/docCompleteness';
 import { DOCUMENTATION_SECTIONS, DocumentationStatus } from '../constants';
 import { IDocument } from '../models/IMockDataTypes';
 

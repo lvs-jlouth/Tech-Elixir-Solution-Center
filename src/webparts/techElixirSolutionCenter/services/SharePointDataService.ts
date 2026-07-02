@@ -371,7 +371,7 @@ export class SharePointDataService {
     };
   }
 
-  private _toString(value: any, fallback: string = ''): string {
+  private _toString(value: any, fallback = ''): string {
     return typeof value === 'string' ? value : value != null ? String(value) : fallback;
   }
 

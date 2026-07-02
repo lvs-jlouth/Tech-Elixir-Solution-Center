@@ -51,7 +51,7 @@ export function getDocBarColor(percentage: number): string {
   return '#a80000';
 }
 
-export function formatDisplayDate(dateText: string | undefined, fallback: string = 'N/A'): string {
+export function formatDisplayDate(dateText: string | undefined, fallback = 'N/A'): string {
   if (!dateText) {
     return fallback;
   }
@@ -220,8 +220,8 @@ export function sortSolutions(
 
 export function buildDistinctOptions(
   values: ReadonlyArray<string>,
-  allKey: string = 'All',
-  allLabel: string = 'All'
+  allKey = 'All',
+  allLabel = 'All'
 ): IDropdownOption[] {
   return [{ key: allKey, text: allLabel }].concat(
     values

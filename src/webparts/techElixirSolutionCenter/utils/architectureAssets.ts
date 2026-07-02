@@ -27,7 +27,7 @@ export function inferArchitectureAssetType(doc: IArchitectureDoc): ResolvedArchi
 }
 
 export function isImageArchitectureAssetType(assetType: ResolvedArchitectureAssetType): boolean {
-  return IMAGE_ASSET_TYPES.indexOf(assetType) >= 0;
+  return (IMAGE_ASSET_TYPES as ReadonlyArray<string>).indexOf(assetType) >= 0;
 }
 
 export function getArchitectureAssetIcon(assetType: ResolvedArchitectureAssetType): string {

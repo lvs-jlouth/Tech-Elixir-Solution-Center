@@ -219,3 +219,35 @@ The `sharepoint/assets/elements.xml` file provisions the **TechElixirApps** list
 ## License
 
 This project is licensed under the MIT License.
+
+---
+
+## Release Notes
+
+See [RELEASE_NOTES.md](RELEASE_NOTES.md) for the full v1.0.0 release notes and known limitations.  
+See [CHANGELOG.md](CHANGELOG.md) for the complete version history.
+
+### v1.0.0 – 2026-07-02 (Initial Release)
+
+Key capabilities shipped in this release:
+
+- Solution Dashboard with Cards and List display modes
+- Mock Data mode (zero-config) and SharePoint Lists mode (seven-list backend)
+- Architecture Documents, Release Timeline, Technical Debt Register, Accessibility Dashboard, Integration Inventory, Document Matrix, GitHub Links, Power Platform Components, and Quick Links sections
+- PowerShell provisioning scripts with idempotent list creation and optional sample data seeding
+- Full project documentation in `docs/`
+
+### Known Limitations (v1.0.0)
+
+| # | Limitation |
+|---|---|
+| 1 | In SharePoint Lists mode, complex sub-entities (architecture docs, release notes, technical debt, accessibility checks, integrations) fall back to **mock data**. Only top-level solution fields are read from `Solution Registry`. Full multi-list read is planned. |
+| 2 | `aria-live` regions for loading and error states are not consistently applied across all components. |
+| 3 | Narrow-viewport table columns may require horizontal scroll (WCAG 1.4.10 Reflow). |
+| 4 | Modal/panel focus trap and Escape key handling have not been formally audited. |
+| 5 | No automated accessibility scan is integrated in the test pipeline. |
+| 6 | GitHub metadata (issues count, PR count, last commit) is static mock data; live GitHub API integration is not yet implemented. |
+| 7 | No GitHub Actions CI/CD workflow — builds must be run manually. |
+| 8 | The dashboard is read-only; no in-place editing from the web part. |
+
+See [RELEASE_NOTES.md](RELEASE_NOTES.md) for the complete list and [docs/08-roadmap.md](docs/08-roadmap.md) for planned fixes.

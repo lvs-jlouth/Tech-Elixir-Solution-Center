@@ -90,6 +90,29 @@
 
 /* ── Section number ── */
 
+.sectionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--neutralPrimary, #323130);
+}
+
+.sectionMeta {
+  font-size: 11px;
+  color: var(--neutralSecondary, #605e5c);
+}
+
+.mutedText {
+  font-size: 12px;
+  color: var(--neutralTertiary, #a19f9d);
+}
+
+.notesText {
+  font-size: 12px;
+  color: var(--neutralPrimary, #323130);
+}
+
+/* ── Section number ── */
+
 .sectionNumber {
   font-size: 12px;
   font-weight: 700;

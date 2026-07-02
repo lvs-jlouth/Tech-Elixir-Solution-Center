@@ -32,7 +32,7 @@ export interface ITechElixirSolutionCenterWebPartProps {
 
 export default class TechElixirSolutionCenterWebPart extends BaseClientSideWebPart<ITechElixirSolutionCenterWebPartProps> {
 
-  private _isDarkTheme: boolean = false;
+  private _isDarkTheme = false;
 
   public render(): void {
     const element: React.ReactElement<ITechElixirSolutionCenterProps> = React.createElement(
