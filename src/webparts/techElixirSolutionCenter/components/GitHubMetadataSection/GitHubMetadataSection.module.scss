@@ -1,8 +1,8 @@
 .section {
-  border: 1px solid #edebe9;
+  border: 1px solid var(--neutralQuaternaryAlt, #edebe9);
   border-radius: 4px;
   padding: 14px 16px;
-  background: #fafafa;
+  background: var(--neutralLighterAlt, #fafafa);
 }
 
 .sectionHeader {
@@ -14,14 +14,14 @@
 
 .sectionIcon {
   font-size: 18px;
-  color: #24292f;
+  color: var(--neutralPrimary, #24292f);
   flex-shrink: 0;
 }
 
 .sectionTitle {
   font-size: 14px;
   font-weight: 600;
-  color: #323130;
+  color: var(--neutralPrimary, #323130);
   margin: 0;
   flex: 1;
 }
@@ -40,7 +40,7 @@
 
 .noRepoNote {
   font-size: 13px;
-  color: #a19f9d;
+  color: var(--neutralTertiary, #a19f9d);
   margin: 0;
   font-style: italic;
 }
@@ -63,7 +63,7 @@
   align-items: baseline;
   gap: 6px;
   padding: 5px 0;
-  border-bottom: 1px solid #edebe9;
+  border-bottom: 1px solid var(--neutralQuaternaryAlt, #edebe9);
 
   &:last-child,
   &:nth-last-child(2):nth-child(odd) {
@@ -73,7 +73,7 @@
 
 .metaIcon {
   font-size: 13px;
-  color: #605e5c;
+  color: var(--neutralSecondary, #605e5c);
   flex-shrink: 0;
   position: relative;
   top: 1px;
@@ -82,7 +82,7 @@
 .metaLabel {
   font-size: 11px;
   font-weight: 600;
-  color: #605e5c;
+  color: var(--neutralSecondary, #605e5c);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   white-space: nowrap;
@@ -92,10 +92,20 @@
 
 .metaValue {
   font-size: 13px;
-  color: #323130;
+  color: var(--neutralPrimary, #323130);
   word-break: break-word;
 }
 
 .commitMessage {
   font-style: italic;
+}
+
+@media (forced-colors: active) {
+  .section {
+    border: 1px solid ButtonText;
+  }
+
+  .metaRow {
+    border-bottom-color: ButtonText;
+  }
 }

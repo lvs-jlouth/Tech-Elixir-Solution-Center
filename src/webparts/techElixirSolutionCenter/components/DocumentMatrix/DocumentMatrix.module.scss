@@ -19,7 +19,7 @@
   align-items: center;
   gap: 4px;
   font-size: 11px;
-  color: #323130;
+  color: var(--neutralPrimary, #323130);
 }
 
 /* ── Status badge (inline within cells) ── */
@@ -52,8 +52,8 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: #deecf9;
-  color: #004578;
+  background: var(--themeLighter, #deecf9);
+  color: var(--themeDarker, #004578);
 }
 
 .optionalBadge {
@@ -64,8 +64,8 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: #f3f2f1;
-  color: #605e5c;
+  background: var(--neutralLight, #f3f2f1);
+  color: var(--neutralSecondary, #605e5c);
 }
 
 /* ── Action chip ── */
@@ -78,13 +78,14 @@
   padding: 2px 8px;
   font-size: 11px;
   font-weight: 600;
+  /* Semantic warning background — kept intentionally hard-coded */
   background: #fff4ce;
   color: #8a5700;
 }
 
 .actionNone {
   font-size: 11px;
-  color: #605e5c;
+  color: var(--neutralSecondary, #605e5c);
 }
 
 /* ── Section number ── */
@@ -92,7 +93,7 @@
 .sectionNumber {
   font-size: 12px;
   font-weight: 700;
-  color: #605e5c;
+  color: var(--neutralSecondary, #605e5c);
   font-variant-numeric: tabular-nums;
 }
 
@@ -109,7 +110,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #f3f2f1;
+  background: var(--neutralLight, #f3f2f1);
   border-radius: 4px;
   padding: 8px 16px;
   min-width: 72px;
@@ -118,16 +119,39 @@
 .summaryValue {
   font-size: 22px;
   font-weight: 700;
-  color: #323130;
+  color: var(--neutralPrimary, #323130);
   line-height: 1.2;
 }
 
 .summaryLabel {
   font-size: 10px;
   font-weight: 600;
-  color: #605e5c;
+  color: var(--neutralSecondary, #605e5c);
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-top: 2px;
   text-align: center;
+}
+
+@media (forced-colors: active) {
+  .statusBadge,
+  .requiredBadge,
+  .optionalBadge {
+    border: 1px solid ButtonText;
+    forced-color-adjust: none;
+  }
+
+  .actionChip {
+    border: 1px solid ButtonText;
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .legendDot {
+    border: 1px solid ButtonText;
+  }
+
+  .summaryStat {
+    border: 1px solid ButtonText;
+  }
 }

@@ -1,15 +1,15 @@
 .card {
-  border: 1px solid #edebe9;
+  border: 1px solid var(--neutralQuaternaryAlt, #edebe9);
   border-radius: 4px;
   padding: 16px;
-  background: #ffffff;
+  background: var(--bodyBackground, #ffffff);
   box-shadow: 0 1.6px 3.6px rgba(0,0,0,.132), 0 0.3px 0.9px rgba(0,0,0,.108);
   display: flex;
   flex-direction: column;
   gap: 0;
 
   &:focus {
-    outline: 2px solid #0078d4;
+    outline: 2px solid var(--themePrimary, #0078d4);
     outline-offset: 2px;
   }
 }
@@ -25,11 +25,11 @@
 
   &:hover {
     box-shadow: 0 3.2px 7.2px rgba(0,0,0,.18), 0 0.6px 1.8px rgba(0,0,0,.15);
-    border-color: #0078d4;
+    border-color: var(--themePrimary, #0078d4);
   }
 
   &:focus {
-    outline: 2px solid #0078d4;
+    outline: 2px solid var(--themePrimary, #0078d4);
     outline-offset: 2px;
   }
 }
@@ -50,14 +50,14 @@
 .appName {
   font-size: 16px;
   font-weight: 600;
-  color: #323130;
+  color: var(--neutralPrimary, #323130);
   margin: 0;
   line-height: 1.3;
 }
 
 .owner {
   font-size: 12px;
-  color: #605e5c;
+  color: var(--neutralSecondary, #605e5c);
   margin: 4px 0 0;
 }
 
@@ -78,7 +78,7 @@
 
 .description {
   font-size: 14px;
-  color: #323130;
+  color: var(--neutralPrimary, #323130);
   margin: 0 0 12px;
   line-height: 1.5;
 }
@@ -91,7 +91,7 @@
   gap: 8px;
   margin: 0 0 12px;
   padding: 10px;
-  background: #f3f2f1;
+  background: var(--neutralLight, #f3f2f1);
   border-radius: 4px;
 }
 
@@ -103,7 +103,7 @@
   dt {
     font-size: 10px;
     font-weight: 600;
-    color: #605e5c;
+    color: var(--neutralSecondary, #605e5c);
     text-transform: uppercase;
     letter-spacing: 0.04em;
   }
@@ -111,7 +111,7 @@
   dd {
     font-size: 12px;
     font-weight: 600;
-    color: #323130;
+    color: var(--neutralPrimary, #323130);
     margin: 0;
   }
 }
@@ -126,18 +126,18 @@
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #605e5c;
+  color: var(--neutralSecondary, #605e5c);
   margin-bottom: 4px;
 }
 
 .docBarPct {
   font-weight: 600;
-  color: #323130;
+  color: var(--neutralPrimary, #323130);
 }
 
 .docBarTrack {
   height: 6px;
-  background: #edebe9;
+  background: var(--neutralQuaternaryAlt, #edebe9);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -180,10 +180,47 @@
 }
 
 .tag {
-  background: #eff6fc;
-  color: #0078d4;
+  background: var(--themeLighterAlt, #eff6fc);
+  color: var(--themePrimary, #0078d4);
   border-radius: 2px;
   padding: 2px 8px;
   font-size: 12px;
   font-weight: 500;
+}
+
+@media (forced-colors: active) {
+  .card {
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+
+  .clickable:hover {
+    border-color: Highlight;
+    box-shadow: none;
+  }
+
+  .clickable:focus,
+  .card:focus {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .badge,
+  .statusPill {
+    border: 1px solid ButtonText;
+    forced-color-adjust: none;
+  }
+
+  .tag {
+    border: 1px solid ButtonText;
+  }
+
+  .docBarTrack {
+    background: ButtonFace;
+    border: 1px solid ButtonText;
+  }
+
+  .docBarFill {
+    background: Highlight;
+  }
 }
