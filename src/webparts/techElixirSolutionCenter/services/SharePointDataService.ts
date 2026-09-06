@@ -50,12 +50,11 @@ export class SharePointDataService {
 
   public async getSolutions(): Promise<IApplication[]> {
     try {
+      // ShortName/AppType are not provisioned list columns; the model derives them from Title/Tags instead.
       const items = await this._readListItems(this._lists.solutions, [
         'Id',
         'Title',
-        'ShortName',
         'Description',
-        'AppType',
         'SolutionStatus',
         'AppStatus',
         'Owner',
