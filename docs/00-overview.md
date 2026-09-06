@@ -65,3 +65,5 @@ The web part operates in two modes:
 | [06-development-guide.md](06-development-guide.md) | Local development and contributing |
 | [07-release-process.md](07-release-process.md) | Release versioning and deployment checklist |
 | [08-roadmap.md](08-roadmap.md) | Future features and planned integrations |
+| [11-administration-and-usage-sop.md](11-administration-and-usage-sop.md) | Administration and usage operating procedure |
+| [12-portable-installation-guide.md](12-portable-installation-guide.md) | Portable installer and anonymization guide |
