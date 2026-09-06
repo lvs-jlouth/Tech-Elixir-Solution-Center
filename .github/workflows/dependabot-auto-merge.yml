@@ -1,0 +1,124 @@
+name: Dependabot Auto Merge
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    env:
+      DEPENDABOT_MAJOR_REVIEWERS: ${{ vars.DEPENDABOT_MAJOR_REVIEWERS }}
+    steps:
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add severity/update labels
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+
+            const labels = ["dependencies"];
+            const updateType = "${{ steps.metadata.outputs.update-type }}";
+
+            if (updateType === "security") labels.push("security");
+            if (updateType === "version-update:semver-patch") labels.push("patch");
+            if (updateType === "version-update:semver-minor") labels.push("minor");
+            if (updateType === "version-update:semver-major") labels.push("major");
+
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels });
+
+      - name: Auto-approve safe updates
+        if: |
+          steps.metadata.outputs.update-type == 'security' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            try {
+              await github.rest.pulls.createReview({
+                owner,
+                repo,
+                pull_number,
+                event: "APPROVE",
+                body: "Auto-approved safe Dependabot update (security/patch/minor)."
+              });
+            } catch (error) {
+              core.warning(`Approval skipped: ${error.message}`);
+            }
+
+      - name: Request manual review for major updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = context.payload.pull_request.number;
+
+            const reviewersFromVar = (process.env.DEPENDABOT_MAJOR_REVIEWERS || "")
+              .split(",")
+              .map(v => v.trim())
+              .filter(Boolean);
+            const reviewers = reviewersFromVar.length > 0 ? reviewersFromVar : [owner];
+
+            try {
+              await github.rest.pulls.requestReviewers({
+                owner,
+                repo,
+                pull_number,
+                reviewers
+              });
+            } catch (error) {
+              core.warning(`Reviewer request skipped: ${error.message}`);
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number: pull_number,
+              body: `Major Dependabot update detected. Auto-merge is intentionally disabled and manual review is required. Requested reviewers: ${reviewers.join(", ")}.`
+            });
+
+      - name: Enable auto-merge for safe updates
+        if: |
+          steps.metadata.outputs.update-type == 'security' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+          steps.metadata.outputs.update-type == 'version-update:semver-minor'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prNodeId = context.payload.pull_request.node_id;
+
+            const mutation = `
+              mutation($pullRequestId: ID!) {
+                enablePullRequestAutoMerge(input: {
+                  pullRequestId: $pullRequestId,
+                  mergeMethod: SQUASH
+                }) {
+                  clientMutationId
+                }
+              }
+            `;
+
+            try {
+              await github.graphql(mutation, { pullRequestId: prNodeId });
+            } catch (error) {
+              core.warning(`Auto-merge could not be enabled: ${error.message}`);
+            }
