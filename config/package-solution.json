@@ -3,7 +3,7 @@
   "solution": {
     "name": "tech-elixir-solution-center-client-side-solution",
     "id": "c4d5e6f7-b8c9-5d0e-9f2a-3b4c5d6e7f80",
-    "version": "1.0.0.0",
+    "version": "1.0.1.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

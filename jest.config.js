@@ -10,6 +10,9 @@ module.exports = {
       tsconfig: './tsconfig.test.json'
     }
   },
+  modulePathIgnorePatterns: [
+    '<rootDir>/lib/'
+  ],
   testMatch: [
     '**/tests/**/*.test.ts',
     '**/tests/**/*.test.tsx'

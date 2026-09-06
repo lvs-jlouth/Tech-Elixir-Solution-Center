@@ -1,41 +1,111 @@
 <#
 .SYNOPSIS
-    Provisions the SharePoint backend lists required by the TechElixirSolutionCenter web part.
+    Provisions the SharePoint backend lists required by the Tech Elixir Solution Center.
 
 .DESCRIPTION
-    Creates seven SharePoint lists (Solution Registry, Solution Documents, Solution Releases,
-    Solution Technical Debt, Solution Architecture Assets, Solution Integrations,
-    Solution Accessibility Checks) with all required columns, indexes, and default views.
-    The script is fully idempotent – safe to run multiple times against the same site.
+    Creates and configures the SharePoint lists, columns, indexes, and views required by
+    the Tech Elixir Solution Center web part. The script is idempotent and can be run
+    repeatedly against the configured site.
 
-.PARAMETER SiteUrl
-    Full URL of the target SharePoint site (e.g. https://contoso.sharepoint.com/sites/TechElixir).
+    The SharePoint site URL and Entra ID application client ID are intentionally fixed
+    for the Tech Elixir environment.
 
 .PARAMETER SeedSampleData
-    When provided, adds one sample record to each list for testing.
+    Adds one sample solution and associated child records for testing. Sample data must
+    only be inserted when this switch is explicitly supplied.
 
 .EXAMPLE
-    .\Provision-TechElixirLists.ps1 -SiteUrl "https://contoso.sharepoint.com/sites/TechElixir"
+    .\ProvisionLists.ps1
 
 .EXAMPLE
-    .\Provision-TechElixirLists.ps1 -SiteUrl "https://contoso.sharepoint.com/sites/TechElixir" -SeedSampleData
+    .\ProvisionLists.ps1 -SeedSampleData
 
 .NOTES
-    Requires PnP.PowerShell module (Install-Module PnP.PowerShell).
-    Authenticated interactively via device-code / browser login.
+    Target site:
+    https://tecanada.sharepoint.com/sites/TechElixirApps
+
+    Entra application:
+    TechElixir.PnP.SharePoint.Admin
+
+    Client ID:
+    b20f4aa3-ba69-41e5-af43-a17c3e1f9be2
+
+    Designed for PnP.PowerShell 3.4.1 or a compatible later release.
 #>
 
 [CmdletBinding(SupportsShouldProcess)]
 param (
-    [Parameter(Mandatory = $true)]
-    [string]$SiteUrl,
-
     [Parameter(Mandatory = $false)]
     [switch]$SeedSampleData
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+# ---------------------------------------------------------------------------
+# Fixed environment configuration
+# ---------------------------------------------------------------------------
+$SiteUrl = "https://tecanada.sharepoint.com/sites/TechElixirApps"
+$ClientId = "b20f4aa3-ba69-41e5-af43-a17c3e1f9be2"
+$MinimumPnPVersion = [version]"3.4.1"
+
+function Initialize-PnPPowerShell {
+    [CmdletBinding()]
+    param()
+
+    Write-Host "Checking PnP.PowerShell dependency..." -ForegroundColor Yellow
+
+    $availableModules = @(
+        Get-Module -ListAvailable -Name PnP.PowerShell |
+            Sort-Object Version -Descending
+    )
+
+    if ($availableModules.Count -eq 0) {
+        Write-Host "PnP.PowerShell is not installed. Installing it for the current user..." -ForegroundColor Yellow
+
+        try {
+            if (-not (Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue)) {
+                Install-PackageProvider -Name NuGet -Scope CurrentUser -Force -ErrorAction Stop | Out-Null
+            }
+
+            Install-Module `
+                -Name PnP.PowerShell `
+                -Scope CurrentUser `
+                -Repository PSGallery `
+                -Force `
+                -AllowClobber `
+                -ErrorAction Stop
+        }
+        catch {
+            throw "PnP.PowerShell could not be installed. $($_.Exception.Message)"
+        }
+
+        $availableModules = @(
+            Get-Module -ListAvailable -Name PnP.PowerShell |
+                Sort-Object Version -Descending
+        )
+    }
+
+    if ($availableModules.Count -eq 0) {
+        throw "PnP.PowerShell is unavailable after the installation attempt."
+    }
+
+    $selectedModule = $availableModules[0]
+
+    if ($selectedModule.Version -lt $MinimumPnPVersion) {
+        Write-Warning "PnP.PowerShell $($selectedModule.Version) is installed. Version $MinimumPnPVersion or later is recommended."
+    }
+
+    try {
+        Import-Module PnP.PowerShell -Force -ErrorAction Stop
+    }
+    catch {
+        throw "PnP.PowerShell could not be imported. $($_.Exception.Message)"
+    }
+
+    $loadedModule = Get-Module -Name PnP.PowerShell
+    Write-Host "PnP.PowerShell $($loadedModule.Version) loaded successfully." -ForegroundColor Green
+}
 
 # ---------------------------------------------------------------------------
 # Helper functions
@@ -137,25 +207,20 @@ function Add-IndexIfMissing {
         [string]$InternalName
     )
 
-    $list = Get-PnPList -Identity $ListName -Includes FieldIndexes
     $field = Get-PnPField -List $ListName -Identity $InternalName -ErrorAction SilentlyContinue
     if ($null -eq $field) {
         Write-Host "    Skipping index – column '$InternalName' not found on '$ListName'." -ForegroundColor Yellow
         return
     }
 
-    $alreadyIndexed = $list.FieldIndexes | Where-Object { $_.Id -eq $field.Id }
-    if ($null -ne $alreadyIndexed) {
+    # Compatible across PnP.PowerShell versions: use the field's Indexed flag directly.
+    if ($field.Indexed -eq $true) {
         Write-Host "    Index already exists on '$InternalName' in '$ListName'" -ForegroundColor DarkGray
         return
     }
 
     Write-Host "    Adding index on '$InternalName' in '$ListName'" -ForegroundColor Cyan
-    $ctx = Get-PnPContext
-    $spList = $ctx.Web.Lists.GetByTitle($ListName)
-    $spField = $spList.Fields.GetByInternalNameOrTitle($InternalName)
-    $spList.FieldIndexes.Add($spField) | Out-Null
-    $ctx.ExecuteQuery()
+    Set-PnPField -List $ListName -Identity $InternalName -Values @{ Indexed = $true } | Out-Null
 }
 
 function Add-ViewIfMissing {
@@ -191,13 +256,56 @@ function Add-ViewIfMissing {
     Add-PnPView @params | Out-Null
 }
 
-# ---------------------------------------------------------------------------
-# Connect
-# ---------------------------------------------------------------------------
+# Initialize PnP.PowerShell before any SharePoint operations.
+Initialize-PnPPowerShell
 
-Write-Host "`nConnecting to '$SiteUrl' ..." -ForegroundColor Yellow
-Connect-PnPOnline -Url $SiteUrl -Interactive
-Write-Host "Connected.`n" -ForegroundColor Green
+# ---------------------------------------------------------------------------
+# Connect to SharePoint
+# ---------------------------------------------------------------------------
+Write-Host ""
+Write-Host "============================================================" -ForegroundColor Cyan
+Write-Host " Tech Elixir Solution Center Provisioning" -ForegroundColor Cyan
+Write-Host "============================================================" -ForegroundColor Cyan
+Write-Host "Target site: $SiteUrl" -ForegroundColor Yellow
+Write-Host "PnP client ID: $ClientId" -ForegroundColor DarkGray
+Write-Host ""
+
+try {
+    Connect-PnPOnline `
+        -Url $SiteUrl `
+        -ClientId $ClientId `
+        -Interactive `
+        -ErrorAction Stop
+
+    $web = Get-PnPWeb -Includes Title, Url -ErrorAction Stop
+
+    if ($null -eq $web -or [string]::IsNullOrWhiteSpace($web.Url)) {
+        throw "The PnP connection completed, but the target SharePoint site could not be validated."
+    }
+
+    if ($web.Url.TrimEnd('/') -ne $SiteUrl.TrimEnd('/')) {
+        throw "Connected to '$($web.Url)' instead of the expected site '$SiteUrl'."
+    }
+
+    Write-Host "Connected successfully." -ForegroundColor Green
+    Write-Host "Site title: $($web.Title)" -ForegroundColor Cyan
+    Write-Host "Site URL:   $($web.Url)" -ForegroundColor Cyan
+    Write-Host ""
+}
+catch {
+    Write-Host ""
+    Write-Host "SharePoint connection failed." -ForegroundColor Red
+    Write-Host $_.Exception.Message -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "Validate that:" -ForegroundColor Yellow
+    Write-Host "  1. The Entra application exists and the Client ID is correct."
+    Write-Host "  2. The Entra application has the required delegated SharePoint permissions."
+    Write-Host "  3. Tenant or administrator consent has been granted where required."
+    Write-Host "  4. The signed-in account can create lists and fields on the target site."
+    throw
+}
+
+try {
 
 # ===========================================================================
 # 1. Solution Registry
@@ -499,97 +607,152 @@ Add-ViewIfMissing -ListName 'Solution Accessibility Checks' -ViewName 'By Impact
 if ($SeedSampleData) {
     Write-Host "`n=== Seeding sample data ===" -ForegroundColor Magenta
 
-    # Solution Registry – parent record (used as SolutionId = "1" by children below)
-    Write-Host "  Adding sample: Solution Registry" -ForegroundColor Cyan
-    $parentItem = Add-PnPListItem -List 'Solution Registry' -Values @{
-        Title            = 'Finance Elixir'
-        Description      = 'Finance operations solution built on the Power Platform and SharePoint.'
-        SolutionStatus   = 'Active'
-        Owner            = 'Finance Team'
-        DocCompleteness  = 82
-        Tags             = 'Finance;SharePoint;Power Platform'
+    $existingSample = @(
+        Get-PnPListItem `
+            -List 'Solution Registry' `
+            -Query '<View><Query><Where><Eq><FieldRef Name="Title"/><Value Type="Text">Finance Elixir</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>' `
+            -ErrorAction Stop
+    )
+
+    if ($existingSample.Count -gt 0) {
+        Write-Host "Sample data already exists. Skipping sample-data insertion." -ForegroundColor DarkGray
     }
-    $solutionId = $parentItem.Id.ToString()
+    else {
+        # Solution Registry - parent record (used as SolutionId = "1" by children below)
+        Write-Host "  Adding sample: Solution Registry" -ForegroundColor Cyan
+        $parentItem = Add-PnPListItem -List 'Solution Registry' -Values @{
+            Title            = 'Finance Elixir'
+            Description      = 'Finance operations solution built on the Power Platform and SharePoint.'
+            SolutionStatus   = 'Active'
+            Owner            = 'Finance Team'
+            DocCompleteness  = 82
+            Tags             = 'Finance;SharePoint;Power Platform'
+        }
+        $solutionId = $parentItem.Id.ToString()
 
-    Write-Host "  Adding sample: Solution Documents (SolutionId=$solutionId)" -ForegroundColor Cyan
-    Add-PnPListItem -List 'Solution Documents' -Values @{
-        Title         = 'Architecture Overview'
-        SolutionId    = $solutionId
-        SectionKey    = 'architecture'
-        SectionNumber = '2.1'
-        SectionTitle  = 'Current State Architecture'
-        Status        = 'Current'
-        Owner         = 'Architecture Team'
-        Notes         = 'Reviewed and approved Q2 2026.'
-    } | Out-Null
+        Write-Host "  Adding sample: Solution Documents (SolutionId=$solutionId)" -ForegroundColor Cyan
+        Add-PnPListItem -List 'Solution Documents' -Values @{
+            Title         = 'Architecture Overview'
+            SolutionId    = $solutionId
+            SectionKey    = 'architecture'
+            SectionNumber = '2.1'
+            SectionTitle  = 'Current State Architecture'
+            Status        = 'Current'
+            Owner         = 'Architecture Team'
+            Notes         = 'Reviewed and approved Q2 2026.'
+        } | Out-Null
 
-    Write-Host "  Adding sample: Solution Releases (SolutionId=$solutionId)" -ForegroundColor Cyan
-    Add-PnPListItem -List 'Solution Releases' -Values @{
-        Title            = 'v2.4.0'
-        SolutionId       = $solutionId
-        Version          = '2.4.0'
-        ReleaseDate      = [DateTime]::Today
-        ReleaseType      = 'Minor'
-        Summary          = 'Added API caching improvements and telemetry refactor.'
-        DeploymentStatus = 'Deployed'
-        ReleaseOwner     = 'DevOps Team'
-    } | Out-Null
+        Write-Host "  Adding sample: Solution Releases (SolutionId=$solutionId)" -ForegroundColor Cyan
+        Add-PnPListItem -List 'Solution Releases' -Values @{
+            Title            = 'v2.4.0'
+            SolutionId       = $solutionId
+            Version          = '2.4.0'
+            ReleaseDate      = [DateTime]::Today
+            ReleaseType      = 'Minor'
+            Summary          = 'Added API caching improvements and telemetry refactor.'
+            DeploymentStatus = 'Deployed'
+            ReleaseOwner     = 'DevOps Team'
+        } | Out-Null
 
-    Write-Host "  Adding sample: Solution Technical Debt (SolutionId=$solutionId)" -ForegroundColor Cyan
-    Add-PnPListItem -List 'Solution Technical Debt' -Values @{
-        Title               = 'Replace legacy auth flow'
-        SolutionId          = $solutionId
-        Description         = 'Uses deprecated token logic that will be unsupported in 2027.'
-        Category            = 'Security'
-        Severity            = 'High'
-        SuggestedRemediation = 'Move to managed identity for all API calls.'
-        Owner               = 'Platform Security'
-        TargetRelease       = '2.5.0'
-        Status              = 'Open'
-    } | Out-Null
+        Write-Host "  Adding sample: Solution Technical Debt (SolutionId=$solutionId)" -ForegroundColor Cyan
+        Add-PnPListItem -List 'Solution Technical Debt' -Values @{
+            Title                = 'Replace legacy auth flow'
+            SolutionId           = $solutionId
+            Description          = 'Uses deprecated token logic that will be unsupported in 2027.'
+            Category             = 'Security'
+            Severity             = 'High'
+            SuggestedRemediation = 'Move to managed identity for all API calls.'
+            Owner                = 'Platform Security'
+            TargetRelease        = '2.5.0'
+            Status               = 'Open'
+        } | Out-Null
 
-    Write-Host "  Adding sample: Solution Architecture Assets (SolutionId=$solutionId)" -ForegroundColor Cyan
-    Add-PnPListItem -List 'Solution Architecture Assets' -Values @{
-        Title            = 'Target Architecture Diagram'
-        SolutionId       = $solutionId
-        AssetType        = 'VSDX'
-        Description      = 'Logical application topology – future state.'
-        Category         = 'Future State'
-        Owner            = 'Enterprise Architecture'
-        PreviewAvailable = $false
-    } | Out-Null
+        Write-Host "  Adding sample: Solution Architecture Assets (SolutionId=$solutionId)" -ForegroundColor Cyan
+        Add-PnPListItem -List 'Solution Architecture Assets' -Values @{
+            Title            = 'Target Architecture Diagram'
+            SolutionId       = $solutionId
+            AssetType        = 'VSDX'
+            Description      = 'Logical application topology - future state.'
+            Category         = 'Future State'
+            Owner            = 'Enterprise Architecture'
+            PreviewAvailable = $false
+        } | Out-Null
 
-    Write-Host "  Adding sample: Solution Integrations (SolutionId=$solutionId)" -ForegroundColor Cyan
-    Add-PnPListItem -List 'Solution Integrations' -Values @{
-        Title              = 'Finance API Connector'
-        SolutionId         = $solutionId
-        Name               = 'SAP Finance API'
-        SystemType         = 'External API'
-        Direction          = 'Bidirectional'
-        AuthenticationType = 'OAuth 2.0'
-        DataClassification = 'Confidential'
-        Environment        = 'Production'
-        Status             = 'Active'
-        Owner              = 'Integration Team'
-        Notes              = 'Rate limited at 500 RPM.'
-    } | Out-Null
+        Write-Host "  Adding sample: Solution Integrations (SolutionId=$solutionId)" -ForegroundColor Cyan
+        Add-PnPListItem -List 'Solution Integrations' -Values @{
+            Title              = 'Finance API Connector'
+            SolutionId         = $solutionId
+            Name               = 'SAP Finance API'
+            SystemType         = 'External API'
+            Direction          = 'Bidirectional'
+            AuthenticationType = 'OAuth 2.0'
+            DataClassification = 'Confidential'
+            Environment        = 'Production'
+            Status             = 'Active'
+            Owner              = 'Integration Team'
+            Notes              = 'Rate limited at 500 RPM.'
+        } | Out-Null
 
-    Write-Host "  Adding sample: Solution Accessibility Checks (SolutionId=$solutionId)" -ForegroundColor Cyan
-    Add-PnPListItem -List 'Solution Accessibility Checks' -Values @{
-        Title               = 'Keyboard Focus Order'
-        SolutionId          = $solutionId
-        Requirement         = 'All interactive controls are keyboard reachable'
-        WcagReference       = 'WCAG 2.1.1'
-        Status              = 'NeedsAttention'
-        ImpactArea          = 'Keyboard Navigation'
-        Notes               = 'Modal trap on settings panel.'
-        RemediationGuidance = 'Implement focus trap and escape key handling in modal component.'
-        Owner               = 'Accessibility Champion'
-        TargetDate          = [DateTime]::Today.AddDays(30)
-    } | Out-Null
+        Write-Host "  Adding sample: Solution Accessibility Checks (SolutionId=$solutionId)" -ForegroundColor Cyan
+        Add-PnPListItem -List 'Solution Accessibility Checks' -Values @{
+            Title               = 'Keyboard Focus Order'
+            SolutionId          = $solutionId
+            Requirement         = 'All interactive controls are keyboard reachable'
+            WcagReference       = 'WCAG 2.1.1'
+            Status              = 'NeedsAttention'
+            ImpactArea          = 'Keyboard Navigation'
+            Notes               = 'Modal trap on settings panel.'
+            RemediationGuidance = 'Implement focus trap and escape key handling in modal component.'
+            Owner               = 'Accessibility Champion'
+            TargetDate          = [DateTime]::Today.AddDays(30)
+        } | Out-Null
 
-    Write-Host "`nSample data seeded successfully." -ForegroundColor Green
+        Write-Host "`nSample data seeded successfully." -ForegroundColor Green
+    }
 }
 
-Write-Host "`n=== Provisioning complete ===" -ForegroundColor Green
-Disconnect-PnPOnline
+# ---------------------------------------------------------------------------
+# Final verification
+# ---------------------------------------------------------------------------
+$expectedLists = @(
+    'Solution Registry',
+    'Solution Documents',
+    'Solution Releases',
+    'Solution Technical Debt',
+    'Solution Architecture Assets',
+    'Solution Integrations',
+    'Solution Accessibility Checks'
+)
+
+$verificationResults = foreach ($listName in $expectedLists) {
+    $list = Get-PnPList -Identity $listName -ErrorAction SilentlyContinue
+
+    [PSCustomObject]@{
+        ListName = $listName
+        Exists   = ($null -ne $list)
+    }
+}
+
+$missingLists = @($verificationResults | Where-Object { -not $_.Exists })
+
+Write-Host ""
+Write-Host "Provisioning verification:" -ForegroundColor Magenta
+$verificationResults | Format-Table -AutoSize
+
+if ($missingLists.Count -gt 0) {
+    $missingListNames = $missingLists.ListName -join ', '
+    throw "Provisioning verification failed. Missing lists: $missingListNames"
+}
+
+Write-Host "All expected Solution Center lists are present." -ForegroundColor Green
+Write-Host "Provisioning completed successfully." -ForegroundColor Green
+}
+finally {
+    try {
+        Disconnect-PnPOnline -ErrorAction SilentlyContinue
+        Write-Host "Disconnected from SharePoint." -ForegroundColor DarkGray
+    }
+    catch {
+        Write-Warning "The script could not cleanly disconnect the PnP session."
+    }
+}
