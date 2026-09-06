@@ -26,3 +26,8 @@ npm-debug.log*
 
 # Coverage
 coverage/
+
+# Local backups and generated reports
+backups/
+install-report-*.json
+*.backup.ps1
