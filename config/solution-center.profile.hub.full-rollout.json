@@ -1,0 +1,44 @@
+{
+  "operationMode": "Install",
+  "installScope": "HubSites",
+  "siteUrl": "",
+  "hubSiteUrl": "https://contoso.sharepoint.com/sites/Hub",
+  "discoverAssociatedSites": true,
+  "associatedSiteUrls": [
+    "https://contoso.sharepoint.com/sites/AppA",
+    "https://contoso.sharepoint.com/sites/AppB"
+  ],
+  "createMissingSites": true,
+  "tenantAdminUrl": "https://contoso-admin.sharepoint.com",
+  "missingSiteTemplate": "CommunicationSite",
+  "missingSiteOwnerUpn": "admin@contoso.com",
+  "autoAssociateCreatedSitesToHub": true,
+  "nonDestructiveUpgrade": false,
+  "enableBackup": true,
+  "backupBeforeChanges": true,
+  "backupFolder": "backups",
+  "backupListNames": [
+    "Solution Registry",
+    "Solution Documents",
+    "Solution Releases",
+    "Solution Technical Debt",
+    "Solution Architecture Assets",
+    "Solution Integrations",
+    "Solution Accessibility Checks"
+  ],
+  "deployPackage": true,
+  "appCatalogUrl": "https://contoso.sharepoint.com/sites/appcatalog",
+  "packagePath": "sharepoint/solution/tech-elixir-solution-center.sppkg",
+  "publishPackage": true,
+  "provisionLists": true,
+  "seedMinimalData": false,
+  "importSampleData": false,
+  "sampleDataFolder": "sharepoint/seed-data",
+  "applyBranding": false,
+  "branding": {
+    "productTitle": "Solution Center",
+    "logoUrl": "",
+    "accentColor": "#0078d4",
+    "themeVariant": "Light"
+  }
+}
